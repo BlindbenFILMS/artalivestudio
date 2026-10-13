@@ -8,6 +8,7 @@
 <meta name="description" content="Bring a still painting to life with motion, light, sound and story.">
 <script src="../site-config.js"></script><script src="../site.js" defer></script>
 <script src="../capture.js"></script>
+<script src="../account.js"></script>
 <style id="aa-skin">
 html:root{--ink:#15191f;--panel:#1d222a;--line:#2c333d;--text:#f2ede4;--soft:#a7adb6;--red:#ff7a2a;--blue:#2aa8e0;--gold:#f5a623;--orange:#ff7a2a}
 header{border-bottom:3px solid var(--line)!important;position:relative}
@@ -508,7 +509,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
       <div class="group" id="projectGroup">
         <div class="ghead"><span class="label">Project</span><span class="saved" id="savedState">Not saved yet</span></div>
-        <p class="hint">Your work saves itself in this browser. To move it to another device, copy the project and paste it there.</p>
+        <p class="hint">Your work saves itself in this browser. Press <b>Save to my account</b> to keep it in My projects and open it on any device.</p>
+        <div class="row2"><button class="act primary" id="cloudSave" type="button">Save to my account</button><button class="act" id="myProj" type="button">My projects</button></div>
         <div class="row2"><button class="act" id="copyProj" type="button">Copy project</button><button class="act" id="loadProj" type="button">Load pasted project</button></div>
         <div class="field"><label for="projText">Project code</label><textarea id="projText" spellcheck="false" placeholder="Paste a copied project here, then press Load pasted project"></textarea></div>
         <span class="label">Versions</span>
@@ -2288,6 +2290,28 @@ else if (!store.get('lps-toured')) window.__aaTourWait = true;
   if (rec && recCanvas) { const g = recCanvas.getContext('2d'); g.drawImage(cv, 0, 0); g.drawImage($('fx'), 0, 0); }
   requestAnimationFrame(frame);
 })(last);
+</script>
+
+<script>
+(function () {
+  const A = window.AAAccount; if (!A) return;
+  let pid = new URLSearchParams(location.search).get('project');
+  const st = (t, html) => { if (html) $('savedState').innerHTML = html; else $('savedState').textContent = t; live(t); };
+  $('myProj').onclick = () => { location.href = '../projects.html'; };
+  $('cloudSave').onclick = async () => {
+    const b = $('cloudSave'); b.disabled = true; st('Saving to your account…');
+    try { const pr = project(); pid = await A.saveProject({ id: pid, kind: 'studio', title: pr.title || 'My animation', data: pr, thumbSrc: painting && painting.src });
+      history.replaceState(null, '', '?project=' + pid); st('Saved to your account'); }
+    catch (er) { if (er.code === 'signin') st('Log in first, then press Save again', '<a href="../login.html" target="_blank" rel="noopener" style="color:inherit">Log in</a> in a new tab, then press Save again');
+      else st(er.message || 'Couldn’t save. Check your connection and try again.'); }
+    finally { b.disabled = false; } };
+  if (pid) {
+    const open = () => { st('Opening your project…'); try { $('restoreBar').classList.add('hide'); } catch (e) {}
+      A.getProject(pid).then(p => { if (p.kind !== 'studio') throw new Error('That project is a game. Open it in the Game Maker.'); try { pushUndo(); } catch (e) {} p.data.title = p.title; loadProject(p.data); const m = 'Opened ' + p.title + ' from your account'; st(m); setTimeout(() => st(m), 1600); })
+        .catch(er => { pid = null; st(er.code === 'signin' ? 'Log in to open this project' : er.message || 'Couldn’t open that project'); }); };
+    if (document.readyState === 'complete') setTimeout(open, 400); else addEventListener('load', () => setTimeout(open, 400));
+  }
+})();
 </script>
 
 </body>

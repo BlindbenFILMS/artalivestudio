@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>My projects · Art Alive</title>
+<meta name="description" content="Point your phone at a painting and watch it move, speak and play. No app to download.">
+<meta name="theme-color" content="#15191f">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Art Alive">
+<meta property="og:title" content="My projects · Art Alive">
+<meta property="og:description" content="Point your phone at a painting and watch it move, speak and play. No app to download.">
+<meta property="og:url" content="https://artalivestudio.com/projects.html">
+<meta property="og:image" content="https://artalivestudio.com/share-card.jpg?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Art Alive: point your phone, watch art come alive. A phone shows a painting moving.">
+<meta property="og:video" content="https://artalivestudio.com/share.mp4?v=2">
+<meta property="og:video:secure_url" content="https://artalivestudio.com/share.mp4?v=2">
+<meta property="og:video:type" content="video/mp4">
+<meta property="og:video:width" content="1200">
+<meta property="og:video:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://artalivestudio.com/share-card.jpg?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="wrap">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="./" aria-label="Art Alive home"><img src="art-alive-mark.png" alt=""><img class="wm" src="art-alive-wordmark.png" alt="Art Alive"></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav id="nav" aria-label="Main">
+      <ul class="util"><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to</a></li><li><a href="about.html">About</a></li><li><a href="login.html">Log in</a></li><li><a class="btn small" href="signup.html" style="color:#14100c;text-decoration:none">Join the waitlist</a></li></ul>
+      <ul class="aud"><li><a href="for-creators.html">For Creators</a></li><li><a href="for-galleries.html">For Galleries</a></li><li><a href="for-businesses.html">For Businesses</a></li><li><a href="for-everyone.html">For Everyone</a></li><li><a href="games/index.html">Game Maker</a></li><li><a class="studio" href="studio/index.html">Creator Studio</a></li></ul>
+    </nav>
+  </header>
+  <main class="wrap" id="main">
+    <section class="pj-head">
+      <div><span class="eyebrow">Your account</span><h1>My projects</h1><p class="pj-who" id="pjWho"></p></div>
+      <div class="pj-new"><a class="btn small" href="studio/index.html">New animation</a><a class="btn small ghost" href="games/index.html">New game</a></div>
+    </section>
+    <p class="status" id="pjStatus" role="status" aria-live="polite"></p>
+    <section id="pjBody" hidden aria-label="Your projects" style="display:flex;flex-direction:column;gap:18px">
+      <ul class="pj-folders" id="pjFolders" aria-label="Folders"></ul>
+      <ul class="pj-grid" id="pjGrid"></ul>
+      <div class="pj-empty" id="pjEmpty" hidden><h2 style="margin:0">Nothing here yet</h2><p>Make an animation or a game, then press <b>Save to my account</b>. It will show up here, ready to open on any device.</p>
+        <div class="pj-new"><a class="btn small" href="studio/index.html">New animation</a><a class="btn small ghost" href="games/index.html">New game</a></div></div>
+      <p><button class="btn small ghost" type="button" id="pjOut">Log out</button></p>
+    </section>
+    <section class="pj-empty" id="pjLogin" hidden><h2 style="margin:0">Log in to see your projects</h2><p>Your saved animations and games live in your account, so you can open them on any phone or computer.</p><a class="btn small" href="login.html">Log in</a></section>
+    <dialog class="pj-dlg" id="pjDlg"><form method="dialog" id="pjDlgForm"><h2 id="pjDlgH"></h2><p id="pjDlgP"></p>
+      <div class="field" id="pjDlgField"><label for="pjDlgIn" id="pjDlgL"></label><input id="pjDlgIn" type="text" maxlength="120" list="pjFolderList" autocomplete="off"></div><datalist id="pjFolderList"></datalist>
+      <div class="row"><button class="btn" value="ok" id="pjDlgOk"></button><button class="btn ghost" value="cancel" type="button" id="pjDlgNo">Cancel</button></div></form></dialog>
+
+  </main>
+  <footer>
+    <div class="row"><img src="art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="for-creators.html">For Creators</a></li><li><a href="for-galleries.html">For Galleries</a></li><li><a href="for-businesses.html">For Businesses</a></li><li><a href="for-everyone.html">For Everyone</a></li><li><a href="studio/index.html">Creator Studio</a></li><li><a href="games/index.html">Game Maker</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to make one</a></li><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="presskit.html">Press kit</a></li><li><a href="privacy.html">Privacy</a></li></ul></div>
+    <span>Art Alive is made by the <a href="https://blindcanvasproject.com/" target="_blank" rel="noopener">Blind Canvas Project</a> and Able Art Alliance.</span>
+  </footer>
+</div>
+<script src="site-config.js"></script><script src="site.js"></script><script src="account.js"></script>
+<script>
+(function(){const b=document.querySelector('.menu-btn'),n=document.getElementById('nav');if(!b)return;
+b.addEventListener('click',()=>{const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'Close':'Menu';});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&n.classList.contains('open')){n.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='Menu';b.focus();}});})();
+</script><script>
+(function(){
+const $=id=>document.getElementById(id), st=$('pjStatus');
+let all=[], folder=null;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const when=d=>{const t=new Date(d),s=(Date.now()-t)/1000;return s<60?'just now':s<3600?Math.round(s/60)+' min ago':s<86400?Math.round(s/3600)+' hours ago':t.toLocaleDateString(undefined,{month:'short',day:'numeric',year:t.getFullYear()===new Date().getFullYear()?undefined:'numeric'});};
+function say(t,cls){st.className='status'+(cls?' '+cls:'');st.textContent=t;}
+function ask(o){return new Promise(ok=>{$('pjDlgH').textContent=o.title;$('pjDlgP').textContent=o.text||'';$('pjDlgP').hidden=!o.text;$('pjDlgField').hidden=o.input===undefined;
+  $('pjDlgL').textContent=o.label||'';$('pjDlgIn').value=o.input||'';$('pjDlgOk').textContent=o.ok;const d=$('pjDlg');
+  const done=v=>{d.close();ok(v);};$('pjDlgNo').onclick=()=>done(null);d.onclose=()=>{};
+  $('pjDlgForm').onsubmit=e=>{e.preventDefault();done(o.input===undefined?true:$('pjDlgIn').value.trim());};d.oncancel=e=>{e.preventDefault();done(null);};
+  d.showModal();(o.input!==undefined?$('pjDlgIn'):$('pjDlgNo')).focus();});}
+function draw(){
+  const folders=[...new Set(all.map(p=>p.folder).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  if(folder&&!folders.includes(folder))folder=null;
+  $('pjFolderList').innerHTML=folders.map(f=>'<option value="'+esc(f)+'">').join('');
+  $('pjFolders').innerHTML=folders.length?['<li><button type="button" data-f="" aria-pressed="'+(!folder)+'">All projects ('+all.length+')</button></li>'].concat(folders.map(f=>'<li><button type="button" data-f="'+esc(f)+'" aria-pressed="'+(folder===f)+'">'+esc(f)+' ('+all.filter(p=>p.folder===f).length+')</button></li>')).join(''):'';
+  $('pjFolders').querySelectorAll('button').forEach(b=>b.onclick=()=>{folder=b.dataset.f||null;draw();say(folder?'Showing the folder '+folder:'Showing all projects');});
+  const list=folder?all.filter(p=>p.folder===folder):all;
+  $('pjEmpty').hidden=all.length>0;
+  $('pjGrid').innerHTML=list.map(p=>{const open=(p.kind==='game'?'games':'studio')+'/index.html?project='+p.id,kind=p.kind==='game'?'Game':'Animation';
+    return '<li class="pj" data-id="'+p.id+'"><a class="th" href="'+open+'" tabindex="-1" aria-hidden="true">'+(p.thumbUrl?'<img src="'+esc(p.thumbUrl)+'" alt="" loading="lazy">':'')+'</a><div class="tx"><span class="kind">'+kind+'</span><h2>'+esc(p.title)+'</h2><p class="meta">Edited '+when(p.updated_at)+(p.folder?' · in '+esc(p.folder):'')+'</p>'+
+      '<div class="acts"><a class="btn" href="'+open+'" aria-label="Open '+esc(p.title)+'">Open</a><button type="button" class="link" data-a="rename">Rename</button><button type="button" class="link" data-a="move">Folder</button><button type="button" class="link" data-a="copy">Copy</button><button type="button" class="link" data-a="del">Delete</button></div></div></li>';}).join('');
+  $('pjGrid').querySelectorAll('.pj').forEach(li=>{const p=all.find(x=>x.id===li.dataset.id);li.querySelectorAll('button[data-a]').forEach(b=>{b.setAttribute('aria-label',b.textContent+' '+p.title);b.onclick=()=>act(b.dataset.a,p,b);});});
+}
+async function act(a,p,btn){
+  try{
+    if(a==='rename'){const t=await ask({title:'Rename',label:'New name',input:p.title,ok:'Rename'});if(!t||t===p.title)return btn.focus();await AAAccount.updateProject(p.id,{title:t});p.title=t;draw();say('Renamed to '+t,'ok');}
+    if(a==='move'){const f=await ask({title:'Put in a folder',text:'Type a folder name, pick one you already have, or leave it empty to take it out of its folder.',label:'Folder',input:p.folder||'',ok:'Save'});if(f===null)return btn.focus();await AAAccount.updateProject(p.id,{folder:f});p.folder=f;draw();say(f?p.title+' is now in '+f:p.title+' is out of its folder','ok');}
+    if(a==='copy'){say('Making a copy…');await AAAccount.duplicateProject(p.id);await refresh();say('Copied. The copy is at the top.','ok');}
+    if(a==='del'){const y=await ask({title:'Delete '+p.title+'?',text:'This removes the project and its pictures and recordings from your account. It can’t be undone.',ok:'Delete'});if(!y)return btn.focus();say('Deleting…');await AAAccount.deleteProject(p.id);all=all.filter(x=>x.id!==p.id);draw();say(p.title+' was deleted.','ok');}
+  }catch(er){say(er.message||'Something went wrong. Please try again.','bad');}
+}
+async function refresh(){all=await AAAccount.listProjects();draw();}
+(async()=>{
+  if(!AAAccount.configured){say('Accounts are being set up. Please check back soon.');return;}
+  say('Loading your projects…');
+  let u=null;try{u=await AAAccount.user();}catch(er){say(er.message,'bad');return;}
+  if(!u){say('');$('pjLogin').hidden=false;return;}
+  const next=new URLSearchParams(location.search).get('next');if(next&&/^\/[^\/]/.test(next)){location.replace(next);return;}
+  if(location.hash)history.replaceState(null,'',location.pathname);
+  $('pjWho').textContent='Logged in as '+u.email;$('pjBody').hidden=false;
+  try{await refresh();say(all.length?all.length+(all.length===1?' project':' projects'):'');}catch(er){say(er.message||'Couldn’t load your projects.','bad');}
+})();
+$('pjOut').onclick=async()=>{await AAAccount.signOut();location.href='login.html';};
+})();
+</script>
+</body>
+</html>

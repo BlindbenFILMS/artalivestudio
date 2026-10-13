@@ -63,3 +63,12 @@ Made the files another way? Name them as in `voice/voice-lines.csv` (for example
 The site lives at **https://artalivestudio.com**, published from its own GitHub repository with GitHub Pages.
 The `CNAME` file tells GitHub Pages which domain to use; leave it in place.
 The domain is registered at Cloudflare, whose DNS points it to GitHub Pages (see the setup steps Claude gave you).
+
+## Customer accounts (Supabase)
+
+Customers log in with an email link (no password) and save their animations and games to **My projects**.
+
+- Settings are in `site-config.js`: the Supabase Project URL and **publishable** key. Never put the secret key in any file here.
+- One-time setup: in Supabase, open **SQL Editor → New query**, paste everything from `setup/supabase-setup.sql`, and press **Run**.
+- To make accounts invite-only, set `openSignup: false` in `site-config.js` and invite people in Supabase under **Authentication → Users → Invite**.
+- Pages: `login.html` (log in), `projects.html` (My projects). The Studio and Game Maker each have a **Save to my account** button.

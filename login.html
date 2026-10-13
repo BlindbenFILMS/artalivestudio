@@ -43,14 +43,24 @@
   <main class="wrap" id="main">
     <section class="auth">
       <form id="authForm" novalidate>
-        <span class="eyebrow">Log in</span>
-        <h1>Welcome back</h1>
-        <p class="soon-bar">Accounts open soon. <a href="signup.html" style="color:inherit">Join the waitlist</a> and we'll email you the day they do.</p>
-        <div class="field"><label for="em">Email</label><input id="em" name="email" type="email" autocomplete="email" required></div><div class="field"><label for="pw">Password</label><input id="pw" name="password" type="password" autocomplete="current-password" required></div>
-        <button class="btn" type="submit">Log in</button>
-        <p class="status" id="status" role="status"></p>
-        <p class="switch">New here? <a href="signup.html">Create an account</a></p>
-        <a class="btn ghost" href="studio/index.html">Open the Creator Studio</a>
+        <span class="eyebrow">Log in or create an account</span>
+        <h1 id="lgH">Welcome to Art Alive</h1>
+        <div id="lgForm" style="display:flex;flex-direction:column;gap:16px">
+          <p class="fine" style="font-size:16px">Type your email and we’ll send you a sign-in link. No password to remember. First time here? The same link creates your free account.</p>
+          <div class="field"><label for="em">Email</label><input id="em" name="email" type="email" autocomplete="email" inputmode="email" required></div>
+          <button class="btn" type="submit" id="lgBtn">Email me a sign-in link</button>
+        </div>
+        <div id="lgSent" class="done" hidden>
+          <p class="status ok" style="font-size:17px">Check your email. We sent a sign-in link to <b id="lgTo"></b>. Open it on this device to finish.</p>
+          <p class="fine">Nothing there after a minute? Check your spam folder, or <button type="button" class="link" id="lgAgain" style="background:none;border:0;padding:0;color:var(--cream);text-decoration:underline;font:inherit;cursor:pointer">try again</button>.</p>
+        </div>
+        <div id="lgIn" class="done" hidden>
+          <p class="status ok" style="font-size:17px">You’re logged in as <b id="lgMe"></b>.</p>
+          <a class="btn" href="projects.html">Go to My projects</a>
+          <button class="btn ghost" type="button" id="lgOut">Log out</button>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+        <p class="fine">By logging in you agree to keep only art you have the rights to. See our <a href="privacy.html">privacy notice</a>.</p>
       </form>
     </section>
 
@@ -60,14 +70,26 @@
     <span>Art Alive is made by the <a href="https://blindcanvasproject.com/" target="_blank" rel="noopener">Blind Canvas Project</a> and Able Art Alliance.</span>
   </footer>
 </div>
-<script src="site-config.js"></script><script src="site.js"></script>
+<script src="site-config.js"></script><script src="site.js"></script><script src="account.js"></script>
 <script>
 (function(){const b=document.querySelector('.menu-btn'),n=document.getElementById('nav');if(!b)return;
 b.addEventListener('click',()=>{const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'Close':'Menu';});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&n.classList.contains('open')){n.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='Menu';b.focus();}});})();
 </script><script>
-document.getElementById('authForm').addEventListener('submit',e=>{e.preventDefault();
-document.getElementById('status').innerHTML='Accounts are not open yet, so nothing was sent or saved. <a href="signup.html">Join the waitlist</a> to hear the day they open.';});
+(function(){
+const $=id=>document.getElementById(id), st=$('status'), next=new URLSearchParams(location.search).get('next')||'';
+function show(w){$('lgForm').hidden=w!=='form';$('lgSent').hidden=w!=='sent';$('lgIn').hidden=w!=='in';}
+if(!AAAccount.configured){st.textContent='Accounts are being set up. Please check back soon.';$('lgBtn').disabled=true;return;}
+AAAccount.user().then(u=>{if(u){$('lgMe').textContent=u.email;$('lgH').textContent='Welcome back';show('in');}}).catch(()=>{});
+$('authForm').addEventListener('submit',async e=>{e.preventDefault();const em=$('em').value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){st.className='status bad';st.textContent='Please type a full email address, like name@example.com.';$('em').focus();return;}
+  $('lgBtn').disabled=true;st.className='status';st.textContent='Sending…';
+  try{await AAAccount.signIn(em,next);$('lgTo').textContent=em;st.textContent='';show('sent');if(window.aaCount)aaCount('login-link-sent');}
+  catch(er){st.className='status bad';st.textContent=/rate|security purposes|seconds/i.test(er.message||'')?'Too many tries in a row. Wait a minute, then try again.':/signups? not allowed|not found/i.test(er.message||'')?'Accounts are invite-only for now. Join the waitlist and we’ll invite you.':(er.message||'Something went wrong. Please try again.');}
+  finally{$('lgBtn').disabled=false;}});
+$('lgAgain').onclick=()=>{show('form');$('em').focus();};
+$('lgOut').onclick=async()=>{await AAAccount.signOut();show('form');st.className='status';st.textContent='You’re logged out.';};
+})();
 </script>
 </body>
 </html>

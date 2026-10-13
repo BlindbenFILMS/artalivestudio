@@ -135,7 +135,9 @@
             <div class="gm-save">
               <button type="button" class="btn" id="dlGame">Download my game</button>
               <p class="gm-note">One file that plays in any phone or computer browser. Put it on your website, or send it to friends.</p>
-              <button type="button" class="btn ghost" id="dlProj">Save to keep editing</button>
+              <button type="button" class="btn" id="cloudSave">Save to my account</button>
+              <p class="gm-note" id="cloudNote">Keeps your game in <a href="../projects.html">My projects</a>, so you can open it on any device.</p>
+              <button type="button" class="btn ghost" id="dlProj">Download a copy to keep editing</button>
               <label class="btn ghost gm-upload"><input type="file" id="projIn" accept=".json,application/json">Open a saved game</label>
               <p class="gm-status" id="saveMsg" role="status"></p>
             </div>
@@ -155,7 +157,7 @@
     <span>Art Alive is made by the <a href="https://blindcanvasproject.com/" target="_blank" rel="noopener">Blind Canvas Project</a> and Able Art Alliance.</span>
   </footer>
 </div>
-<script src="../site-config.js"></script><script src="../site.js"></script>
+<script src="../site-config.js"></script><script src="../site.js"></script><script src="../account.js"></script>
 <script>
 (function(){const b=document.querySelector('.menu-btn'),n=document.getElementById('nav');if(!b)return;
 b.addEventListener('click',()=>{const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'Close':'Menu';});
@@ -2335,11 +2337,12 @@ ${by}
 }
 $('#dlGame').onclick = () => offerSave(new Blob([gameHTML()], { type: 'text/html' }), slug(G.title) + '-game.html');
 $('#dlProj').onclick = () => offerSave(new Blob([JSON.stringify(G)], { type: 'application/json' }), slug(G.title) + '.artalive.json');
+function openGame(d, done) { G = Object.assign(G, d); Object.keys(edited).forEach(k => delete edited[k]); LINES.forEach(([k]) => { edited[k] = true; });
+  setImage(G.img, () => { $('#tIn').value = G.title || ''; $('#aIn').value = G.artist || ''; setType(G.type); go('play', true); $('#saveMsg').textContent = 'Opened ' + (G.title || 'your game') + '.'; if (done) done(); }); }
 $('#projIn').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return; e.target.value = '';
   const r = new FileReader(); r.onload = () => {
-    try { const d = JSON.parse(r.result); if (!d.img || !d.type) throw 0; G = Object.assign(G, d); Object.keys(edited).forEach(k => delete edited[k]); LINES.forEach(([k]) => { edited[k] = true; });
-      setImage(G.img, () => { $('#tIn').value = G.title || ''; $('#aIn').value = G.artist || ''; setType(G.type); go('play', true); $('#saveMsg').textContent = 'Opened ' + (G.title || 'your game') + '.'; }); }
+    try { const d = JSON.parse(r.result); if (!d.img || !d.type) throw 0; openGame(d); }
     catch (er) { $('#saveMsg').textContent = 'That file isn’t an Art Alive game.'; }
   }; r.readAsText(f);
 });
@@ -2350,7 +2353,24 @@ function say(t) { srBox.textContent = ''; setTimeout(() => { srBox.textContent =
 
 /* start: the tunnel painting with six stars, ready to play */
 setImage(SAMPLES[0].src, () => { G.title = SAMPLES[0].title; G.artist = 'Blind Canvas Project'; $('#tIn').value = G.title; $('#aIn').value = G.artist; fresh(); setType('collect'); go('art'); });
-window.AAMaker = { get G() { return G; }, go, setType, gameHTML };
+window.AAMaker = { get G() { return G; }, go, setType, gameHTML, openGame };
+
+/* ── saving to the creator's account (account.js) ── */
+(function () {
+  const A = window.AAAccount; if (!A) return;
+  let pid = new URLSearchParams(location.search).get('project');
+  const msg = t => { $('#saveMsg').textContent = t; say(t); };
+  $('#cloudSave').onclick = async () => {
+    const btn = $('#cloudSave'); btn.disabled = true; msg('Saving to your account…');
+    try { pid = await A.saveProject({ id: pid, kind: 'game', title: G.title || 'My game', data: G, thumbSrc: G.img });
+      history.replaceState(null, '', '?project=' + pid); msg('Saved to your account. Find it any time in My projects.'); }
+    catch (er) { if (er.code === 'signin' || /log in/i.test(er.message)) { msg('Log in first to save to your account. Your game stays here while you do.');
+        $('#cloudNote').innerHTML = '<a href="../login.html?next=' + encodeURIComponent(location.pathname) + '" target="_blank" rel="noopener">Log in</a> in a new tab, then come back and press Save again.'; }
+      else msg(er.message || 'Couldn’t save. Check your connection and try again.'); }
+    finally { btn.disabled = false; } };
+  if (pid) { msg('Opening your game…'); A.getProject(pid).then(p => { if (p.kind !== 'game') throw new Error('That project is an animation. Open it in the Creator Studio.'); openGame(Object.assign(p.data, { title: p.title }), () => msg('Opened ' + (p.title || 'your game') + ' from your account.')); })
+    .catch(er => { pid = null; msg(er.code === 'signin' ? 'Log in to open this game.' : er.message || 'Couldn’t open that game.'); }); }
+})();
 })();
 </script>
 </body>

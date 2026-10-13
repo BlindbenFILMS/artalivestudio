@@ -19,6 +19,16 @@ window.ART_ALIVE = {
   // 3. VISITOR COUNTING (optional, free, no cookies)
   //    Make an account at https://www.goatcounter.com and type your code here,
   //    for example 'artalive' if your dashboard is artalive.goatcounter.com
-  goatcounter: ''
+  goatcounter: '',
+
+  // 4. ACCOUNTS (Supabase): customers log in and save their projects
+  //    From supabase.com → your project → Connect (or Settings → API Keys).
+  //    Only the Project URL and the PUBLISHABLE key go here. Never the secret key.
+  supabaseUrl: 'https://skacvtlqmbnkkyatkogn.supabase.co',
+  supabaseKey: 'sb_publishable_CtdqqBuI7ndfTOLfNUmetw_rjETRv1E',
+
+  //    true: anyone can make an account by entering their email.
+  //    false: only people you've added in Supabase (Authentication → Users → Invite) can log in.
+  openSignup: true
 
 };
