@@ -1,0 +1,45 @@
+file,language,text
+camera-01,en,"Take a photo of anything square or rectangle. Center it, with all four corners showing. Then press Open camera."
+camera-02,en,"Point at a square or rectangle. Center it, with all four corners in view."
+camera-03,en,Move closer.
+camera-04,en,Step back a little. Keep all four corners in view.
+camera-05,en,Centered. Hold still…
+camera-06,en,"Found the edges. Check the four corners, then press Crop and straighten."
+camera-07,en,Drag the four corners onto the corners of your rectangle.
+camera-08,en,Found the edges.
+camera-09,en,Couldn’t find clear edges. Drag the corners yourself.
+camera-10,en,"The camera wasn’t allowed. Use Upload image instead, or allow the camera and try again."
+camera-11,en,Move your phone left and up to center it.
+camera-12,en,Move your phone left and down to center it.
+camera-13,en,Move your phone left to center it.
+camera-14,en,Move your phone right and up to center it.
+camera-15,en,Move your phone right and down to center it.
+camera-16,en,Move your phone right to center it.
+camera-17,en,Move your phone up to center it.
+camera-18,en,Move your phone down to center it.
+arbol-luminoso-tesoros-welcome,es,¡Bienvenidos al Árbol Luminoso! Tres tesoros están escondidos en la pintura. Muévete despacio y escucha: los pitidos se aceleran cuando te acercas.
+arbol-luminoso-tesoros-about,es,"Un gran árbol brilla desde adentro. Sus ramas se extienden por un cielo naranja y azul, y una multitud de personas está debajo."
+arbol-luminoso-tesoros-hint,es,"Move slowly and listen. When the beeps race and your phone buzzes, you are right on top of it."
+arbol-luminoso-tesoros-good,es,Nice one!
+arbol-luminoso-tesoros-win,es,¡Los encontraste todos! Gracias por jugar con el Árbol Luminoso.
+arbol-luminoso-tesoros-treasure1,es,Encontraste el corazón del árbol. Brilla con una luz dorada.
+arbol-luminoso-tesoros-treasure2,es,"Encontraste a la gente reunida bajo el árbol, mirando hacia arriba."
+arbol-luminoso-tesoros-treasure3,es,"Encontraste el cielo naranja y azul, como un atardecer pintado."
+glowing-tree-memory-welcome,en,"Welcome to the Glowing Tree. Flip the cards and find the matching pairs. Every pair sings its own note, so you can match them by ear."
+glowing-tree-memory-about,en,"A great tree glows from within. Its branches spread across a sky of orange and blue, and a crowd of people stands beneath it."
+glowing-tree-memory-hint,en,Listen for the notes. Two cards that sing the same note are a pair.
+glowing-tree-memory-win,en,All pairs found! The tree is glowing just for you.
+into-the-light-treasure-welcome,en,Welcome to Into the Light. Three treasures are hidden in the painting. Move slowly and listen: the beeps race when you are close.
+into-the-light-treasure-about,en,"A figure with a white cane walks into a blaze of orange, red and blue. The paint drips and runs like rain on a window."
+into-the-light-treasure-win,en,You found them all. Thank you for walking into the light with us.
+into-the-light-treasure-treasure1,en,You found the traveller. His white cane leads him toward the light.
+into-the-light-treasure-treasure2,en,"A cool blue flame, burning through the fire."
+into-the-light-treasure-treasure3,en,The paint pools at his feet like light on a wet street.
+tunnel-marble-welcome,en,Welcome to the Tunnel of Light! Tilt or steer the eyeball and collect every star. Listen: the beeps lead you to the next one.
+tunnel-marble-about,en,"A lone traveller stands in a tunnel of light. Swirls of deep blue and gold spin around him, and the light ahead is warm and bright."
+tunnel-marble-hint,en,Listen to the beeps. They point you to the nearest star. Faster means closer.
+tunnel-marble-win,en,You did it! Every star is home. Thank you for playing in the Tunnel of Light.
+tunnel-puzzle-welcome,en,The Tunnel of Light is in pieces. Slide them back into place. Each piece sings when it finds its home.
+tunnel-puzzle-about,en,"This is Tunnel Puzzle by Blind Canvas Project. Tell your players what they are looking at: the colours, the shapes, and the story behind it."
+tunnel-puzzle-hint,en,Start with the top row. Press Peek to see the whole painting.
+tunnel-puzzle-win,en,Solved! The tunnel is whole again.

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Log in · Art Alive</title>
+<meta name="description" content="Point your phone at a painting and watch it move, speak and play. No app to download.">
+<meta name="theme-color" content="#15191f">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Art Alive">
+<meta property="og:title" content="Log in · Art Alive">
+<meta property="og:description" content="Point your phone at a painting and watch it move, speak and play. No app to download.">
+<meta property="og:url" content="https://artalivestudio.com/login.html">
+<meta property="og:image" content="https://artalivestudio.com/share.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://artalivestudio.com/share.jpg?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="wrap">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="./" aria-label="Art Alive home"><img src="art-alive-mark.png" alt=""><img class="wm" src="art-alive-wordmark.png" alt="Art Alive"></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav id="nav" aria-label="Main">
+      <ul class="util"><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to</a></li><li><a href="about.html">About</a></li><li><a href="login.html" aria-current="page">Log in</a></li><li><a class="btn small" href="signup.html" style="color:#14100c;text-decoration:none">Join the waitlist</a></li></ul>
+      <ul class="aud"><li><a href="for-creators.html">For Creators</a></li><li><a href="for-galleries.html">For Galleries</a></li><li><a href="for-businesses.html">For Businesses</a></li><li><a href="for-everyone.html">For Everyone</a></li><li><a href="games/index.html">Game Maker</a></li><li><a class="studio" href="studio/index.html">Creator Studio</a></li></ul>
+    </nav>
+  </header>
+  <main class="wrap" id="main">
+    <section class="auth">
+      <form id="authForm" novalidate>
+        <span class="eyebrow">Log in</span>
+        <h1>Welcome back</h1>
+        <p class="soon-bar">Accounts open soon. <a href="signup.html" style="color:inherit">Join the waitlist</a> and we'll email you the day they do.</p>
+        <div class="field"><label for="em">Email</label><input id="em" name="email" type="email" autocomplete="email" required></div><div class="field"><label for="pw">Password</label><input id="pw" name="password" type="password" autocomplete="current-password" required></div>
+        <button class="btn" type="submit">Log in</button>
+        <p class="status" id="status" role="status"></p>
+        <p class="switch">New here? <a href="signup.html">Create an account</a></p>
+        <a class="btn ghost" href="studio/index.html">Open the Creator Studio</a>
+      </form>
+    </section>
+
+  </main>
+  <footer>
+    <div class="row"><img src="art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="for-creators.html">For Creators</a></li><li><a href="for-galleries.html">For Galleries</a></li><li><a href="for-businesses.html">For Businesses</a></li><li><a href="for-everyone.html">For Everyone</a></li><li><a href="studio/index.html">Creator Studio</a></li><li><a href="games/index.html">Game Maker</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to make one</a></li><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="presskit.html">Press kit</a></li><li><a href="privacy.html">Privacy</a></li></ul></div>
+    <span>Art Alive is made by the <a href="https://blindcanvasproject.com/" target="_blank" rel="noopener">Blind Canvas Project</a> and Able Art Alliance.</span>
+  </footer>
+</div>
+<script src="site-config.js"></script><script src="site.js"></script>
+<script>
+(function(){const b=document.querySelector('.menu-btn'),n=document.getElementById('nav');if(!b)return;
+b.addEventListener('click',()=>{const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'Close':'Menu';});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&n.classList.contains('open')){n.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='Menu';b.focus();}});})();
+</script><script>
+document.getElementById('authForm').addEventListener('submit',e=>{e.preventDefault();
+document.getElementById('status').innerHTML='Accounts are not open yet, so nothing was sent or saved. <a href="signup.html">Join the waitlist</a> to hear the day they open.';});
+</script>
+</body>
+</html>

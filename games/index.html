@@ -1,0 +1,2351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Game Maker · Art Alive</title>
+<meta name="description" content="Turn your art into a game that talks, beeps and buzzes, so anyone can play it.">
+<meta name="theme-color" content="#15191f">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Art Alive">
+<meta property="og:title" content="Game Maker · Art Alive">
+<meta property="og:description" content="Turn your art into a game that talks, beeps and buzzes, so anyone can play it.">
+<meta property="og:url" content="https://artalivestudio.com/games/">
+<meta property="og:image" content="https://artalivestudio.com/share.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://artalivestudio.com/share.jpg?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<div class="wrap">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="../" aria-label="Art Alive home"><img src="../art-alive-mark.png" alt=""><img class="wm" src="../art-alive-wordmark.png" alt="Art Alive"></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav id="nav" aria-label="Main">
+      <ul class="util"><li><a href="../gallery.html">Gallery</a></li><li><a href="../how-to.html">How to</a></li><li><a href="../about.html">About</a></li><li><a href="../login.html">Log in</a></li><li><a class="btn small" href="../signup.html" style="color:#14100c;text-decoration:none">Join the waitlist</a></li></ul>
+      <ul class="aud"><li><a href="../for-creators.html">For Creators</a></li><li><a href="../for-galleries.html">For Galleries</a></li><li><a href="../for-businesses.html">For Businesses</a></li><li><a href="../for-everyone.html">For Everyone</a></li><li><a href="../games/index.html" aria-current="page">Game Maker</a></li><li><a class="studio" href="../studio/index.html">Creator Studio</a></li></ul>
+    </nav>
+  </header>
+  <main class="wrap" id="main">
+    <section class="page-head gm-head">
+      <span class="eyebrow">Game Maker · new</span>
+      <h1>Turn your art into a <span class="alive">game</span></h1>
+      <div class="rule" aria-hidden="true"></div>
+      <p class="lede">Pick a game, place a few things on your painting, record your voice and play. Every game talks, beeps and buzzes, so anyone can play it, with or without sight.</p>
+    </section>
+
+    <section class="gm" aria-label="Game Maker">
+      <nav class="gm-steps" aria-label="Steps">
+        <button type="button" data-go="art"><b>1</b>Art</button>
+        <button type="button" data-go="game"><b>2</b>Game</button>
+        <button type="button" data-go="build"><b>3</b>Build</button>
+        <button type="button" data-go="look"><b>4</b>Look</button>
+        <button type="button" data-go="voice"><b>5</b>Voice</button>
+        <button type="button" data-go="play" class="gm-playstep"><b>6</b>Play</button>
+      </nav>
+
+      <div class="gm-body">
+        <div class="gm-left">
+          <div class="gm-canvaswrap" id="ewrap">
+            <canvas id="ecv" aria-describedby="ehelp"></canvas>
+          </div>
+          <p class="gm-help" id="ehelp" aria-live="polite"></p>
+          <div id="playRoot" hidden></div>
+        </div>
+
+        <div class="gm-panels">
+          <!-- 1 ART -->
+          <section class="gm-panel" data-step="art" aria-labelledby="h-art">
+            <h2 id="h-art">1. Your art</h2>
+            <div class="gm-row"><label class="btn gm-upload"><input type="file" id="fileIn" accept="image/*">Upload image</label><button type="button" class="btn blue" id="camBtn">Take a photo</button></div>
+            <p class="gm-note">A painting, a drawing or a poster. Take a photo and Art Alive helps you line it up, then straightens it. It stays on your device.</p>
+            <p class="gm-sub">Or try one of ours</p>
+            <div class="gm-samples" id="samples"></div>
+            <div class="gm-fields">
+              <label>Name of your game<input type="text" id="tIn" maxlength="60" autocomplete="off"></label>
+              <label>Artist<input type="text" id="aIn" maxlength="60" autocomplete="off"></label>
+            </div>
+            <div class="gm-nav"><span></span><button type="button" class="btn" data-next>Next: pick a game</button></div>
+          </section>
+
+          <!-- 2 GAME -->
+          <section class="gm-panel" data-step="game" aria-labelledby="h-game" hidden>
+            <h2 id="h-game">2. Pick a game</h2>
+            <div class="gm-types" id="types" role="radiogroup" aria-labelledby="h-game"></div>
+            <div class="gm-nav"><button type="button" class="btn ghost" data-back>Back</button><button type="button" class="btn" data-next>Next: build it</button></div>
+          </section>
+
+          <!-- 3 BUILD -->
+          <section class="gm-panel" data-step="build" aria-labelledby="h-build" hidden>
+            <h2 id="h-build">3. Build it</h2>
+            <div id="build"></div>
+            <div class="gm-nav"><button type="button" class="btn ghost" data-back>Back</button><button type="button" class="btn" data-next>Next: the look</button></div>
+          </section>
+
+          <!-- 4 LOOK -->
+          <section class="gm-panel" data-step="look" aria-labelledby="h-look" hidden>
+            <h2 id="h-look">4. The look</h2>
+            <p class="gm-sub">Bring the painting to life</p>
+            <div class="gm-chips" id="fxChips"></div>
+            <div id="marbleBox">
+              <p class="gm-sub">The marble</p>
+              <div class="gm-chips" id="marbleChips"></div>
+            </div>
+            <div id="itemBox">
+              <p class="gm-sub">Things to collect</p>
+              <div class="gm-chips" id="itemChips"></div>
+            </div>
+            <p class="gm-sub">Players start with</p>
+            <div class="gm-fields two">
+              <label>Controls<select id="ctrlSel"><option value="joystick">Joystick</option><option value="buttons">Arrow buttons</option><option value="tilt">Tilt the phone</option></select></label>
+              <label>View<select id="viewSel"><option value="full">Full sight</option><option value="blur">Blurry sight</option><option value="tunnel">Tunnel vision</option><option value="center">Center loss</option><option value="contrast">High contrast</option></select></label>
+            </div>
+            <p class="gm-note">Players can switch controls and views any time. The views show your painting the way people with low vision see it.</p>
+            <div class="gm-nav"><button type="button" class="btn ghost" data-back>Back</button><button type="button" class="btn" data-next>Next: your voice</button></div>
+          </section>
+
+          <!-- 5 VOICE -->
+          <section class="gm-panel" data-step="voice" aria-labelledby="h-voice" hidden>
+            <h2 id="h-voice">5. Your voice</h2>
+            <p class="gm-note">Record each line in your own voice, or just edit the words and a computer voice will read them. Talk like you're showing a friend your painting.</p>
+            <label class="gm-lang">Language of the game<select id="langSel"><option value="en">English</option><option value="es">Español (Spanish)</option></select></label>
+            <p class="gm-note">Changes the game’s buttons and the computer voice. Your suggested lines switch too, unless you have edited them.</p>
+            <div id="lines"></div>
+            <div class="gm-nav"><button type="button" class="btn ghost" data-back>Back</button><button type="button" class="btn" data-next>Next: play it</button></div>
+          </section>
+
+          <!-- 6 PLAY -->
+          <section class="gm-panel" data-step="play" aria-labelledby="h-play" hidden>
+            <h2 id="h-play">6. Play and share</h2>
+            <p class="gm-note">Play your game, then save it.</p>
+            <div class="gm-save">
+              <button type="button" class="btn" id="dlGame">Download my game</button>
+              <p class="gm-note">One file that plays in any phone or computer browser. Put it on your website, or send it to friends.</p>
+              <button type="button" class="btn ghost" id="dlProj">Save to keep editing</button>
+              <label class="btn ghost gm-upload"><input type="file" id="projIn" accept=".json,application/json">Open a saved game</label>
+              <p class="gm-status" id="saveMsg" role="status"></p>
+            </div>
+            <div class="gm-soon">
+              <b>Coming with creator accounts:</b> publish with one tap, get a QR code, and play your game right on the painting through the Art Alive camera.
+              <a href="../signup.html">Join the waitlist</a>
+            </div>
+            <div class="gm-nav"><button type="button" class="btn ghost" data-back>Back to editing</button><span></span></div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <footer>
+    <div class="row"><img src="../art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="../for-creators.html">For Creators</a></li><li><a href="../for-galleries.html">For Galleries</a></li><li><a href="../for-businesses.html">For Businesses</a></li><li><a href="../for-everyone.html">For Everyone</a></li><li><a href="../studio/index.html">Creator Studio</a></li><li><a href="../games/index.html">Game Maker</a></li><li><a href="../gallery.html">Gallery</a></li><li><a href="../how-to.html">How to make one</a></li><li><a href="../about.html">About</a></li><li><a href="../contact.html">Contact</a></li><li><a href="../presskit.html">Press kit</a></li><li><a href="../privacy.html">Privacy</a></li></ul></div>
+    <span>Art Alive is made by the <a href="https://blindcanvasproject.com/" target="_blank" rel="noopener">Blind Canvas Project</a> and Able Art Alliance.</span>
+  </footer>
+</div>
+<script src="../site-config.js"></script><script src="../site.js"></script>
+<script>
+(function(){const b=document.querySelector('.menu-btn'),n=document.getElementById('nav');if(!b)return;
+b.addEventListener('click',()=>{const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'Close':'Menu';});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&n.classList.contains('open')){n.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='Menu';b.focus();}});})();
+</script><style>/* Game Maker: the painting on one side, one step at a time on the other. */
+.gm{display:flex;flex-direction:column;gap:20px;margin-top:-40px}
+.gm-steps{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;position:sticky;top:0;z-index:5;background:var(--room);padding:10px 0}
+.gm-steps button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border-radius:14px;border:2px solid var(--line);background:var(--wall);color:var(--cream);
+  font:800 15px/1 var(--display);font-stretch:112%;letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
+.gm-steps button b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--line);font-size:14px}
+.gm-steps button[aria-current]{border-color:var(--orange);background:#2a1c12}
+.gm-steps button[aria-current] b{background:var(--orange);color:#14100c}
+.gm-steps .gm-playstep{border-color:#1f4f66}
+.gm-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;align-items:start}
+.gm-left{position:sticky;top:84px;display:flex;flex-direction:column;gap:10px}
+.gm-canvaswrap{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#0b0d10;margin:0 auto;width:100%;max-width:calc(70vh * var(--ar,1))}
+.gm-canvaswrap canvas{display:block;width:100%;height:100%;object-fit:contain;touch-action:none;cursor:crosshair}
+.gm-help{margin:0;text-align:center;font-size:16px;font-weight:700;color:var(--cream);min-height:1.5em}
+.gm-panels{min-width:0}
+.gm-panel{display:flex;flex-direction:column;gap:14px;background:var(--wall);border:1px solid var(--line);border-radius:18px;padding:clamp(18px,3vw,28px)}
+.gm-panel[hidden]{display:none}
+.gm-panel h2{margin:0;font:900 clamp(24px,3vw,32px)/1 var(--display);font-stretch:115%;text-transform:uppercase}
+.gm-panel h2:focus{outline:none}
+.gm-note{margin:0;color:var(--muted);font-size:16px;line-height:1.5}
+.gm-note b{color:var(--cream)}
+.gm-sub{margin:8px 0 0;font:800 13px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.gm-upload{position:relative;cursor:pointer;align-self:flex-start}
+.gm-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.gm-upload:focus-within{outline:3px solid var(--blue);outline-offset:3px}
+.gm-samples{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.gm-sample{display:flex;flex-direction:column;gap:6px;padding:0;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:var(--room);color:var(--cream);cursor:pointer;font:700 14px/1.2 var(--body);text-align:left}
+.gm-sample img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.gm-sample span{padding:0 8px 8px}
+.gm-sample:hover{border-color:var(--orange)}
+.gm-fields{display:grid;gap:12px}
+.gm-fields.two{grid-template-columns:1fr 1fr}
+.gm-fields label,.gm-line label,.gm-tr label{display:flex;flex-direction:column;gap:6px;font-size:15px;font-weight:700}
+.gm input[type=text],.gm textarea,.gm select{width:100%;min-height:48px;border-radius:12px;border:2px solid var(--line);background:var(--room);color:var(--cream);font:16px/1.4 var(--body);padding:10px 12px}
+.gm textarea{resize:vertical}
+.gm input:focus,.gm textarea:focus,.gm select:focus{border-color:var(--blue);outline:none}
+.gm-types{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gm-type{display:grid;grid-template-columns:44px 1fr;grid-template-rows:auto auto;gap:2px 12px;align-items:center;text-align:left;padding:14px;border-radius:14px;border:2px solid var(--line);background:var(--room);color:var(--cream);cursor:pointer}
+.gm-type svg{grid-row:1/3;width:44px;height:44px;color:var(--orange)}
+.gm-type b{font:800 16px/1.1 var(--display);font-stretch:112%;text-transform:uppercase;letter-spacing:.03em}
+.gm-type span{font-size:14px;line-height:1.35;color:var(--muted)}
+.gm-type[aria-checked=true]{border-color:var(--orange);background:#2a1c12}
+.gm-type[aria-checked=true] svg{color:var(--gold)}
+.gm-chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:46px;padding:0 18px;border-radius:999px;border:2px solid var(--line);background:var(--room);color:var(--cream);font:700 15px/1 var(--body);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--cream);color:#14100c;border-color:var(--cream)}
+.chip[aria-pressed=true]::before{content:'✓ '}
+.gm-row{display:flex;flex-wrap:wrap;gap:8px}
+.btn.small{min-height:46px;padding:0 18px;font-size:14px}
+.gm-check{display:flex;gap:10px;align-items:flex-start;font-size:15px;color:var(--cream)}
+.gm-check input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--orange)}
+.gm-tr,.gm-line{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:14px;border:2px solid var(--line);background:var(--room)}
+.gm-tr.on{border-color:var(--orange)}
+.gm-trhead{display:flex;gap:10px;align-items:flex-end}
+.gm-trhead .grow{flex:1}
+.gm-trhead .num{display:grid;place-items:center;flex:none;width:40px;height:48px;border-radius:12px;background:var(--gold);color:#14100c;font:900 20px/1 var(--display)}
+.gm-trhead .x{min-height:48px;padding:0 14px;border-radius:12px;border:2px solid var(--line);background:none;color:var(--muted);font:700 14px var(--body);cursor:pointer}
+.gm-line small{font-weight:400;color:var(--muted);font-size:14px}
+.gm-rec{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.gm-rec button{min-height:46px;padding:0 16px;border-radius:999px;border:2px solid var(--line);background:var(--wall);color:var(--cream);font:700 15px/1 var(--body);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.gm-rec .rec i{width:14px;height:14px;border-radius:50%;background:var(--red)}
+.gm-rec.on .rec{background:var(--red);border-color:var(--red);color:#fff}
+.gm-rec.on .rec i{border-radius:3px;background:#fff}
+.gm-rec .st{font-size:14px;color:var(--muted)}
+.gm-rec.has .st{color:var(--gold);font-weight:700}
+.gm-rec .lvl{flex-basis:100%;height:6px;border-radius:3px;background:var(--line);overflow:hidden;display:none}
+.gm-rec.on .lvl{display:block}
+.gm-rec .lvl b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--orange));transition:width .06s}
+.gm-nav{display:flex;justify-content:space-between;gap:10px;margin-top:6px;flex-wrap:wrap}
+.gm-save{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.gm-status{margin:0;min-height:1.4em;color:var(--gold);font-weight:700}
+.gm-soon{padding:14px;border-radius:14px;border:1px dashed var(--line);font-size:15px;color:var(--muted)}
+.gm-soon b{color:var(--cream)}
+.gm-soon a{color:var(--blue);font-weight:700}
+#playRoot{padding:4px 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:860px){
+  .gm{margin-top:-24px}
+  .gm-body{grid-template-columns:1fr;gap:16px}
+  .gm-left{position:static}
+  .gm-steps{grid-template-columns:repeat(6,1fr);gap:4px}
+  .gm-steps button{flex-direction:column;gap:4px;font-size:11px;min-height:58px;padding:4px 0;letter-spacing:.02em}
+  .gm-canvaswrap{max-width:calc(56vh * var(--ar,1))}
+  .gm-body[data-step=game] .gm-canvaswrap,.gm-body[data-step=voice] .gm-canvaswrap{max-width:calc(26vh * var(--ar,1))}
+  #playRoot .aag-stage{max-height:64vh;max-width:calc(64vh * var(--aag-ar-n,1))}
+}
+@media (max-width:520px){.gm-types{grid-template-columns:1fr}.gm-fields.two{grid-template-columns:1fr}}
+#build{display:flex;flex-direction:column;gap:12px}
+#build .gm-sub{margin:4px 0 0}
+#marbleBox,#itemBox{display:flex;flex-direction:column;gap:14px}
+#marbleBox[hidden],#itemBox[hidden]{display:none}
+.gm-body.playing .gm-left{position:static}
+#playRoot .aag-stage{max-height:62vh;max-width:calc(62vh * var(--aag-ar-n,1))}
+.gm-rec .up{position:relative;min-height:46px;padding:0 16px;border-radius:999px;border:2px solid var(--line);background:var(--wall);color:var(--cream);font:700 15px/1 var(--body);cursor:pointer;display:inline-flex;align-items:center}
+.gm-rec .up input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.gm-rec .up:focus-within{outline:3px solid var(--blue);outline-offset:3px}
+#playRoot .aag-stage.aag-ar{max-width:calc(62vh * var(--aag-arn,.75))}
+.gm-lang{display:flex;flex-direction:column;gap:6px;font-size:15px;font-weight:700}
+</style>
+<style id="aa-pcss">/* Art Alive game player: the painting on top, then big clear controls underneath. */
+.aag{--a-room:#15191f;--a-wall:#1d222a;--a-line:#2c333d;--a-cream:#f2ede4;--a-muted:#a7adb6;--a-orange:#ff7a2a;--a-blue:#2aa8e0;--a-gold:#f5a623;
+  display:flex;flex-direction:column;gap:14px;color:var(--a-cream);font-family:'Atkinson Hyperlegible',Verdana,Arial,sans-serif;max-width:720px;margin:0 auto;width:100%}
+.aag button{font:inherit;cursor:pointer}
+.aag-stage{position:relative;border-radius:16px;overflow:hidden;background:#0b0d10;border:1px solid var(--a-line);aspect-ratio:var(--aag-ar,4/3);max-height:72vh;margin:0 auto;width:100%;
+  max-width:calc(72vh * (var(--aag-ar-n,1)))}
+.aag-cv{display:block;width:100%;height:100%;object-fit:contain;touch-action:none;user-select:none;-webkit-user-select:none}
+.aag-cover,.aag-win{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(10,12,16,.45);text-align:center;padding:16px}
+.aag-cover[hidden],.aag-win[hidden]{display:none}
+.aag-play,.aag-again{min-height:64px;min-width:180px;padding:0 34px;border:0;border-radius:999px;background:var(--a-orange);color:#14100c;
+  font:900 22px/1 'Archivo','Arial Black',Arial,sans-serif!important;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 10px 30px -8px rgba(255,122,42,.8)}
+.aag-play::before{content:'';display:inline-block;border-left:16px solid currentColor;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-right:12px;vertical-align:-2px}
+.aag-tip{margin:0;max-width:30ch;font-size:17px;font-weight:700;text-shadow:0 2px 8px #000}
+.aag-win{background:rgba(10,12,16,.68)}
+.aag-wint{margin:0;font:900 clamp(30px,7vw,52px)/1 'Archivo','Arial Black',Arial,sans-serif;text-transform:uppercase;background:linear-gradient(90deg,var(--a-orange),var(--a-gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.aag-wins{margin:0;font-size:19px;color:var(--a-cream)}
+.aag-status{margin:0;text-align:center;font:800 clamp(17px,2.6vw,21px)/1.3 'Archivo','Arial Black',Arial,sans-serif;letter-spacing:.02em;min-height:1.3em}
+.aag-ctrl{display:flex;align-items:center;justify-content:center;gap:clamp(16px,6vw,48px);flex-wrap:wrap;min-height:120px}
+.aag-pad{display:flex;justify-content:center}
+.aag-joy{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#262c36 0 55%,#1d222a 56%);border:3px solid var(--a-line);position:relative;touch-action:none;
+  box-shadow:inset 0 0 0 10px rgba(255,255,255,.03),0 8px 24px -10px #000}
+.aag-joy::before{content:'';position:absolute;inset:14px;border-radius:50%;border:2px dashed rgba(167,173,182,.35)}
+.aag-knob{position:absolute;left:50%;top:50%;width:66px;height:66px;margin:-33px 0 0 -33px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffb27a,var(--a-orange) 55%,#c4501a);
+  box-shadow:0 6px 16px -4px #000,inset 0 -4px 8px rgba(0,0,0,.25);pointer-events:none;transition:transform .06s}
+.aag-dpad{display:grid;grid-template-columns:repeat(3,62px);grid-template-rows:repeat(3,62px);gap:6px;touch-action:none}
+.aag-dpad button{border:2px solid var(--a-line);border-radius:16px;background:var(--a-wall);color:var(--a-cream);font-size:24px;line-height:1;touch-action:none;user-select:none;-webkit-user-select:none}
+.aag-dpad button.on,.aag-dpad button:active{background:var(--a-orange);color:#14100c;border-color:var(--a-orange)}
+.aag-dpad .u{grid-area:1/2}.aag-dpad .l{grid-area:2/1}.aag-dpad .r{grid-area:2/3}.aag-dpad .d{grid-area:3/2}
+.aag-tiltbox{text-align:center}.aag-tiltbox p{margin:0 0 10px;font-size:18px;font-weight:700}
+.aag-small,.aag-bar button{min-height:48px;padding:0 20px;border-radius:999px;border:2px solid var(--a-line);background:transparent;color:var(--a-cream);font-weight:700;font-size:16px}
+.aag-small:hover,.aag-bar button:hover{border-color:var(--a-cream)}
+.aag-act{width:118px;height:118px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#7fd3ff,var(--a-blue) 60%,#156f99);color:#0b1620;
+  font:900 20px/1 'Archivo','Arial Black',Arial,sans-serif!important;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 10px 26px -8px rgba(42,168,224,.8);touch-action:none;user-select:none;-webkit-user-select:none}
+.aag-act:active{transform:scale(.96)}
+.aag-acts:empty{display:none}
+.aag-bar{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.aag-opts{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 18px;font-size:15px;color:var(--a-muted)}
+.aag-opts label{display:flex;align-items:center;gap:8px}
+.aag-opts select{min-height:44px;border-radius:12px;border:2px solid var(--a-line);background:var(--a-wall);color:var(--a-cream);font:inherit;font-size:16px;padding:0 10px}
+.aag-chk input{width:22px;height:22px;accent-color:var(--a-orange)}
+.aag-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.aag :focus-visible{outline:3px solid var(--a-blue);outline-offset:3px}
+@media (max-width:420px){.aag-joy{width:132px;height:132px}.aag-act{width:104px;height:104px;font-size:18px!important}.aag-dpad{grid-template-columns:repeat(3,56px);grid-template-rows:repeat(3,56px)}}
+.aag-opts label[hidden]{display:none}
+.aag-stage.aag-ar{aspect-ratio:var(--aag-arr,3/4);max-width:calc(72vh * var(--aag-arn,.75))}
+.aag-arvid{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
+.aag-stage.aag-ar .aag-cv{position:absolute;left:0;top:0;width:auto;height:auto;transform-origin:0 0;opacity:0;pointer-events:none;object-fit:initial}
+.aag-artip{position:absolute;left:10px;right:10px;bottom:10px;margin:0;padding:10px 14px;border-radius:12px;background:rgba(10,12,16,.82);text-align:center;font-weight:700;font-size:17px;transition:opacity .4s}
+.aag-artip.hide{opacity:0}
+.aag-bar .aag-arbtn{border-color:var(--a-blue);color:#bfe9ff}
+</style>
+<script id="aa-engine">/* Art Alive game engine. Plays one game made in the Game Maker: marble collect, marble maze, marble bowling,
+   hidden treasures, slide puzzle and memory match. Shared by the maker's Play step and every downloaded game. */
+(function () {
+'use strict';
+const TAU = Math.PI * 2, clamp = (v, a, b) => v < a ? a : v > b ? b : v, lerp = (a, b, t) => a + (b - a) * t;
+const SCALE = [392, 440, 523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.5, 1567.98, 1760];
+
+/* ── sound ── */
+let AC = null, OUT = null, NB = null;
+function ac() {
+  try {
+    if (!AC) { AC = new (window.AudioContext || window.webkitAudioContext)(); OUT = AC.createGain(); OUT.gain.value = .55; OUT.connect(AC.destination); }
+    if (AC.state === 'suspended') AC.resume();
+  } catch (e) { AC = null; }
+  return AC;
+}
+function tone(f, d, type, v, when, pan) {
+  const a = ac(); if (!a) return;
+  d = d || .3; const t = a.currentTime + (when || 0), o = a.createOscillator(), g = a.createGain();
+  o.type = type || 'sine'; o.frequency.setValueAtTime(f, t);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v || .2, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  o.connect(g);
+  if (pan && a.createStereoPanner) { const p = a.createStereoPanner(); p.pan.value = clamp(pan, -1, 1); g.connect(p); p.connect(OUT); } else g.connect(OUT);
+  o.start(t); o.stop(t + d + .05);
+}
+function noiseBuf(a) {
+  if (!NB) { NB = a.createBuffer(1, a.sampleRate, a.sampleRate); const c = NB.getChannelData(0); for (let i = 0; i < c.length; i++) c[i] = Math.random() * 2 - 1; }
+  return NB;
+}
+function noise(d, v, freq, q) {
+  const a = ac(); if (!a) return;
+  const s = a.createBufferSource(); s.buffer = noiseBuf(a);
+  const f = a.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq || 800; f.Q.value = q || 1;
+  const g = a.createGain(), t = a.currentTime; g.gain.setValueAtTime(v || .2, t); g.gain.exponentialRampToValueAtTime(.0001, t + (d || .15));
+  s.connect(f); f.connect(g); g.connect(OUT); s.start(t); s.stop(t + (d || .15) + .05);
+}
+const SFX = {
+  note(i, v) { const f = SCALE[i % SCALE.length]; tone(f, .55, 'triangle', v || .22); tone(f * 2, .35, 'sine', .05, .02); },
+  collect(i) { SFX.note(i + 2); tone(SCALE[(i + 4) % 12] * 2, .25, 'sine', .07, .07); },
+  bump(s) { noise(.07, clamp(s, .03, .3), 260, 1.5); },
+  win() { [2, 4, 5, 7, 9].forEach((k, j) => tone(SCALE[k] * 2, .5, 'triangle', .16, j * .11)); [2, 4, 6].forEach(k => tone(SCALE[k], 1.4, 'sine', .09, .6)); },
+  wrong() { tone(220, .16, 'square', .04); tone(185, .22, 'square', .04, .09); },
+  flip() { noise(.05, .12, 2400, 2); },
+  slide() { noise(.09, .1, 900, .8); },
+  crash(n) { for (let i = 0; i < Math.min(n, 5); i++) noise(.2, .2, 400 + Math.random() * 900, 2); tone(110, .3, 'sine', .18); },
+  ping(warm, pan) { tone(lerp(300, 1400, warm), .11, 'sine', lerp(.05, .2, warm), 0, pan); },
+  start() { tone(523.25, .15, 'triangle', .15); tone(783.99, .25, 'triangle', .15, .1); },
+  found() { [4, 7, 9].forEach((k, j) => tone(SCALE[k], .45, 'triangle', .18, j * .08)); },
+  tick() { tone(1200, .04, 'square', .03); }
+};
+let rollSrc = null, rollGain = null;
+function rollSound(speed) {
+  const a = AC; if (!a) return;
+  if (!rollSrc) {
+    rollSrc = a.createBufferSource(); rollSrc.buffer = noiseBuf(a); rollSrc.loop = true;
+    const f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 380; rollGain = a.createGain(); rollGain.gain.value = 0;
+    rollSrc.connect(f); f.connect(rollGain); rollGain.connect(OUT); rollSrc.start();
+  }
+  rollGain.gain.setTargetAtTime(clamp(speed, 0, 1) * .16, a.currentTime, .05);
+}
+function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+
+
+/* ── Ben's own voice: lines recorded with Chatterbox play instead of the computer voice (voice/voice.json) ── */
+const VOICEPACK = { map: null, base: '', ready: null,
+  load(base) { if (this.ready) return this.ready; this.base = base; try { this.ready = fetch(base + 'voice.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(m => { this.map = m; }).catch(() => {}); } catch (e) { this.ready = Promise.resolve(); } return this.ready; },
+  file(t) { if (!this.map || !t) return null; const f = this.map[String(t).trim().replace(/\s+/g, ' ')]; return f ? this.base + f : null; } };
+/* ── voice: the creator's recording, or the browser's voice reading their words ── */
+let curAudio = null, lastVoice = 0;
+function stopVoice() { if (curAudio) { curAudio.pause(); curAudio = null; } try { speechSynthesis.cancel(); } catch (e) {} }
+function speakText(t, cb) { try { const u = new SpeechSynthesisUtterance(t); u.rate = 1; u.lang = VOICE_LANG === 'es' ? 'es-ES' : VOICE_LANG; u.onend = () => cb && cb(); speechSynthesis.speak(u); } catch (e) { cb && cb(); } }
+function sayLine(line, cb) {
+  if (!line) return false;
+  if (!line.audio && line.text) { const f = VOICEPACK.file(line.text); if (f) line = { text: line.text, audio: f }; }
+  lastVoice = performance.now();
+  if (line.audio) {
+    stopVoice(); const a = new Audio(line.audio); curAudio = a;
+    a.onended = () => { if (curAudio === a) curAudio = null; cb && cb(); };
+    a.play().catch(() => { if (line.text) speakText(line.text, cb); });
+    return true;
+  }
+  if (line.text && line.text.trim()) { stopVoice(); speakText(line.text, cb); return true; }
+  return false;
+}
+function voiceBusy() { return (curAudio && !curAudio.paused) || (window.speechSynthesis && speechSynthesis.speaking); }
+
+
+/* ── Spanish for the game buttons, messages and computer voice ── */
+const ES = {
+  'Play': 'Jugar', 'Play again': 'Jugar otra vez', 'Restart': 'Reiniciar', 'Hear about it': 'Escuchar la obra', 'Hint': 'Pista',
+  'Play on the painting': 'Jugar sobre la pintura', 'Back to the screen': 'Volver a la pantalla', 'Controls': 'Controles', 'View': 'Vista', 'Sound guide': 'Guía de sonido',
+  'Joystick': 'Palanca', 'Arrow buttons': 'Botones de flecha', 'Tilt the phone': 'Inclinar el teléfono',
+  'Full sight': 'Vista completa', 'Blurry sight': 'Vista borrosa', 'Tunnel vision': 'Visión de túnel', 'Center loss': 'Pérdida central', 'High contrast': 'Alto contraste',
+  'Roll': 'Lanzar', 'Flip': 'Voltear', 'Peek': 'Mirar', 'Listen': 'Escuchar', 'Recenter': 'Recentrar', 'Recentered': 'Recentrado',
+  'Tilt your phone to move.': 'Inclina tu teléfono para moverte.', 'Up': 'Arriba', 'Down': 'Abajo', 'Left': 'Izquierda', 'Right': 'Derecha',
+  'Joystick. Drag to move. Arrow keys work too.': 'Palanca. Arrastra para moverte. También funcionan las flechas.',
+  'You did it!': '¡Lo lograste!', 'Solved!': '¡Resuelto!', 'All pairs found!': '¡Todas las parejas!', 'Strike!': '¡Chuza!', 'All pins down!': '¡Todos los bolos derribados!',
+  'All treasures found!': '¡Todos los tesoros encontrados!', 'You made it!': '¡Llegaste!', 'All collected!': '¡Todo recogido!', 'Rolling!': '¡Rodando!',
+  'Very close!': '¡Muy cerca!', 'Getting warm.': 'Caliente.', 'Cool.': 'Tibio.', 'Cold. Keep looking.': 'Frío. Sigue buscando.', 'Piece in place': 'Pieza en su lugar', 'A pair!': '¡Una pareja!',
+  'Press Play again for a new round.': 'Pulsa Jugar otra vez para una nueva ronda.', 'No description yet.': 'Aún no hay descripción.',
+  'Tilt was not allowed. Choose Joystick or Arrow buttons.': 'No se permitió inclinar. Elige Palanca o Botones de flecha.',
+  'Roll the marble to collect them all.': 'Rueda la canica para recogerlos todos.', 'Roll the marble through the maze to the goal.': 'Rueda la canica por el laberinto hasta la meta.',
+  'Aim, then press Roll.': 'Apunta y pulsa Lanzar.', 'Search the painting. The beeps speed up as you get close.': 'Explora la pintura. Los pitidos se aceleran cuando te acercas.',
+  'Slide the pieces back into place.': 'Desliza las piezas a su lugar.', 'Flip two cards at a time to find pairs.': 'Voltea dos cartas a la vez para encontrar parejas.',
+  'Point your camera at the painting. Keep all four corners in view.': 'Apunta la cámara a la pintura. Mantén las cuatro esquinas a la vista.',
+  'Camera on. Point at the painting.': 'Cámara encendida. Apunta a la pintura.', 'Found it! Play right on the painting.': '¡La encontré! Juega sobre la pintura.',
+  'Found the painting. Play!': 'Encontré la pintura. ¡A jugar!', 'Lost the painting. Point back at it.': 'Perdí la pintura. Vuelve a apuntarla.',
+  'The camera was not allowed. You can keep playing on the screen.': 'No se permitió la cámara. Puedes seguir jugando en la pantalla.'
+};
+const ES_NOUN = { Stars: 'Estrellas', Hearts: 'Corazones', Gems: 'Gemas', Notes: 'Notas' };
+const ES_RULES = [
+  [/^(Stars|Hearts|Gems|Notes): (\d+) of (\d+) · (.*)$/, m => `${ES_NOUN[m[1]]}: ${m[2]} de ${m[3]} · ${m[4]}`],
+  [/^Reach the gold goal · (.*)$/, m => `Llega a la meta dorada · ${m[1]}`],
+  [/^Roll (\d+) of 3 · Pins down: (\d+) of (\d+)$/, m => `Lanzamiento ${m[1]} de 3 · Bolos derribados: ${m[2]} de ${m[3]}`],
+  [/^Treasures found: (\d+) of (\d+)$/, m => `Tesoros encontrados: ${m[1]} de ${m[2]}`],
+  [/^Pieces in place: (\d+) of (\d+) · Moves: (\d+)$/, m => `Piezas en su lugar: ${m[1]} de ${m[2]} · Movimientos: ${m[3]}`],
+  [/^Pairs: (\d+) of (\d+) · Turns: (\d+)$/, m => `Parejas: ${m[1]} de ${m[2]} · Turnos: ${m[3]}`],
+  [/^(\d+) moves$/, m => `${m[1]} movimientos`], [/^(\d+) turns$/, m => `${m[1]} turnos`], [/^In (\d+) rolls?$/, m => `En ${m[1]} lanzamiento${m[1] === '1' ? '' : 's'}`],
+  [/^(\d+) of (\d+) pins!$/, m => `¡${m[1]} de ${m[2]} bolos!`], [/^(\d+) of (\d+)$/, m => `${m[1]} de ${m[2]}`],
+  [/^Found (.*)!$/, m => `¡Encontraste ${m[1] === 'a treasure' ? 'un tesoro' : m[1]}!`], [/^Card (\d+): note (\d+)$/, m => `Carta ${m[1]}: nota ${m[2]}`],
+  [/^Card (\d+), row (\d+)(, matched|, face up)?$/, m => `Carta ${m[1]}, fila ${m[2]}${m[3] === ', matched' ? ', emparejada' : m[3] ? ', boca arriba' : ''}`],
+  [/^(\d+) pins down\. Roll again\.$/, m => `${m[1]} bolos derribados. Lanza otra vez.`], [/^(\d+) of (\d+) pieces are in place\.$/, m => `${m[1]} de ${m[2]} piezas están en su lugar.`],
+  [/^Controls: (.*)$/, m => 'Controles: ' + (ES[m[1]] || m[1])], [/^View: (.*)$/, m => 'Vista: ' + (ES[m[1]] || m[1])]
+];
+function toES(t) { if (t == null) return t; t = String(t); if (ES[t]) return ES[t]; for (const [re, f] of ES_RULES) { const m = t.match(re); if (m) return f(m); } return t; }
+function translateDom(el, L) { const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); const nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+  for (const n of nodes) { const t = n.nodeValue.trim(); if (t) { const x = L(t); if (x !== t) n.nodeValue = n.nodeValue.replace(t, x); } }
+  el.querySelectorAll('[aria-label]').forEach(e => { e.setAttribute('aria-label', L(e.getAttribute('aria-label'))); }); }
+let VOICE_LANG = 'en';
+/* ── the painting, prepared once in each way it can be seen ── */
+function sizeFor(img, long) {
+  const a = img.naturalWidth / img.naturalHeight;
+  return a >= 1 ? [long, Math.round(long / a)] : [Math.round(long * a), long];
+}
+function prepArt(img, W, H) {
+  const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; };
+  const full = mk(); full.getContext('2d').drawImage(img, 0, 0, W, H);
+  // blurry: shrink then stretch, which works in every browser
+  const sm = document.createElement('canvas'); sm.width = Math.max(8, W >> 4); sm.height = Math.max(8, H >> 4);
+  const sx = sm.getContext('2d'); sx.imageSmoothingQuality = 'high'; sx.drawImage(full, 0, 0, sm.width, sm.height);
+  const blur = mk(), bx = blur.getContext('2d'); bx.imageSmoothingQuality = 'high'; bx.drawImage(sm, 0, 0, W, H);
+  // high contrast: bold edges of colour
+  const con = mk(), cx = con.getContext('2d'); cx.drawImage(full, 0, 0);
+  try {
+    const d = cx.getImageData(0, 0, W, H), p = d.data;
+    for (let i = 0; i < p.length; i += 4) {
+      const l = (p[i] * .3 + p[i + 1] * .59 + p[i + 2] * .11);
+      for (let k = 0; k < 3; k++) { let v = l + (p[i + k] - l) * 1.6; v = (v - 128) * 1.9 + 128; p[i + k] = clamp(v, 0, 255); }
+    }
+    cx.putImageData(d, 0, 0);
+  } catch (e) {}
+  // dimmed, for card and fog backgrounds
+  return { full, blur, contrast: con, W, H };
+}
+
+/* ── living effects, the same ones the Creator Studio offers ── */
+function makeFx(W, H) {
+  const P = [], M = Math.min(W, H);
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  function spawn(kind) {
+    if (kind === 'sparkles') return { k: kind, x: rnd(0, W), y: rnd(0, H), life: 0, max: rnd(.6, 1.6), s: rnd(.008, .02) * M };
+    if (kind === 'embers') return { k: kind, x: rnd(0, W), y: H + 10, vx: rnd(-10, 10), vy: rnd(-70, -30) * M / 600, life: 0, max: rnd(2, 5), s: rnd(1.2, 3) * M / 600, ph: rnd(0, TAU) };
+    if (kind === 'rain') return { k: kind, x: rnd(-W * .2, W), y: rnd(-H, 0), vy: rnd(700, 1000) * M / 600, life: 0, max: 9, s: rnd(10, 22) * M / 600 };
+    if (kind === 'snow') return { k: kind, x: rnd(0, W), y: rnd(-H * .2, 0), vy: rnd(18, 45) * M / 600, life: 0, max: 30, s: rnd(1.5, 4) * M / 600, ph: rnd(0, TAU) };
+  }
+  const want = { sparkles: 34, embers: 40, rain: 90, snow: 70 };
+  return {
+    bursts: [],
+    burst(x, y, col, n) { for (let i = 0; i < (n || 24); i++) { const a = rnd(0, TAU), sp = rnd(60, 260) * M / 600; this.bursts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, max: rnd(.5, 1.1), c: col || '#ffd27a', s: rnd(2, 5) * M / 600 }); } },
+    rings: [],
+    ring(x, y, col) { this.rings.push({ x, y, life: 0, c: col || 'rgba(255,230,180,' }); },
+    update(dt, fx) {
+      for (const k in want) {
+        if (!fx[k]) continue;
+        let n = 0; for (const p of P) if (p.k === k) n++;
+        for (; n < want[k]; n++) { const p = spawn(k); if (k === 'rain' || k === 'snow') p.y = rnd(-H, H); P.push(p); }
+      }
+      for (let i = P.length - 1; i >= 0; i--) {
+        const p = P[i]; p.life += dt;
+        if (p.vx !== undefined) p.x += p.vx * dt;
+        if (p.vy !== undefined) p.y += p.vy * dt;
+        if (p.k === 'embers') p.x += Math.sin(p.life * 2 + p.ph) * 12 * dt;
+        if (p.k === 'snow') p.x += Math.sin(p.life * .8 + p.ph) * 14 * dt;
+        if (p.k === 'rain') p.x += p.vy * .12 * dt;
+        if (!fx[p.k] || p.life > p.max || p.y > H + 30 || p.y < -H * 1.2) P.splice(i, 1);
+      }
+      for (let i = this.bursts.length - 1; i >= 0; i--) { const b = this.bursts[i]; b.life += dt; b.x += b.vx * dt; b.y += b.vy * dt; b.vx *= .96; b.vy = b.vy * .96 + 40 * dt; if (b.life > b.max) this.bursts.splice(i, 1); }
+      for (let i = this.rings.length - 1; i >= 0; i--) { this.rings[i].life += dt; if (this.rings[i].life > 1) this.rings.splice(i, 1); }
+    },
+    glow(ctx, t, fx) {
+      if (!fx.glow) return;
+      const x = W * (.5 + .28 * Math.sin(t * .23)), y = H * (.42 + .2 * Math.cos(t * .17)), r = M * (.55 + .08 * Math.sin(t * .9));
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, 'rgba(255,214,150,.30)'); g.addColorStop(1, 'rgba(255,214,150,0)');
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); ctx.restore();
+    },
+    draw(ctx, t) {
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      for (const p of P) {
+        const f = p.life / p.max, a = Math.sin(Math.PI * clamp(f, 0, 1));
+        if (p.k === 'sparkles') {
+          const s = p.s * (.6 + .4 * Math.sin(t * 9 + p.x));
+          ctx.globalAlpha = a; ctx.fillStyle = '#fff6d8';
+          ctx.beginPath(); ctx.moveTo(p.x, p.y - s * 2); ctx.lineTo(p.x + s * .35, p.y); ctx.lineTo(p.x, p.y + s * 2); ctx.lineTo(p.x - s * .35, p.y); ctx.closePath(); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(p.x - s * 2, p.y); ctx.lineTo(p.x, p.y + s * .35); ctx.lineTo(p.x + s * 2, p.y); ctx.lineTo(p.x, p.y - s * .35); ctx.closePath(); ctx.fill();
+        } else if (p.k === 'embers') {
+          ctx.globalAlpha = a * .9; ctx.fillStyle = f < .5 ? '#ffcf6a' : '#ff6a2a';
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, TAU); ctx.fill();
+        } else if (p.k === 'rain') {
+          ctx.globalAlpha = .35; ctx.strokeStyle = '#cfe6ff'; ctx.lineWidth = Math.max(1, p.s * .08);
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - p.s * .12, p.y - p.s); ctx.stroke();
+        } else if (p.k === 'snow') {
+          ctx.globalAlpha = .85; ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, TAU); ctx.fill();
+        }
+      }
+      for (const b of this.bursts) { ctx.globalAlpha = 1 - b.life / b.max; ctx.fillStyle = b.c; ctx.beginPath(); ctx.arc(b.x, b.y, b.s, 0, TAU); ctx.fill(); }
+      ctx.restore();
+      for (const r of this.rings) {
+        ctx.save(); ctx.globalAlpha = 1 - r.life; ctx.strokeStyle = r.c + (1 - r.life) + ')'; ctx.lineWidth = M * .012 * (1 - r.life) + 1;
+        ctx.beginPath(); ctx.arc(r.x, r.y, M * (.03 + r.life * .16), 0, TAU); ctx.stroke(); ctx.restore();
+      }
+    }
+  };
+}
+
+/* ── shapes ── */
+function starPath(ctx, x, y, r, pts, inner) { ctx.beginPath(); for (let i = 0; i < pts * 2; i++) { const a = -Math.PI / 2 + i * Math.PI / pts, rr = i % 2 ? r * (inner || .45) : r; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } ctx.closePath(); }
+function heartPath(ctx, x, y, r) { ctx.beginPath(); ctx.moveTo(x, y + r * .9); ctx.bezierCurveTo(x - r * 1.5, y - r * .1, x - r * .7, y - r * 1.2, x, y - r * .45); ctx.bezierCurveTo(x + r * .7, y - r * 1.2, x + r * 1.5, y - r * .1, x, y + r * .9); ctx.closePath(); }
+function gemPath(ctx, x, y, r) { ctx.beginPath(); ctx.moveTo(x - r, y - r * .3); ctx.lineTo(x - r * .5, y - r * .85); ctx.lineTo(x + r * .5, y - r * .85); ctx.lineTo(x + r, y - r * .3); ctx.lineTo(x, y + r); ctx.closePath(); }
+function notePath(ctx, x, y, r) { ctx.beginPath(); ctx.ellipse(x - r * .25, y + r * .45, r * .45, r * .33, -.4, 0, TAU); ctx.rect(x + r * .1, y - r * .9, r * .16, r * 1.35); ctx.moveTo(x + r * .1, y - r * .9); ctx.quadraticCurveTo(x + r * .8, y - r * .7, x + r * .7, y - r * .1); ctx.lineTo(x + r * .26, y - r * .45); ctx.closePath(); }
+const ITEM_COL = { star: ['#ffe27a', '#f5a623'], heart: ['#ff8fa3', '#e8433a'], gem: ['#9fe6ff', '#2aa8e0'], note: ['#fff1c9', '#ff7a2a'] };
+function drawItem(ctx, style, x, y, r, t) {
+  const c = ITEM_COL[style] || ITEM_COL.star, bob = Math.sin(t * 3 + x * .05) * r * .12;
+  y += bob;
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.2); g.addColorStop(0, c[0] + '88'); g.addColorStop(1, c[0] + '00');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 2.2, 0, TAU); ctx.fill();
+  if (style === 'heart') heartPath(ctx, x, y, r); else if (style === 'gem') gemPath(ctx, x, y, r); else if (style === 'note') notePath(ctx, x, y, r); else starPath(ctx, x, y, r, 5);
+  const f = ctx.createLinearGradient(x, y - r, x, y + r); f.addColorStop(0, c[0]); f.addColorStop(1, c[1]);
+  ctx.fillStyle = f; ctx.fill(); ctx.lineWidth = Math.max(1.5, r * .12); ctx.strokeStyle = 'rgba(20,16,12,.75)'; ctx.stroke();
+}
+function drawMarble(ctx, kind, x, y, r, vx, vy, t, look) {
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(x + r * .25, y + r * .35, r * 1.05, r * .8, 0, 0, TAU); ctx.fill();
+  if (kind === 'sun') {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(t * .8);
+    ctx.fillStyle = 'rgba(255,190,60,.55)'; for (let i = 0; i < 10; i++) { ctx.rotate(TAU / 10); ctx.beginPath(); ctx.moveTo(r * .8, -r * .18); ctx.lineTo(r * 1.55, 0); ctx.lineTo(r * .8, r * .18); ctx.fill(); }
+    ctx.restore();
+    const g = ctx.createRadialGradient(x - r * .3, y - r * .3, r * .1, x, y, r); g.addColorStop(0, '#fff7c2'); g.addColorStop(.5, '#ffc23a'); g.addColorStop(1, '#ff7a2a');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+  } else if (kind === 'glass') {
+    const g = ctx.createRadialGradient(x - r * .35, y - r * .35, r * .05, x, y, r); g.addColorStop(0, 'rgba(255,255,255,.95)'); g.addColorStop(.35, 'rgba(160,220,255,.55)'); g.addColorStop(1, 'rgba(30,90,160,.85)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    ctx.save(); ctx.beginPath(); ctx.arc(x, y, r * .92, 0, TAU); ctx.clip(); ctx.translate(x, y); ctx.rotate(t * 1.5 + (vx + vy) * .002);
+    ctx.strokeStyle = '#ff7a2a'; ctx.lineWidth = r * .22; ctx.beginPath(); ctx.moveTo(-r, -r * .2); ctx.bezierCurveTo(-r * .3, r * .6, r * .3, -r * .6, r, r * .2); ctx.stroke();
+    ctx.strokeStyle = '#e8433a'; ctx.lineWidth = r * .12; ctx.beginPath(); ctx.moveTo(-r, r * .3); ctx.bezierCurveTo(-r * .2, -r * .5, r * .4, r * .7, r, -r * .1); ctx.stroke();
+    ctx.restore();
+  } else if (kind === 'paint') {
+    const g = ctx.createRadialGradient(x - r * .3, y - r * .3, r * .1, x, y, r * 1.1); g.addColorStop(0, '#ffd2b0'); g.addColorStop(.4, '#ff7a2a'); g.addColorStop(1, '#b8331f');
+    ctx.fillStyle = g; ctx.beginPath();
+    for (let i = 0; i <= 24; i++) { const a = i / 24 * TAU, w = 1 + .08 * Math.sin(a * 5 + t * 4); ctx.lineTo(x + Math.cos(a) * r * w, y + Math.sin(a) * r * w); }
+    ctx.fill();
+  } else {
+    // the eyeball, which looks where it is rolling
+    const g = ctx.createRadialGradient(x - r * .35, y - r * .35, r * .1, x, y, r); g.addColorStop(0, '#ffffff'); g.addColorStop(.75, '#efe7dc'); g.addColorStop(1, '#c9b8a6');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    ctx.strokeStyle = 'rgba(200,60,50,.35)'; ctx.lineWidth = Math.max(1, r * .04);
+    for (let i = 0; i < 5; i++) { const a = i * 1.3 + 1; ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * r * .95, y + Math.sin(a) * r * .95); ctx.quadraticCurveTo(x + Math.cos(a + .3) * r * .7, y + Math.sin(a + .3) * r * .7, x + Math.cos(a + .1) * r * .55, y + Math.sin(a + .1) * r * .55); ctx.stroke(); }
+    const ix = x + look.x * r * .42, iy = y + look.y * r * .42;
+    const ig = ctx.createRadialGradient(ix, iy, r * .05, ix, iy, r * .46); ig.addColorStop(0, '#7fd3ff'); ig.addColorStop(.7, '#2aa8e0'); ig.addColorStop(1, '#155a80');
+    ctx.fillStyle = ig; ctx.beginPath(); ctx.arc(ix, iy, r * .44, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#0b0d10'; ctx.beginPath(); ctx.arc(ix, iy, r * .2, 0, TAU); ctx.fill();
+  }
+  ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.beginPath(); ctx.ellipse(x - r * .38, y - r * .42, r * .2, r * .12, -.6, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+function roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+
+/* ── defaults the maker also uses ── */
+const NOUN = { star: ['star', 'stars'], heart: ['heart', 'hearts'], gem: ['gem', 'gems'], note: ['note', 'notes'] };
+function pinRack(p) {
+  const n = p.n || 10, rows = n >= 10 ? 4 : n >= 6 ? 3 : 2, out = [];
+  for (let r = 0; r < rows; r++) for (let i = 0; i <= r; i++) out.push({ dx: (i - r / 2), dy: -r });
+  return out.slice(0, n);
+}
+function autoCrops(n, W, H) {
+  const g = 4, cells = [];
+  for (let j = 0; j < g; j++) for (let i = 0; i < g; i++) cells.push({ x: (i + .5) / g, y: (j + .5) / g });
+  for (let i = cells.length - 1; i > 0; i--) { const k = Math.floor(Math.random() * (i + 1)); [cells[i], cells[k]] = [cells[k], cells[i]]; }
+  return cells.slice(0, n).map(c => ({ x: c.x, y: c.y }));
+}
+
+/* ── the game ── */
+const VIEWS = [['full', 'Full sight'], ['blur', 'Blurry sight'], ['tunnel', 'Tunnel vision'], ['center', 'Center loss'], ['contrast', 'High contrast']];
+const CONTROLS = [['joystick', 'Joystick'], ['buttons', 'Arrow buttons'], ['tilt', 'Tilt the phone']];
+const ACTION = { bowl: 'Roll', memory: 'Flip', puzzle: 'Peek', treasure: 'Listen' };
+
+function create(root, data, opts) {
+  opts = opts || {};
+  const D = JSON.parse(JSON.stringify(data));
+  D.fx = D.fx || {}; D.lines = D.lines || {};
+  const type = D.type || 'collect';
+  root.classList.add('aag');
+  root.innerHTML = `
+  <div class="aag-stage"><canvas class="aag-cv"></canvas>
+    <div class="aag-cover"><button type="button" class="aag-play">Play</button><p class="aag-tip"></p></div>
+    <div class="aag-win" hidden><p class="aag-wint">You did it!</p><p class="aag-wins"></p><button type="button" class="aag-again">Play again</button></div>
+  </div>
+  <p class="aag-status" aria-live="polite"></p>
+  <div class="aag-ctrl"><div class="aag-pad"></div><div class="aag-acts"></div></div>
+  <div class="aag-bar">
+    <button type="button" data-a="restart">Restart</button>
+    <button type="button" data-a="hear">Hear about it</button>
+    <button type="button" data-a="hint">Hint</button>
+    <button type="button" data-a="ar" class="aag-arbtn" hidden>Play on the painting</button>
+  </div>
+  <div class="aag-opts">
+    <label>Controls<select class="aag-csel">${CONTROLS.map(c => `<option value="${c[0]}">${c[1]}</option>`).join('')}</select></label>
+    <label>View<select class="aag-vsel">${VIEWS.map(v => `<option value="${v[0]}">${v[1]}</option>`).join('')}</select></label>
+    <label class="aag-chk"><input type="checkbox" class="aag-guide" checked> Sound guide</label>
+  </div>
+  <p class="aag-sr" aria-live="assertive"></p>`;
+  const $ = s => root.querySelector(s);
+  try { if (location.protocol !== 'file:') VOICEPACK.load(D.voicePack || new URL('../voice/', location.href).href); } catch (e) {}
+  const LANG = String(D.lang || 'en').slice(0, 2); VOICE_LANG = LANG; const L = t => LANG === 'es' ? toES(t) : t;
+  if (LANG !== 'en') { translateDom(root, L); root.setAttribute('lang', LANG); }
+  const cv = $('.aag-cv'), ctx = cv.getContext('2d'), statusEl = $('.aag-status'), srEl = $('.aag-sr');
+  const cover = $('.aag-cover'), winEl = $('.aag-win'), pad = $('.aag-pad'), acts = $('.aag-acts');
+  const csel = $('.aag-csel'), vsel = $('.aag-vsel'), guide = $('.aag-guide');
+  csel.value = D.controls || 'joystick'; vsel.value = D.view || 'full';
+  cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', (D.title || 'Painting') + (D.artist ? ', by ' + D.artist : '') + '. ' + ((D.lines.about && D.lines.about.text) || ''));
+  if (type === 'memory' || type === 'puzzle') guide.closest('label').hidden = true;
+  const announce = t => { t = L(t); srEl.textContent = ''; setTimeout(() => { srEl.textContent = t; }, 30); };
+
+  let W = 960, H = 720, M = 720, art = null, fxr = null, S = null, running = false, alive = true, raf = 0, last = 0, T = 0;
+  const vec = { x: 0, y: 0 }, src = { joy: { x: 0, y: 0 }, pad: { x: 0, y: 0 }, key: { x: 0, y: 0 }, tilt: { x: 0, y: 0 }, touch: null };
+  let actionDown = false;
+
+  /* controls under the picture */
+  function buildPad() {
+    const mode = csel.value; pad.innerHTML = ''; src.joy.x = src.joy.y = src.pad.x = src.pad.y = 0;
+    if (mode === 'joystick') {
+      pad.innerHTML = '<div class="aag-joy" role="application" aria-label="Joystick. Drag to move. Arrow keys work too."><div class="aag-knob"></div></div>';
+      const base = pad.firstChild, knob = base.firstChild; let id = null;
+      const set = (cx, cy) => { const r = base.getBoundingClientRect(), R = r.width / 2; let dx = cx - (r.left + R), dy = cy - (r.top + R); const d = Math.hypot(dx, dy), m = R * .6; if (d > m) { dx *= m / d; dy *= m / d; } knob.style.transform = `translate(${dx}px,${dy}px)`; src.joy.x = dx / m; src.joy.y = dy / m; };
+      base.addEventListener('pointerdown', e => { id = e.pointerId; base.setPointerCapture(id); ac(); set(e.clientX, e.clientY); e.preventDefault(); });
+      base.addEventListener('pointermove', e => { if (e.pointerId === id) set(e.clientX, e.clientY); });
+      const end = e => { if (e.pointerId !== id) return; id = null; knob.style.transform = ''; src.joy.x = src.joy.y = 0; };
+      base.addEventListener('pointerup', end); base.addEventListener('pointercancel', end);
+    } else if (mode === 'buttons') {
+      pad.innerHTML = `<div class="aag-dpad">
+        <button type="button" class="u" data-d="0,-1" aria-label="Up">▲</button>
+        <button type="button" class="l" data-d="-1,0" aria-label="Left">◀</button>
+        <button type="button" class="r" data-d="1,0" aria-label="Right">▶</button>
+        <button type="button" class="d" data-d="0,1" aria-label="Down">▼</button></div>`;
+      pad.querySelectorAll('button').forEach(b => {
+        const [dx, dy] = b.dataset.d.split(',').map(Number);
+        const on = e => { e.preventDefault(); ac(); src.pad.x = dx; src.pad.y = dy; stepOnce = { x: dx, y: dy }; b.classList.add('on'); try { b.setPointerCapture(e.pointerId); } catch (er) {} };
+        const off = () => { if (src.pad.x === dx && src.pad.y === dy) { src.pad.x = src.pad.y = 0; } b.classList.remove('on'); };
+        b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off);
+        b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); src.pad.x = dx; src.pad.y = dy; stepOnce = { x: dx, y: dy }; } });
+        b.addEventListener('keyup', off);
+      });
+    } else {
+      pad.innerHTML = '<div class="aag-tiltbox"><p>Tilt your phone to move.</p><button type="button" class="aag-small">Recenter</button></div>';
+      pad.querySelector('button').onclick = () => { tilt0 = null; announce('Recentered'); };
+      askTilt();
+    }
+    if (LANG !== 'en') translateDom(pad, L);
+    acts.innerHTML = '';
+    if (ACTION[type]) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'aag-act'; b.textContent = L(ACTION[type]);
+      b.addEventListener('pointerdown', e => { e.preventDefault(); ac(); actionDown = true; doAction(true); });
+      b.addEventListener('pointerup', () => { actionDown = false; doAction(false); });
+      b.addEventListener('pointerleave', () => { if (actionDown) { actionDown = false; doAction(false); } });
+      b.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); doAction(true); } });
+      b.addEventListener('keyup', e => { if (e.key === 'Enter' || e.key === ' ') doAction(false); });
+      acts.appendChild(b);
+    }
+  }
+  let stepOnce = false, tilt0 = null, tiltAsked = false;
+  function onTilt(e) {
+    if (e.beta == null) return;
+    if (!tilt0) tilt0 = { b: e.beta, g: e.gamma };
+    src.tilt.x = clamp((e.gamma - tilt0.g) / 22, -1, 1); src.tilt.y = clamp((e.beta - tilt0.b) / 22, -1, 1);
+  }
+  function askTilt() {
+    if (tiltAsked) return; tiltAsked = true;
+    const go = () => window.addEventListener('deviceorientation', onTilt);
+    try { if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') DeviceOrientationEvent.requestPermission().then(s => { if (s === 'granted') go(); else announce('Tilt was not allowed. Choose Joystick or Arrow buttons.'); }, () => { tiltAsked = false; }); else go(); } catch (e) { go(); }
+  }
+  csel.onchange = () => { buildPad(); announce('Controls: ' + csel.options[csel.selectedIndex].text); };
+  vsel.onchange = () => announce('View: ' + vsel.options[vsel.selectedIndex].text);
+  const keys = {};
+  function onKey(e) {
+    if (!root.isConnected) return;
+    const tag = (e.target && e.target.tagName) || ''; if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    const map = { ArrowLeft: 'l', ArrowRight: 'r', ArrowUp: 'u', ArrowDown: 'd', a: 'l', d: 'r', w: 'u', s: 'd' };
+    const k = map[e.key];
+    if (k) { if (!running && e.type === 'keydown') return; e.preventDefault(); if (e.type === 'keydown' && !keys[k]) { keys[k] = 1; stepOnce = { x: k === 'r' ? 1 : k === 'l' ? -1 : 0, y: k === 'd' ? 1 : k === 'u' ? -1 : 0 }; } else if (e.type === 'keyup') keys[k] = 0; src.key.x = (keys.r || 0) - (keys.l || 0); src.key.y = (keys.d || 0) - (keys.u || 0); }
+    if (running && (e.key === ' ' || e.key === 'Enter') && e.target === document.body) { e.preventDefault(); if (e.type === 'keydown' && !e.repeat) doAction(true); if (e.type === 'keyup') doAction(false); }
+  }
+  window.addEventListener('keydown', onKey); window.addEventListener('keyup', onKey);
+  function readVec() {
+    const list = [src.key, src.pad, src.joy, csel.value === 'tilt' ? src.tilt : { x: 0, y: 0 }];
+    for (const s of list) if (Math.abs(s.x) > .08 || Math.abs(s.y) > .08) { vec.x = s.x; vec.y = s.y; return; }
+    vec.x = vec.y = 0;
+  }
+
+  /* pointer on the picture */
+  const toArt = e => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H }; };
+  let ptrId = null;
+  cv.addEventListener('pointerdown', e => { if (!running) return; ptrId = e.pointerId; cv.setPointerCapture(ptrId); src.touch = toArt(e); tap(src.touch); e.preventDefault(); });
+  cv.addEventListener('pointermove', e => { if (e.pointerId === ptrId) src.touch = toArt(e); });
+  const pend = e => { if (e.pointerId === ptrId) { ptrId = null; src.touch = null; } };
+  cv.addEventListener('pointerup', pend); cv.addEventListener('pointercancel', pend);
+
+  /* buttons */
+  root.querySelectorAll('.aag-bar button').forEach(b => b.addEventListener('click', () => {
+    ac(); const a = b.dataset.a;
+    if (a === 'restart') { reset(); begin(false); }
+    if (a === 'hear') { if (!sayLine(D.lines.about)) announce(D.title ? D.title + (D.artist ? ', by ' + D.artist : '') : 'No description yet.'); }
+    if (a === 'hint') hint();
+    if (a === 'ar') { if (AR) stopAR(); else startAR(); }
+  }));
+  $('.aag-play').addEventListener('click', () => { ac(); if (csel.value === 'tilt') askTilt(); begin(true); });
+  $('.aag-again').addEventListener('click', () => { reset(); begin(false); });
+
+  /* load */
+  const img = new Image();
+  img.onload = () => {
+    if (!alive) return;
+    [W, H] = sizeFor(img, opts.long || 1000); M = Math.min(W, H);
+    cv.width = W; cv.height = H; root.style.setProperty('--aag-ar', W + '/' + H); root.style.setProperty('--aag-ar-n', (W / H).toFixed(4));
+    art = prepArt(img, W, H); fxr = makeFx(W, H);
+    reset(); buildPad();
+    $('.aag-tip').textContent = L(TIPS[type] || '');
+    last = performance.now(); raf = requestAnimationFrame(loop);
+  };
+  img.src = D.img;
+
+  const TIPS = {
+    collect: 'Roll the marble to collect them all.', maze: 'Roll the marble through the maze to the goal.', bowl: 'Aim, then press Roll.',
+    treasure: 'Search the painting. The beeps speed up as you get close.', puzzle: 'Slide the pieces back into place.', memory: 'Flip two cards at a time to find pairs.'
+  };
+
+  /* ── state per game ── */
+  const px = p => ({ x: p.x * W, y: p.y * H });
+  function reset() {
+    running = false; winEl.hidden = true; stopVoice();
+    const r = M * .04;
+    S = { t: 0, done: false, focus: { x: W / 2, y: H / 2 }, msgT: 0 };
+    if (type === 'collect' || type === 'maze' || type === 'bowl') {
+      const st = px((type === 'bowl' ? D.ball : type === 'maze' ? D.mStart : D.start) || (type === 'bowl' ? { x: .5, y: .9 } : { x: .5, y: .5 }));
+      S.m = { x: st.x, y: st.y, vx: 0, vy: 0, r: type === 'bowl' ? M * .045 : r, look: { x: 0, y: 0 } };
+      S.trail = [];
+    }
+    if (type === 'collect') { S.items = (D.items || []).map(p => ({ ...px(p), got: false })); S.got = 0; }
+    if (type === 'maze') {
+      S.walls = (D.walls || []).map(w => [w[0] * W, w[1] * H, w[2] * W, w[3] * H]); S.goal = px(D.goal || { x: .9, y: .1 });
+      S.m.r = M * .028;
+    }
+    if (type === 'bowl') {
+      const c = px(D.pins || { x: .5, y: .3 }), sp = M * .075;
+      S.pins = pinRack(D.pins || {}).map(o => { const x = c.x + o.dx * sp, y = c.y - o.dy * sp * .9; return { x, y, hx: x, hy: y, vx: 0, vy: 0, r: M * .03, down: false, fade: 1 }; });
+      S.start = { x: S.m.x, y: S.m.y }; S.phase = 'aim'; S.aim = 0; S.power = 0; S.rolls = 0; S.downCount = 0; S.settle = 0;
+    }
+    if (type === 'treasure') {
+      S.items = (D.treasures || []).map(p => ({ ...px(p), got: false, name: p.name, line: p.line })); S.got = 0;
+      S.seek = { x: W / 2, y: H * .55 }; S.nextPing = 0;
+      S.fog = document.createElement('canvas'); S.fog.width = W; S.fog.height = H;
+      const f = S.fog.getContext('2d');
+      if (D.fog !== false) {
+        f.fillStyle = 'rgba(14,16,22,.94)'; f.fillRect(0, 0, W, H);
+        for (let i = 0; i < 260; i++) { f.fillStyle = `rgba(${40 + Math.random() * 30},${44 + Math.random() * 30},${60 + Math.random() * 40},${Math.random() * .25})`; f.beginPath(); f.arc(Math.random() * W, Math.random() * H, M * (.02 + Math.random() * .08), 0, TAU); f.fill(); }
+      }
+    }
+    if (type === 'puzzle') {
+      const n = clamp(D.size || 3, 2, 6); S.n = n; S.tiles = []; for (let i = 0; i < n * n; i++) S.tiles.push(i);
+      S.blank = n * n - 1; S.moves = 0; S.anim = {}; S.peek = 0;
+      let prev = -1, b = n * n - 1;
+      for (let k = 0; k < 40 * n * n || isSolved(); k++) {
+        const opts2 = nbrs(b, n).filter(x => x !== prev); const nb = opts2[Math.floor(Math.random() * opts2.length)];
+        S.tiles[b] = S.tiles[nb]; S.tiles[nb] = n * n - 1; prev = b; b = nb; if (k > 4000) break;
+      }
+      S.cursor = 0;
+    }
+    if (type === 'memory') {
+      const P = clamp(D.pairs || 6, 2, 8);
+      const crops = (D.crops && D.crops.length >= P ? D.crops : autoCrops(P)).slice(0, P);
+      const cards = []; crops.forEach((c, i) => { cards.push({ p: i, c }); cards.push({ p: i, c }); });
+      for (let i = cards.length - 1; i > 0; i--) { const k = Math.floor(Math.random() * (i + 1)); [cards[i], cards[k]] = [cards[k], cards[i]]; }
+      cards.forEach(c => { c.up = false; c.flip = 0; c.done = false; });
+      const n = cards.length, cols = n <= 8 ? 4 : 4, rows = Math.ceil(n / cols);
+      S.cards = cards; S.cols = cols; S.rows = rows; S.open = []; S.turns = 0; S.pairs = 0; S.P = P; S.cursor = 0; S.wait = 0; S.reveal = 0;
+    }
+    if (type === 'treasure' || type === 'collect') { /* nothing more */ }
+    status();
+    cover.hidden = false; root.classList.remove('aag-on');
+  }
+  function begin(first) {
+    cover.hidden = true; winEl.hidden = true; running = true; root.classList.add('aag-on'); SFX.start();
+    if (first !== false) { if (!sayLine(D.lines.welcome)) announce(TIPS[type]); }
+    status();
+  }
+  const fmtT = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+  function status() {
+    if (!S) return; let t = '';
+    const nn = NOUN[D.itemStyle] || NOUN.star;
+    if (type === 'collect') t = `${nn[1][0].toUpperCase() + nn[1].slice(1)}: ${S.got} of ${S.items.length} · ${fmtT(S.t)}`;
+    if (type === 'maze') t = `Reach the gold goal · ${fmtT(S.t)}`;
+    if (type === 'bowl') t = `Roll ${Math.min(S.rolls + 1, 3)} of 3 · Pins down: ${S.downCount} of ${S.pins.length}`;
+    if (type === 'treasure') t = `Treasures found: ${S.got} of ${S.items.length}`;
+    if (type === 'puzzle') t = `Pieces in place: ${inPlace()} of ${S.n * S.n - 1} · Moves: ${S.moves}`;
+    if (type === 'memory') t = `Pairs: ${S.pairs} of ${S.P} · Turns: ${S.turns}`;
+    t = L(t); if (statusEl.textContent !== t) statusEl.textContent = t;
+  }
+  function good() { if (performance.now() - lastVoice > 3500 && !voiceBusy() && D.lines.good && (D.lines.good.audio || D.lines.good.text)) sayLine(D.lines.good); }
+  function win(detail) {
+    if (S.done) return; S.done = true; running = false; root.classList.remove('aag-on');
+    SFX.win(); buzz([60, 40, 60, 40, 160]);
+    for (let i = 0; i < 6; i++) setTimeout(() => fxr && fxr.burst(Math.random() * W, Math.random() * H * .7, ['#ffd27a', '#ff7a2a', '#2aa8e0', '#fff'][i % 4], 30), i * 140);
+    $('.aag-wint').textContent = L(detail.big || 'You did it!'); $('.aag-wins').textContent = L(detail.small || '');
+    setTimeout(() => { winEl.hidden = false; $('.aag-again').focus({ preventScroll: true }); }, 900);
+    if (!sayLine(D.lines.win)) announce(L(detail.big || 'You did it!') + ' ' + L(detail.small || ''));
+    rollSound(0);
+  }
+  function hint() {
+    if (!sayLine(D.lines.hint)) announce(TIPS[type]);
+    if (!S) return;
+    S.hintT = 2.2;
+    if (type === 'puzzle') announce(`${inPlace()} of ${S.n * S.n - 1} pieces are in place.`);
+    if (type === 'memory') { S.reveal = 1.1; }
+  }
+
+  /* ── puzzle helpers ── */
+  function nbrs(i, n) { const r = Math.floor(i / n), c = i % n, o = []; if (r > 0) o.push(i - n); if (r < n - 1) o.push(i + n); if (c > 0) o.push(i - 1); if (c < n - 1) o.push(i + 1); return o; }
+  function isSolved() { return S && S.tiles && S.tiles.every((t, i) => t === i); }
+  function inPlace() { let k = 0; S.tiles.forEach((t, i) => { if (t === i && t !== S.n * S.n - 1) k++; }); return k; }
+  function slideFrom(pos) {
+    const n = S.n, bpos = S.tiles.indexOf(n * n - 1);
+    if (!nbrs(bpos, n).includes(pos)) { SFX.wrong(); return; }
+    const id = S.tiles[pos]; S.tiles[bpos] = id; S.tiles[pos] = n * n - 1; S.moves++;
+    const fr = { x: pos % n - bpos % n, y: Math.floor(pos / n) - Math.floor(bpos / n) }; S.anim[id] = { x: fr.x, y: fr.y };
+    if (id === bpos) { SFX.note(id); buzz(25); const tw = W / n, th = H / n; fxr.ring((bpos % n + .5) * tw, (Math.floor(bpos / n) + .5) * th, 'rgba(255,215,120,'); announce('Piece in place'); } else SFX.slide();
+    status();
+    if (isSolved()) win({ big: 'Solved!', small: `${S.moves} moves` });
+  }
+  function puzzleDir(dx, dy) { // arrow moves a piece in that direction into the gap
+    const n = S.n, b = S.tiles.indexOf(n * n - 1), r = Math.floor(b / n), c = b % n;
+    const sr = r - dy, sc = c - dx; if (sr < 0 || sr >= n || sc < 0 || sc >= n) { SFX.bump(.08); return; }
+    slideFrom(sr * n + sc);
+  }
+
+  /* ── memory helpers ── */
+  function cardRect(i) {
+    const pad2 = M * .04, gap = M * .025, cw = (W - pad2 * 2 - gap * (S.cols - 1)) / S.cols, ch = (H - pad2 * 2 - gap * (S.rows - 1)) / S.rows;
+    const c = i % S.cols, r = Math.floor(i / S.cols); return { x: pad2 + c * (cw + gap), y: pad2 + r * (ch + gap), w: cw, h: ch };
+  }
+  function flipCard(i) {
+    const c = S.cards[i]; if (!c || c.up || c.done || S.wait > 0 || S.open.length >= 2) return;
+    c.up = true; S.open.push(i); SFX.flip(); SFX.note(c.p * 2 % 12, .18); buzz(15);
+    announce(`Card ${i + 1}: note ${c.p + 1}`);
+    if (S.open.length === 2) {
+      S.turns++; const [a, b] = S.open.map(k => S.cards[k]);
+      if (a.p === b.p) {
+        a.done = b.done = true; S.open = []; S.pairs++;
+        setTimeout(() => { SFX.collect(a.p); buzz([30, 30, 50]); [a, b].forEach((cc, j) => { const r = cardRect(S.cards.indexOf(cc)); fxr.burst(r.x + r.w / 2, r.y + r.h / 2, '#ffd27a', 18); }); }, 250);
+        announce('A pair!'); good();
+        if (S.pairs === S.P) setTimeout(() => win({ big: 'All pairs found!', small: `${S.turns} turns` }), 600);
+      } else { S.wait = 1.1; setTimeout(() => SFX.wrong(), 450); }
+      status();
+    }
+  }
+
+  /* ── input events ── */
+  function tap(p) {
+    if (type === 'puzzle') { const n = S.n, c = Math.floor(p.x / (W / n)), r = Math.floor(p.y / (H / n)); slideFrom(clamp(r, 0, n - 1) * n + clamp(c, 0, n - 1)); }
+    if (type === 'memory') { for (let i = 0; i < S.cards.length; i++) { const r = cardRect(i); if (p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h) { S.cursor = i; flipCard(i); break; } } }
+    if (type === 'bowl' && S.phase === 'aim') { S.aim = clamp(Math.atan2(p.x - S.m.x, S.m.y - p.y), -1, 1); }
+  }
+  function doAction(down) {
+    if (!running || !S) return;
+    if (type === 'bowl') { if (down && S.phase === 'aim') launch(); }
+    if (type === 'memory' && down) flipCard(S.cursor);
+    if (type === 'puzzle') S.peek = down ? 1 : 0;
+    if (type === 'treasure' && down) { S.nextPing = 0; const n = nearest(S.items, S.seek); if (n) { const d = Math.hypot(n.x - S.seek.x, n.y - S.seek.y) / M; announce(d < .15 ? 'Very close!' : d < .3 ? 'Getting warm.' : d < .5 ? 'Cool.' : 'Cold. Keep looking.'); } }
+  }
+  function launch() {
+    const sp = M * lerp(1.4, 2.6, S.power);
+    S.m.vx = Math.sin(S.aim) * sp; S.m.vy = -Math.cos(S.aim) * sp; S.phase = 'roll'; S.settle = 0; tone(196, .3, 'triangle', .15);
+    announce('Rolling!');
+  }
+  const nearest = (arr, p) => { let b = null, bd = 1e9; for (const it of arr) { if (it.got) continue; const d = Math.hypot(it.x - p.x, it.y - p.y); if (d < bd) { bd = d; b = it; } } return b; };
+
+  /* ── physics ── */
+  function wallHit(m, w) {
+    const [x1, y1, x2, y2] = w, dx = x2 - x1, dy = y2 - y1, L2 = dx * dx + dy * dy || 1;
+    const t = clamp(((m.x - x1) * dx + (m.y - y1) * dy) / L2, 0, 1), cx = x1 + dx * t, cy = y1 + dy * t;
+    let nx = m.x - cx, ny = m.y - cy; const d = Math.hypot(nx, ny), lim = m.r + M * .009;
+    if (d < lim && d > 0.0001) {
+      nx /= d; ny /= d; m.x = cx + nx * lim; m.y = cy + ny * lim;
+      const vn = m.vx * nx + m.vy * ny; if (vn < 0) { m.vx -= 1.5 * vn * nx; m.vy -= 1.5 * vn * ny; if (-vn > M * .15) { SFX.bump(-vn / M * .25); buzz(12); } }
+    }
+  }
+  function edges(m, bounce) {
+    let hit = 0;
+    if (m.x < m.r) { m.x = m.r; if (m.vx < 0) { hit = -m.vx; m.vx *= -bounce; } }
+    if (m.x > W - m.r) { m.x = W - m.r; if (m.vx > 0) { hit = m.vx; m.vx *= -bounce; } }
+    if (m.y < m.r) { m.y = m.r; if (m.vy < 0) { hit = -m.vy; m.vy *= -bounce; } }
+    if (m.y > H - m.r) { m.y = H - m.r; if (m.vy > 0) { hit = m.vy; m.vy *= -bounce; } }
+    if (hit > M * .2) { SFX.bump(hit / M * .2); buzz(10); }
+  }
+  function marbleStep(dt) {
+    const m = S.m, A = M * 2.4;
+    let ax = vec.x, ay = vec.y;
+    if (src.touch && type !== 'bowl') { const dx = src.touch.x - m.x, dy = src.touch.y - m.y, d = Math.hypot(dx, dy); if (d > m.r * .5) { const k = clamp(d / (M * .2), 0, 1); ax = dx / d * k; ay = dy / d * k; } }
+    m.vx += ax * A * dt; m.vy += ay * A * dt;
+    const fr = Math.pow(.25, dt); m.vx *= fr; m.vy *= fr;
+    const sp = Math.hypot(m.vx, m.vy), max = M * 1.3; if (sp > max) { m.vx *= max / sp; m.vy *= max / sp; }
+    const steps = 4;
+    for (let s = 0; s < steps; s++) {
+      m.x += m.vx * dt / steps; m.y += m.vy * dt / steps;
+      if (S.walls) for (const w of S.walls) wallHit(m, w);
+      edges(m, .45);
+    }
+    const spd = Math.hypot(m.vx, m.vy); m.look.x = lerp(m.look.x, spd > 5 ? m.vx / spd * clamp(spd / (M * .3), 0, 1) : 0, .15); m.look.y = lerp(m.look.y, spd > 5 ? m.vy / spd * clamp(spd / (M * .3), 0, 1) : 0, .15);
+    rollSound(spd / (M * 1.2));
+    if (D.marble === 'paint' && spd > 10) { S.trail.push({ x: m.x, y: m.y, a: 1 }); if (S.trail.length > 240) S.trail.shift(); }
+    S.focus = { x: m.x, y: m.y };
+  }
+  function bowlStep(dt) {
+    const m = S.m;
+    if (S.phase === 'aim') {
+      S.aim = clamp(S.aim + vec.x * dt * 1.4, -1, 1); S.power = .5 + .5 * Math.sin(S.t * 3.2);
+      rollSound(0); S.focus = { x: m.x, y: m.y }; return;
+    }
+    m.vx += vec.x * M * .6 * dt; // spin
+    const fr = Math.pow(.45, dt), frp = Math.pow(.18, dt);
+    const all = [m, ...S.pins.filter(p => p.fade > .02)];
+    for (let s = 0; s < 4; s++) {
+      for (const b of all) { b.x += b.vx * dt / 4; b.y += b.vy * dt / 4; }
+      for (let i = 0; i < all.length; i++) for (let j = i + 1; j < all.length; j++) {
+        const a = all[i], b = all[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy), lim = a.r + b.r;
+        if (d < lim && d > .001) {
+          const nx = dx / d, ny = dy / d, ma = a === m ? 4 : 1, mb = b === m ? 4 : 1, ov = lim - d;
+          a.x -= nx * ov * mb / (ma + mb); a.y -= ny * ov * mb / (ma + mb); b.x += nx * ov * ma / (ma + mb); b.y += ny * ov * ma / (ma + mb);
+          const rv = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+          if (rv < 0) {
+            const jimp = -(1.6) * rv / (1 / ma + 1 / mb);
+            a.vx -= jimp * nx / ma; a.vy -= jimp * ny / ma; b.vx += jimp * nx / mb; b.vy += jimp * ny / mb;
+            if (-rv > M * .1) { SFX.crash(1); buzz(20); }
+          }
+        }
+      }
+    }
+    for (const b of all) { const k = b === m ? fr : frp; b.vx *= k; b.vy *= k; }
+    for (const p of S.pins) { if (p.down) p.fade = Math.max(0, p.fade - dt * .5); else if (Math.hypot(p.x - p.hx, p.y - p.hy) > p.r * 1.4 || p.x < 0 || p.x > W || p.y < 0 || p.y > H) { p.down = true; S.downCount++; fxr.burst(p.x, p.y, '#fff', 10); status(); } }
+    rollSound(Math.hypot(m.vx, m.vy) / (M * 2));
+    S.focus = { x: m.x, y: m.y };
+    const out = m.x < -m.r || m.x > W + m.r || m.y < -m.r || m.y > H + m.r;
+    const still = (Math.hypot(m.vx, m.vy) < M * .07 || S.downCount >= S.pins.length) && S.pins.every(p => p.fade <= .02 || Math.hypot(p.vx, p.vy) < M * .03);
+    if (out || still) S.settle += dt; else S.settle = 0;
+    if (S.settle > .9) {
+      S.rolls++;
+      for (const p of S.pins) if (p.down) { p.fade = 0; p.vx = p.vy = 0; } else { p.x = p.hx; p.y = p.hy; p.vx = p.vy = 0; }
+      if (S.downCount >= S.pins.length) { win({ big: S.rolls === 1 ? 'Strike!' : 'All pins down!', small: `In ${S.rolls} roll${S.rolls > 1 ? 's' : ''}` }); return; }
+      if (S.rolls >= 3) { win({ big: `${S.downCount} of ${S.pins.length} pins!`, small: 'Press Play again for a new round.' }); return; }
+      announce(`${S.downCount} pins down. Roll again.`);
+      m.x = S.start.x; m.y = S.start.y; m.vx = m.vy = 0; S.phase = 'aim'; status();
+    }
+  }
+  function treasureStep(dt) {
+    const s = S.seek, sp = M * .5;
+    s.x = clamp(s.x + vec.x * sp * dt, 0, W); s.y = clamp(s.y + vec.y * sp * dt, 0, H);
+    if (src.touch) { s.x = lerp(s.x, src.touch.x, .35); s.y = lerp(s.y, src.touch.y, .35); }
+    S.focus = { x: s.x, y: s.y };
+    const f = S.fog.getContext('2d'); f.save(); f.globalCompositeOperation = 'destination-out';
+    const g = f.createRadialGradient(s.x, s.y, 0, s.x, s.y, M * .1); g.addColorStop(0, 'rgba(0,0,0,.5)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    f.fillStyle = g; f.beginPath(); f.arc(s.x, s.y, M * .1, 0, TAU); f.fill(); f.restore();
+    const n = nearest(S.items, s); if (!n) return;
+    const d = Math.hypot(n.x - s.x, n.y - s.y), warm = clamp(1 - d / (M * .7), 0, 1);
+    S.warm = warm;
+    if (d < M * .07) {
+      n.got = true; S.got++; SFX.found(); buzz([40, 30, 80]); fxr.burst(n.x, n.y, '#ffd27a', 36); fxr.ring(n.x, n.y);
+      f.save(); f.globalCompositeOperation = 'destination-out'; f.beginPath(); f.arc(n.x, n.y, M * .16, 0, TAU); f.fill(); f.restore();
+      announce('Found ' + (n.name || 'a treasure') + '!');
+      if (!sayLine(n.line)) good();
+      status();
+      if (S.got === S.items.length) setTimeout(() => { S.clearFog = 1; win({ big: 'All treasures found!', small: fmtT(S.t) }); }, 900);
+      return;
+    }
+    if (guide.checked) {
+      S.nextPing -= dt;
+      if (S.nextPing <= 0) { SFX.ping(warm, clamp((n.x - s.x) / (M * .5), -1, 1)); if (warm > .72) buzz(Math.round(10 + warm * 25)); S.nextPing = lerp(1.1, .11, Math.pow(warm, 1.4)); }
+    }
+  }
+  function guidePing(dt, target) {
+    if (!guide.checked || !target) return;
+    S.nextPing = (S.nextPing || 0) - dt;
+    if (S.nextPing > 0) return;
+    const d = Math.hypot(target.x - S.m.x, target.y - S.m.y), warm = clamp(1 - d / (M * 1.1), 0, 1);
+    SFX.ping(warm * .8, clamp((target.x - S.m.x) / (M * .5), -1, 1)); S.nextPing = lerp(1.4, .25, warm);
+  }
+  function stepDiscrete(dt) {
+    S.repeat = (S.repeat || 0) - dt;
+    let v = vec;
+    if (stepOnce) { v = stepOnce; stepOnce = false; S.repeat = .42; S.held = false; }
+    else {
+      const mag = Math.max(Math.abs(vec.x), Math.abs(vec.y));
+      if (mag < .5) { S.repeat = 0; S.held = false; return; }
+      if (S.repeat > 0) return;
+      S.repeat = S.held ? .22 : .42; S.held = true;
+    }
+    const dx = Math.abs(v.x) > Math.abs(v.y) ? Math.sign(v.x) : 0, dy = dx ? 0 : Math.sign(v.y);
+    if (!dx && !dy) return;
+    if (type === 'puzzle') puzzleDir(dx, dy);
+    if (type === 'memory') {
+      const c = S.cursor % S.cols, r = Math.floor(S.cursor / S.cols);
+      const nc = clamp(c + dx, 0, S.cols - 1), nr = clamp(r + dy, 0, S.rows - 1), ni = Math.min(nr * S.cols + nc, S.cards.length - 1);
+      if (ni !== S.cursor) { S.cursor = ni; SFX.tick(); const cd = S.cards[ni]; announce(`Card ${ni + 1}, row ${nr + 1}` + (cd.done ? ', matched' : cd.up ? ', face up' : '')); } else SFX.bump(.06);
+    }
+  }
+
+  /* ── frame ── */
+  function loop(now) {
+    if (!alive) return;
+    raf = requestAnimationFrame(loop);
+    const dt = Math.min(.05, (now - last) / 1000); last = now; T += dt;
+    readVec();
+    if (running && S && !S.done) {
+      S.t += dt;
+      if (type === 'collect') {
+        marbleStep(dt);
+        for (let i = 0; i < S.items.length; i++) { const it = S.items[i]; if (!it.got && Math.hypot(it.x - S.m.x, it.y - S.m.y) < S.m.r + M * .035) { it.got = true; S.got++; SFX.collect(S.got); buzz(30); fxr.burst(it.x, it.y, ITEM_COL[D.itemStyle || 'star'][0], 26); fxr.ring(it.x, it.y); status(); announce(`${S.got} of ${S.items.length}`); good(); if (S.got === S.items.length) win({ big: 'All collected!', small: fmtT(S.t) }); } }
+        guidePing(dt, nearest(S.items, S.m));
+      }
+      if (type === 'maze') {
+        marbleStep(dt);
+        if (Math.hypot(S.goal.x - S.m.x, S.goal.y - S.m.y) < S.m.r + M * .04) { fxr.ring(S.goal.x, S.goal.y); win({ big: 'You made it!', small: fmtT(S.t) }); }
+        guidePing(dt, S.goal);
+      }
+      if (type === 'bowl') bowlStep(dt);
+      if (type === 'treasure') treasureStep(dt);
+      if (type === 'puzzle' || type === 'memory') stepDiscrete(dt);
+      if (type === 'memory' && S.wait > 0) { S.wait -= dt; if (S.wait <= 0) { S.open.forEach(k => { S.cards[k].up = false; }); S.open = []; } }
+      if (Math.floor(S.t) !== Math.floor(S.t - dt)) status();
+    } else if (S && S.m) rollSound(0);
+    if (S && S.hintT) S.hintT = Math.max(0, S.hintT - dt);
+    if (S && S.reveal) S.reveal = Math.max(0, S.reveal - dt);
+    fxr.update(dt, D.fx);
+    draw();
+  }
+
+  function drawArt(src2) {
+    const fx = D.fx, k = fx.breathe ? 1 + .012 * (1 + Math.sin(T * 1.3)) : 1;
+    const view = vsel.value, im = view === 'blur' ? art.blur : view === 'contrast' ? art.contrast : art.full;
+    ctx.save(); ctx.translate(W / 2, H / 2); ctx.scale(k, k); ctx.drawImage(src2 || im, -W / 2, -H / 2, W, H); ctx.restore();
+  }
+  function draw() {
+    if (!art || !S) return;
+    ctx.clearRect(0, 0, W, H);
+    const view = vsel.value, im = view === 'blur' ? art.blur : view === 'contrast' ? art.contrast : art.full;
+    if (type === 'puzzle') drawPuzzle(im);
+    else if (type === 'memory') drawMemory(im);
+    else drawArt();
+    fxr.glow(ctx, T, D.fx);
+    if (type === 'collect') for (const it of S.items) if (!it.got) drawItem(ctx, D.itemStyle || 'star', it.x, it.y, M * .032, T);
+    if (type === 'maze') drawMaze();
+    if (type === 'bowl') drawBowl();
+    if (type === 'treasure') drawTreasure();
+    if (S.trail && S.trail.length) { ctx.save(); for (const p of S.trail) { p.a *= .995; ctx.globalAlpha = p.a * .55; ctx.fillStyle = '#ff7a2a'; ctx.beginPath(); ctx.arc(p.x, p.y, S.m.r * .5, 0, TAU); ctx.fill(); } ctx.restore(); }
+    if (S.m) drawMarble(ctx, D.marble || 'eye', S.m.x, S.m.y, S.m.r, S.m.vx, S.m.vy, T, S.m.look);
+    fxr.draw(ctx, T);
+    if (S.hintT && S.m && type === 'collect') { const n = nearest(S.items, S.m); if (n) arrow(S.m, n); }
+    if (S.hintT && type === 'maze') arrow(S.m, S.goal);
+    if (S.hintT && type === 'treasure') { const n = nearest(S.items, S.seek); if (n) arrow(S.seek, n); }
+    // how it looks with less sight: the dark follows where you play
+    if (view === 'tunnel' || view === 'center') {
+      const f = S.focus, g = view === 'tunnel' ? ctx.createRadialGradient(f.x, f.y, M * .12, f.x, f.y, M * .42) : ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, M * .2);
+      if (view === 'tunnel') { g.addColorStop(0, 'rgba(5,6,8,0)'); g.addColorStop(1, 'rgba(5,6,8,.97)'); }
+      else { g.addColorStop(0, 'rgba(40,36,34,.92)'); g.addColorStop(.6, 'rgba(40,36,34,.6)'); g.addColorStop(1, 'rgba(40,36,34,0)'); }
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    }
+  }
+  function arrow(a, b) {
+    const ang = Math.atan2(b.y - a.y, b.x - a.x), r = M * .12, x = a.x + Math.cos(ang) * r, y = a.y + Math.sin(ang) * r;
+    ctx.save(); ctx.globalAlpha = Math.min(1, S.hintT); ctx.translate(x, y); ctx.rotate(ang); ctx.fillStyle = '#ffd27a'; ctx.strokeStyle = '#14100c'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(M * .05, 0); ctx.lineTo(-M * .03, -M * .035); ctx.lineTo(-M * .015, 0); ctx.lineTo(-M * .03, M * .035); ctx.closePath(); ctx.stroke(); ctx.fill(); ctx.restore();
+  }
+  function drawMaze() {
+    const lw = M * .018;
+    ctx.save(); ctx.lineCap = 'round';
+    ctx.strokeStyle = 'rgba(10,10,14,.8)'; ctx.lineWidth = lw + 6; ctx.beginPath(); for (const w of S.walls) { ctx.moveTo(w[0], w[1]); ctx.lineTo(w[2], w[3]); } ctx.stroke();
+    ctx.strokeStyle = '#f2ede4'; ctx.lineWidth = lw; ctx.shadowColor = 'rgba(255,214,150,.9)'; ctx.shadowBlur = 12; ctx.stroke();
+    ctx.restore();
+    const g = S.goal, p = 1 + .15 * Math.sin(T * 4);
+    ctx.save(); ctx.fillStyle = 'rgba(245,166,35,.35)'; ctx.beginPath(); ctx.arc(g.x, g.y, M * .06 * p, 0, TAU); ctx.fill();
+    drawItem(ctx, 'star', g.x, g.y, M * .035, T); ctx.restore();
+  }
+  function drawBowl() {
+    const m = S.m;
+    // lane
+    ctx.save(); ctx.globalAlpha = .18; ctx.fillStyle = '#000'; ctx.fillRect(S.start.x - M * .22, 0, M * .44, H); ctx.restore();
+    for (const p of S.pins) {
+      if (p.fade <= 0) continue;
+      ctx.save(); ctx.globalAlpha = p.fade;
+      ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(p.x + p.r * .2, p.y + p.r * .3, p.r, p.r * .8, 0, 0, TAU); ctx.fill();
+      const g = ctx.createRadialGradient(p.x - p.r * .3, p.y - p.r * .3, p.r * .1, p.x, p.y, p.r); g.addColorStop(0, '#fff'); g.addColorStop(1, '#d9d2c7');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, TAU); ctx.fill();
+      ctx.strokeStyle = '#e8433a'; ctx.lineWidth = p.r * .25; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * .62, 0, TAU); ctx.stroke();
+      ctx.restore();
+    }
+    if (S.phase === 'aim' && running) {
+      const L = M * .32, ex = m.x + Math.sin(S.aim) * L, ey = m.y - Math.cos(S.aim) * L;
+      ctx.save(); ctx.setLineDash([M * .02, M * .015]); ctx.strokeStyle = 'rgba(255,214,150,.95)'; ctx.lineWidth = M * .01;
+      ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(ex, ey); ctx.stroke(); ctx.setLineDash([]);
+      // power meter
+      const bw = M * .3, bh = M * .03, bx = m.x - bw / 2, by = Math.min(H - bh - 6, m.y + m.r + M * .03);
+      ctx.fillStyle = 'rgba(0,0,0,.6)'; roundRect(ctx, bx - 3, by - 3, bw + 6, bh + 6, bh); ctx.fill();
+      const gg = ctx.createLinearGradient(bx, 0, bx + bw, 0); gg.addColorStop(0, '#2aa8e0'); gg.addColorStop(.6, '#f5a623'); gg.addColorStop(1, '#e8433a');
+      ctx.fillStyle = gg; roundRect(ctx, bx, by, Math.max(bh, bw * S.power), bh, bh / 2); ctx.fill();
+      ctx.restore();
+    }
+  }
+  function drawTreasure() {
+    if (S.clearFog) S.clearFog = Math.max(0, S.clearFog - .02);
+    ctx.save(); ctx.globalAlpha = S.clearFog !== undefined ? S.clearFog : 1; ctx.drawImage(S.fog, 0, 0); ctx.restore();
+    for (const it of S.items) if (it.got) {
+      ctx.save(); ctx.strokeStyle = '#ffd27a'; ctx.lineWidth = M * .008; ctx.beginPath(); ctx.arc(it.x, it.y, M * .05, 0, TAU); ctx.stroke();
+      drawItem(ctx, 'gem', it.x, it.y - M * .085, M * .022, T); ctx.restore();
+    }
+    if (running || !S.done) {
+      const s = S.seek, w = S.warm || 0, r = M * (.055 + w * .03);
+      const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r * 2);
+      g.addColorStop(0, `rgba(255,${Math.round(lerp(230, 140, w))},${Math.round(lerp(160, 60, w))},.55)`); g.addColorStop(1, 'rgba(255,200,120,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(s.x, s.y, r * 2, 0, TAU); ctx.fill();
+      ctx.strokeStyle = w > .7 ? '#ff7a2a' : '#f2ede4'; ctx.lineWidth = M * .008; ctx.beginPath(); ctx.arc(s.x, s.y, r * (1 + .1 * Math.sin(T * (4 + w * 10))), 0, TAU); ctx.stroke();
+    }
+  }
+  function drawPuzzle(im) {
+    const n = S.n, tw = W / n, th = H / n, gap = Math.max(2, M * .004), blankId = n * n - 1, solved = S.done;
+    ctx.fillStyle = '#0d0f13'; ctx.fillRect(0, 0, W, H);
+    for (let pos = 0; pos < n * n; pos++) {
+      const id = S.tiles[pos]; if (id === blankId && !solved) continue;
+      let c = pos % n, r = Math.floor(pos / n); const a = S.anim[id];
+      if (a) { c += a.x; r += a.y; a.x *= .7; a.y *= .7; if (Math.abs(a.x) + Math.abs(a.y) < .01) delete S.anim[id]; }
+      const sx = (id % n) * tw, sy = Math.floor(id / n) * th;
+      ctx.drawImage(im, sx, sy, tw, th, c * tw + gap / 2, r * th + gap / 2, tw - gap, th - gap);
+      if (!solved && id === pos) { ctx.strokeStyle = 'rgba(255,214,120,.65)'; ctx.lineWidth = gap * 1.5; ctx.strokeRect(c * tw + gap, r * th + gap, tw - gap * 2, th - gap * 2); }
+    }
+    if (S.peek > 0) { ctx.save(); ctx.globalAlpha = .85; ctx.drawImage(im, 0, 0, W, H); ctx.restore(); }
+    if (!solved && running) {
+      const b = S.tiles.indexOf(blankId), bc = b % n, br = Math.floor(b / n);
+      ctx.save(); ctx.strokeStyle = 'rgba(42,168,224,.8)'; ctx.setLineDash([8, 6]); ctx.lineWidth = 3; ctx.strokeRect(bc * tw + 6, br * th + 6, tw - 12, th - 12); ctx.restore();
+    }
+  }
+  function drawMemory(im) {
+    ctx.save(); ctx.drawImage(im, 0, 0, W, H); if (!S.done) { ctx.fillStyle = 'rgba(10,12,16,.72)'; ctx.fillRect(0, 0, W, H); } ctx.restore();
+    if (S.done) return;
+    const csz = M * .3;
+    for (let i = 0; i < S.cards.length; i++) {
+      const c = S.cards[i], r = cardRect(i), want = (c.up || c.done || S.reveal > 0) ? 1 : 0;
+      c.flip = lerp(c.flip, want, .25);
+      const sx = Math.abs(Math.cos(c.flip * Math.PI)), face = c.flip > .5, cx = r.x + r.w / 2;
+      ctx.save(); ctx.translate(cx, 0); ctx.scale(Math.max(.02, sx), 1); ctx.translate(-cx, 0);
+      roundRect(ctx, r.x, r.y, r.w, r.h, M * .02);
+      if (face) {
+        ctx.save(); ctx.clip(); const s = Math.max(r.w, r.h) / Math.min(r.w, r.h);
+        const cw = csz * (r.w >= r.h ? 1 : r.w / r.h), ch = csz * (r.h > r.w ? 1 : r.h / r.w);
+        const ccx = clamp(c.c.x * W - cw / 2, 0, W - cw), ccy = clamp(c.c.y * H - ch / 2, 0, H - ch);
+        ctx.drawImage(im, ccx, ccy, cw, ch, r.x, r.y, r.w, r.h); ctx.restore();
+        ctx.lineWidth = M * .008; ctx.strokeStyle = c.done ? '#ffd27a' : '#f2ede4'; ctx.stroke();
+      } else {
+        const g = ctx.createLinearGradient(r.x, r.y, r.x + r.w, r.y + r.h); g.addColorStop(0, '#ff7a2a'); g.addColorStop(.55, '#e8433a'); g.addColorStop(1, '#2aa8e0');
+        ctx.fillStyle = g; ctx.fill(); ctx.lineWidth = M * .006; ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.font = `900 ${Math.round(Math.min(r.w, r.h) * .5)}px Archivo, Arial Black, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('A', cx, r.y + r.h / 2 + 2);
+      }
+      ctx.restore();
+      if (i === S.cursor && running && csel.value !== 'tilt' || i === S.cursor && running) { ctx.save(); ctx.strokeStyle = '#2aa8e0'; ctx.lineWidth = M * .012; roundRect(ctx, r.x - M * .01, r.y - M * .01, r.w + M * .02, r.h + M * .02, M * .025); ctx.stroke(); ctx.restore(); }
+    }
+  }
+
+
+  /* ── play on the real painting: the camera finds the art and the game sits right on it ── */
+  let AR = null;
+  const arBtn = root.querySelector('.aag-arbtn');
+  if (window.AACapture && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) arBtn.hidden = false;
+  const stageEl = root.querySelector('.aag-stage');
+  function startAR() {
+    ac();
+    const vid = document.createElement('video'); vid.className = 'aag-arvid'; vid.muted = true; vid.playsInline = true; vid.setAttribute('playsinline', ''); vid.autoplay = true;
+    const tip = document.createElement('p'); tip.className = 'aag-artip'; tip.setAttribute('aria-live', 'polite'); tip.textContent = L('Point your camera at the painting. Keep all four corners in view.');
+    AR = { vid, tip, stream: null, q: null, seen: 0, lost: 0, t: 0, raf: 0 };
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false }).then(st => {
+      if (!AR) { st.getTracks().forEach(t => t.stop()); return; }
+      AR.stream = st; vid.srcObject = st; vid.play().catch(() => {});
+      stageEl.prepend(vid); stageEl.appendChild(tip); stageEl.classList.add('aag-ar'); arBtn.textContent = L('Back to the screen');
+      announce('Camera on. Point at the painting.');
+      if (window.AACapture.resetTracking) AACapture.resetTracking(); AR.trk = null;
+      const tick = () => {
+        if (!AR) return; AR.raf = requestAnimationFrame(tick);
+        const vw = vid.videoWidth, vh = vid.videoHeight; if (!vw) return;
+        stageEl.style.setProperty('--aag-arr', vw + '/' + vh); stageEl.style.setProperty('--aag-arn', (vw / vh).toFixed(4));
+        if (!AR.trk) AR.trk = AACapture.tracker ? AACapture.tracker() : null;
+        const r = AR.trk ? AR.trk.update(vid, vw, vh) : AACapture.detect(vid, vw, vh), sw = stageEl.clientWidth, sh = stageEl.clientHeight;
+        if (r) {
+          AR.q = r.c.map(([x, y]) => [x * sw, y * sh]);
+          AR.lost = 0; if (!AR.seen) { AR.seen = 1; SFX.found(); buzz([30, 30, 60]); tip.textContent = L('Found it! Play right on the painting.'); announce('Found the painting. Play!'); setTimeout(() => { if (AR) tip.classList.add('hide'); }, 2200); }
+        } else if (AR.q) { AR.lost++; if (AR.lost === 15) { tip.textContent = L('Lost the painting. Point back at it.'); tip.classList.remove('hide'); } }
+        if (AR.q) {
+          const H = AACapture.homography([[0, 0], [W, 0], [W, H0()], [0, H0()]], AR.q);
+          cv.style.transform = `matrix3d(${H[0]},${H[3]},0,${H[6]},${H[1]},${H[4]},0,${H[7]},0,0,1,0,${H[2]},${H[5]},0,1)`;
+          cv.style.opacity = AR.lost > 15 ? .35 : 1;
+        }
+      };
+      tick();
+    }).catch(() => { AR = null; announce('The camera was not allowed. You can keep playing on the screen.'); });
+  }
+  const H0 = () => H;
+  function stopAR() {
+    if (!AR) return; cancelAnimationFrame(AR.raf); if (AR.stream) AR.stream.getTracks().forEach(t => t.stop());
+    AR.vid.remove(); AR.tip.remove(); AR = null;
+    stageEl.classList.remove('aag-ar'); cv.style.transform = ''; cv.style.opacity = ''; if (arBtn) arBtn.textContent = L('Play on the painting');
+  }
+  return {
+    destroy() { stopAR(); alive = false; cancelAnimationFrame(raf); stopVoice(); rollSound(0); window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onKey); window.removeEventListener('deviceorientation', onTilt); root.innerHTML = ''; },
+    get state() { return S; }, start() { begin(); }, canvas: cv
+  };
+}
+
+window.AAGame = { create, prepArt, makeFx, drawItem, drawMarble, sizeFor, pinRack, autoCrops, SFX, sayLine, stopVoice, ac, VIEWS, NOUN };
+})();
+</script>
+<script id="aa-capture">/* Art Alive capture tools, shared by the Creator Studio and the Game Maker.
+   AACapture.open({ onDone })  — a camera view that finds the art on the wall, guides you to centre it by sound, voice and
+                                 vibration, snaps it when steady, lets you nudge the four corners, then straightens it.
+   AACapture.recordButton(label, onAudio) — a button that records from the microphone and hands back the audio. */
+(function () {
+'use strict';
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+
+/* ── styles ── */
+const css = `
+.aacap{position:fixed;inset:0;z-index:9999;background:#0b0d10;color:#f2ede4;display:flex;flex-direction:column;font:17px/1.4 'Atkinson Hyperlegible',Verdana,Arial,sans-serif}
+.aacap[hidden]{display:none}
+.aacap-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px}
+.aacap-top h2{margin:0;font:900 18px/1.1 'Archivo','Arial Black',Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em}
+.aacap-view{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.aacap-view video,.aacap-view canvas.aacap-ph{max-width:100%;max-height:100%;display:block}
+.aacap-ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.aacap-edit .aacap-ov{pointer-events:auto;touch-action:none}
+.aacap-tip{position:absolute;left:12px;right:12px;bottom:14px;margin:0 auto;max-width:520px;text-align:center;padding:12px 16px;border-radius:14px;background:rgba(10,12,16,.82);font-weight:700;font-size:19px}
+.aacap-tip.good{background:rgba(31,122,60,.92)}
+.aacap-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;padding:12px 14px calc(14px + env(safe-area-inset-bottom))}
+.aacap button,.aacap .aacap-btn{min-height:52px;padding:0 22px;border-radius:999px;border:2px solid #2c333d;background:#1d222a;color:#f2ede4;font:800 16px/1 'Archivo','Arial Black',Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
+.aacap .go{background:#ff7a2a;border-color:#ff7a2a;color:#14100c}
+.aacap .shoot{width:76px;height:76px;min-height:0;padding:0;border-radius:50%;background:#f2ede4;border:6px solid #ff7a2a;font-size:0}
+.aacap label{display:flex;align-items:center;gap:8px;font-size:15px}
+.aacap input[type=checkbox]{width:22px;height:22px;accent-color:#ff7a2a}
+.aacap :focus-visible{outline:3px solid #2aa8e0;outline-offset:3px}
+.aarec{display:inline-flex;align-items:center;gap:8px}
+.aarec i{display:inline-block;width:12px;height:12px;border-radius:50%;background:#e8433a}
+.aarec.on{background:#e8433a!important;border-color:#e8433a!important;color:#fff!important}
+.aarec.on i{border-radius:2px;background:#fff}
+.aacap-intro{max-width:520px;margin:auto;padding:20px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;overflow:auto}
+.aacap-intro svg{width:150px;height:auto}
+.aacap-intro h3{margin:0;font:900 clamp(24px,6vw,34px)/1.05 'Archivo','Arial Black',Arial,sans-serif;text-transform:uppercase}
+.aacap-intro ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:19px;text-align:left}
+.aacap-intro li{padding-left:30px;position:relative}.aacap-intro li::before{content:'✓';position:absolute;left:0;color:#3ddc84;font-weight:900}
+.aacap-intro b{color:#f5a623}
+.aacap-head{position:absolute;left:12px;right:12px;top:10px;margin:0 auto;max-width:560px;text-align:center;padding:10px 14px;border-radius:12px;background:rgba(10,12,16,.82);font-weight:700;font-size:17px;z-index:2}
+.aacap-head b{color:#ff7a2a}
+.aa-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}`;
+const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+/* ── sound and voice for guidance ── */
+let AC = null;
+function beep(f, d, v) { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime; o.frequency.value = f; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v || .12, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + (d || .1)); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + (d || .1) + .03); } catch (e) {} }
+function buzz(p) { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} }
+
+/* ── finding the art: a rectangle around the centre of the view (from the Art Alive demo) ── */
+const PW = 240; let PH = 135, L = null, lab = null, pix = null, GX = null, GY = null, MAG = null, LB = null, ACC = null, EDGE_T = 40, prevC = null;
+const pc = document.createElement('canvas'), pctx = pc.getContext('2d', { willReadFrequently: true });
+const NT = 90, COS = new Float32Array(NT), SIN = new Float32Array(NT); for (let t = 0; t < NT; t++) { COS[t] = Math.cos(t * Math.PI / NT); SIN[t] = Math.sin(t * Math.PI / NT); }
+const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+function quadArea(P) { let s = 0; for (let i = 0; i < 4; i++) { const a = P[i], b = P[(i + 1) % 4]; s += a[0] * b[1] - b[0] * a[1]; } return Math.abs(s) / 2; }
+function convex(P) { let sg = 0; for (let i = 0; i < 4; i++) { const a = P[i], b = P[(i + 1) % 4], c = P[(i + 2) % 4], z = (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]); if (Math.abs(z) < 1e-6) return false; const s = Math.sign(z); if (sg && s !== sg) return false; sg = s; } return true; }
+function inQuad(P, x, y) { let sg = 0; for (let i = 0; i < 4; i++) { const a = P[i], b = P[(i + 1) % 4], z = (b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]); const s = Math.sign(z); if (!s) continue; if (sg && s !== sg) return false; sg = s; } return true; }
+function detect(src, sw, sh) {
+  if (!sw || !sh) return null;
+  PH = Math.round(PW * sh / sw);
+  if (pc.width !== PW || pc.height !== PH) { pc.width = PW; pc.height = PH; L = new Uint8Array(PW * PH); lab = new Int32Array(PW * PH); pix = new Int32Array(PW * PH); }
+  pctx.drawImage(src, 0, 0, PW, PH); const d = pctx.getImageData(0, 0, PW, PH).data, n = PW * PH, hist = new Uint32Array(256);
+  for (let i = 0; i < n; i++) { const l = (d[i * 4] * 77 + d[i * 4 + 1] * 150 + d[i * 4 + 2] * 29) >> 8; L[i] = l; hist[l]++; }
+  const pct = q => { let s = 0; for (let v = 0; v < 256; v++) { s += hist[v]; if (s >= n * q) return v; } return 255; };
+  const p5 = pct(.05), p20 = pct(.2);
+  let best = lineQuad(PW / 2, PH / 2);
+  if (!best) for (const T of new Set([Math.min(90, p5 + 14), Math.min(90, p20 + 10), 42])) { const c = findAt(T); if (c && (!best || c.score > best.score)) best = c; }
+  if (best) prevC = best.c;
+  return best;
+}
+function lineQuad(cx, cy) {
+  const n = PW * PH;
+  if (!MAG || MAG.length !== n) { GX = new Float32Array(n); GY = new Float32Array(n); MAG = new Float32Array(n); LB = new Float32Array(n); }
+  for (let i = 0; i < n; i++) LB[i] = L[i];
+  for (let y = 1; y < PH - 1; y++) for (let x = 1; x < PW - 1; x++) { const i = y * PW + x; LB[i] = (L[i - PW - 1] + L[i - PW] + L[i - PW + 1] + L[i - 1] + L[i] + L[i + 1] + L[i + PW - 1] + L[i + PW] + L[i + PW + 1]) / 9; }
+  const samp = []; MAG.fill(0);
+  for (let y = 1; y < PH - 1; y++) for (let x = 1; x < PW - 1; x++) { const i = y * PW + x;
+    const gx = LB[i - PW + 1] + 2 * LB[i + 1] + LB[i + PW + 1] - LB[i - PW - 1] - 2 * LB[i - 1] - LB[i + PW - 1], gy = LB[i + PW - 1] + 2 * LB[i + PW] + LB[i + PW + 1] - LB[i - PW - 1] - 2 * LB[i - PW] - LB[i - PW + 1];
+    GX[i] = gx; GY[i] = gy; const m = Math.hypot(gx, gy); MAG[i] = m; if ((x + y) % 3 === 0) samp.push(m); }
+  samp.sort((a, b) => a - b); EDGE_T = Math.max(36, samp[Math.floor(samp.length * .86)] || 36);
+  const DIAG = Math.ceil(Math.hypot(PW, PH)), NR = 2 * DIAG + 1;
+  if (!ACC || ACC.length !== NT * NR) ACC = new Float32Array(NT * NR); else ACC.fill(0);
+  for (let y = 1; y < PH - 1; y++) for (let x = 1; x < PW - 1; x++) { const i = y * PW + x; if (MAG[i] < EDGE_T) continue;
+    let th = Math.atan2(GY[i], GX[i]); if (th < 0) th += Math.PI; const tb = Math.round(th / Math.PI * NT) % NT;
+    for (let dd = -1; dd <= 1; dd++) { const t = (tb + dd + NT) % NT, r = Math.round(x * COS[t] + y * SIN[t]) + DIAG; ACC[t * NR + r] += 1; } }
+  const minV = .16 * Math.min(PW, PH), peaks = [];
+  for (let t = 0; t < NT; t++) for (let r = 0; r < NR; r++) { const v = ACC[t * NR + r]; if (v < minV) continue; let mx = true;
+    for (let dt = -2; dt <= 2 && mx; dt++) for (let dr = -3; dr <= 3; dr++) { if (!dt && !dr) continue; const tt = (t + dt + NT) % NT, rr = r + dr; if (rr < 0 || rr >= NR) continue; if (ACC[tt * NR + rr] > v) { mx = false; break; } }
+    if (mx) peaks.push({ t, r: r - DIAG, v }); }
+  peaks.sort((a, b) => b.v - a.v);
+  const top = [], bot = [], lef = [], rig = [];
+  for (const p of peaks.slice(0, 48)) { const th = p.t * Math.PI / NT, c = COS[p.t], s_ = SIN[p.t];
+    if (Math.abs(th - Math.PI / 2) < .6) { const y = (p.r - cx * c) / s_; (y < cy - 4 ? top : y > cy + 4 ? bot : []).push(p); }
+    else if (th < .6 || th > Math.PI - .6) { const x = (p.r - cy * s_) / c; (x < cx - 4 ? lef : x > cx + 4 ? rig : []).push(p); } }
+  const X = (a, b) => { const c1 = COS[a.t], s1 = SIN[a.t], c2 = COS[b.t], s2 = SIN[b.t], den = c1 * s2 - s1 * c2; if (Math.abs(den) < 1e-4) return null; return [(a.r * s2 - b.r * s1) / den, (c1 * b.r - c2 * a.r) / den]; };
+  let best = null; const T6 = a => a.slice(0, 6);
+  for (const a of T6(top)) for (const b of T6(bot)) for (const l of T6(lef)) for (const r of T6(rig)) {
+    const P = [X(a, l), X(a, r), X(b, r), X(b, l)]; if (P.some(q => !q || q[0] < .5 || q[1] < .5 || q[0] > PW - .5 || q[1] > PH - .5)) continue;
+    if (!convex(P) || !inQuad(P, cx, cy)) continue; const area = quadArea(P); if (area < n * .04) continue;
+    const tl = dist(P[0], P[1]), bl = dist(P[3], P[2]), ll = dist(P[0], P[3]), rl = dist(P[1], P[2]), asp = (tl + bl) / (ll + rl);
+    if (asp < .3 || asp > 3.4 || Math.max(tl, bl) / Math.min(tl, bl) > 2 || Math.max(ll, rl) / Math.min(ll, rl) > 2) continue;
+    const cov = [cover(P[0], P[1]), cover(P[1], P[2]), cover(P[2], P[3]), cover(P[3], P[0])], mn = Math.min(...cov); if (mn < .5) continue;
+    let score = mn * .6 + (cov[0] + cov[1] + cov[2] + cov[3]) / 4 * .4 + .15 * Math.sqrt(area / n);
+    if (prevC) { let dsum = 0; for (let k = 0; k < 4; k++) dsum += dist(P[k], [prevC[k][0] * PW, prevC[k][1] * PH]); score += .15 * (1 - Math.min(1, dsum / (.6 * Math.hypot(PW, PH)))); }
+    if (!best || score > best.score) best = { score, c: P.map(([x, y]) => [x / PW, y / PH]) }; }
+  return best;
+}
+function cover(a, b) {
+  const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy), nx = -dy / len, ny = dx / len, N = 26; let hit = 0;
+  for (let k = 0; k < N; k++) { const t = .06 + .88 * k / (N - 1), px = a[0] + dx * t, py = a[1] + dy * t;
+    for (let o = -1; o <= 1; o++) { const x = Math.round(px + nx * o), y = Math.round(py + ny * o); if (x < 1 || y < 1 || x >= PW - 1 || y >= PH - 1) continue; const i = y * PW + x;
+      if (MAG[i] > EDGE_T * .6 && Math.abs(GX[i] * nx + GY[i] * ny) > .7 * MAG[i]) { hit++; break; } } }
+  return hit / N;
+}
+function findAt(T) {
+  lab.fill(0); let id = 0, best = null; const n = PW * PH, minArea = n * .04;
+  for (let s = 0; s < n; s++) {
+    if (lab[s] || L[s] > T) continue;
+    id++; let head = 0, tail = 0; pix[tail++] = s; lab[s] = id; let border = 0, sMin = 1e9, sMax = -1e9, dMin = 1e9, dMax = -1e9, tl = 0, br = 0, tr = 0, bl = 0;
+    while (head < tail) { const i = pix[head++], x = i % PW, y = (i / PW) | 0;
+      if (x === 0 || y === 0 || x === PW - 1 || y === PH - 1) border++;
+      const a = x + y, b = x - y; if (a < sMin) { sMin = a; tl = i; } if (a > sMax) { sMax = a; br = i; } if (b > dMax) { dMax = b; tr = i; } if (b < dMin) { dMin = b; bl = i; }
+      if (x > 0 && !lab[i - 1] && L[i - 1] <= T) { lab[i - 1] = id; pix[tail++] = i - 1; }
+      if (x < PW - 1 && !lab[i + 1] && L[i + 1] <= T) { lab[i + 1] = id; pix[tail++] = i + 1; }
+      if (y > 0 && !lab[i - PW] && L[i - PW] <= T) { lab[i - PW] = id; pix[tail++] = i - PW; }
+      if (y < PH - 1 && !lab[i + PW] && L[i + PW] <= T) { lab[i + PW] = id; pix[tail++] = i + PW; } }
+    const count = tail; if (count < minArea || border > 2) continue;
+    const P = [tl, tr, br, bl].map(i => [i % PW + .5, ((i / PW) | 0) + .5]);
+    const area = quadArea(P); if (area < minArea || !convex(P)) continue;
+    const fill = count / area; if (fill < .68 || fill > 1.25) continue;
+    const top = dist(P[0], P[1]), bot = dist(P[3], P[2]), lef = dist(P[0], P[3]), rig = dist(P[1], P[2]), asp = (top + bot) / (lef + rig);
+    if (asp < .3 || asp > 3.4 || Math.max(top, bot) / Math.min(top, bot) > 1.8 || Math.max(lef, rig) / Math.min(lef, rig) > 1.8) continue;
+    if (!inQuad(P, PW / 2, PH / 2)) continue;
+    const score = area * Math.min(1, fill) ** 2;
+    if (!best || score > best.score) best = { score, c: P.map(([x, y]) => [x / PW, y / PH]) };
+  }
+  return best;
+}
+
+/* ── straightening: map the output rectangle onto the four corners and sample ── */
+function homography(src, dst) { // solves the 3×3 map taking 4 src points to 4 dst points
+  const A = [], b = [];
+  for (let i = 0; i < 4; i++) { const [x, y] = src[i], [u, v] = dst[i];
+    A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]); b.push(u); A.push([0, 0, 0, x, y, 1, -v * x, -v * y]); b.push(v); }
+  for (let c = 0; c < 8; c++) { let p = c; for (let r = c + 1; r < 8; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+    [A[c], A[p]] = [A[p], A[c]]; [b[c], b[p]] = [b[p], b[c]];
+    for (let r = 0; r < 8; r++) if (r !== c) { const f = A[r][c] / A[c][c]; for (let k = c; k < 8; k++) A[r][k] -= f * A[c][k]; b[r] -= f * b[c]; } }
+  return b.map((v, i) => v / A[i][i]).concat([1]);
+}
+function straighten(img, W0, H0, Q, maxSide) {
+  const P = Q.map(([x, y]) => [x * W0, y * H0]);
+  const w = (dist(P[0], P[1]) + dist(P[3], P[2])) / 2, h = (dist(P[0], P[3]) + dist(P[1], P[2])) / 2, k = Math.min(1, (maxSide || 1400) / Math.max(w, h));
+  const OW = Math.max(16, Math.round(w * k)), OH = Math.max(16, Math.round(h * k));
+  const H = homography([[0, 0], [OW, 0], [OW, OH], [0, OH]], P);
+  const sc = document.createElement('canvas'); sc.width = W0; sc.height = H0; const sx = sc.getContext('2d'); sx.drawImage(img, 0, 0, W0, H0);
+  const sd = sx.getImageData(0, 0, W0, H0).data;
+  const out = document.createElement('canvas'); out.width = OW; out.height = OH; const ox = out.getContext('2d'), od = ox.createImageData(OW, OH), o = od.data;
+  for (let y = 0; y < OH; y++) for (let x = 0; x < OW; x++) {
+    const X = x + .5, Y = y + .5, z = H[6] * X + H[7] * Y + 1, u = (H[0] * X + H[1] * Y + H[2]) / z - .5, v = (H[3] * X + H[4] * Y + H[5]) / z - .5;
+    const x0 = clamp(Math.floor(u), 0, W0 - 2), y0 = clamp(Math.floor(v), 0, H0 - 2), fx = clamp(u - x0, 0, 1), fy = clamp(v - y0, 0, 1), i = (y0 * W0 + x0) * 4, j = (y * OW + x) * 4;
+    for (let c = 0; c < 3; c++) { const a = sd[i + c] + (sd[i + 4 + c] - sd[i + c]) * fx, b2 = sd[i + W0 * 4 + c] + (sd[i + W0 * 4 + 4 + c] - sd[i + W0 * 4 + c]) * fx; o[j + c] = a + (b2 - a) * fy; }
+    o[j + 3] = 255;
+  }
+  ox.putImageData(od, 0, 0);
+  return out.toDataURL('image/jpeg', .9);
+}
+
+/* ── sticky tracking: once the rectangle is found, follow the texture inside it every frame (like Artivive),
+      using optical flow on feature points and a homography fit; the rectangle finder only re-anchors it ── */
+function tracker(opts) {
+  opts = opts || {};
+  let TW = opts.width || 320; const findRect = opts.detect || detect; let cost = 0;
+  const cv = document.createElement('canvas'), cx = cv.getContext('2d', { willReadFrequently: true });
+  let disagree = 0, w = 0, h = 0, prevPyr = null, pts = [], quad = null, sm = null, lastT = 0, frame = 0, lostFor = 0, lastDetectF = -99, mode = 'none';
+  const LEVELS = 3, WIN = 4, ITERS = 10;
+  function gray(src, sw, sh) {
+    if (!sw || !sh) return null;
+    const H = Math.round(TW * sh / sw);
+    if (cv.width !== TW || cv.height !== H) { cv.width = TW; cv.height = H; }
+    w = TW; h = H; cx.drawImage(src, 0, 0, w, h);
+    const d = cx.getImageData(0, 0, w, h).data, g = new Float32Array(w * h);
+    for (let i = 0, j = 0; i < g.length; i++, j += 4) g[i] = d[j] * .299 + d[j + 1] * .587 + d[j + 2] * .114;
+    return g;
+  }
+  function pyramid(g) {
+    const L = [{ g, w, h }];
+    for (let l = 1; l < LEVELS; l++) {
+      const p = L[l - 1], nw = p.w >> 1, nh = p.h >> 1, o = new Float32Array(nw * nh);
+      for (let y = 0; y < nh; y++) for (let x = 0; x < nw; x++) { const i = (y * 2) * p.w + x * 2; o[y * nw + x] = (p.g[i] + p.g[i + 1] + p.g[i + p.w] + p.g[i + p.w + 1]) * .25; }
+      L.push({ g: o, w: nw, h: nh });
+    }
+    for (const lv of L) { // gradients for the window sums
+      const gx = new Float32Array(lv.w * lv.h), gy = new Float32Array(lv.w * lv.h), G = lv.g, W2 = lv.w;
+      for (let y = 1; y < lv.h - 1; y++) for (let x = 1; x < W2 - 1; x++) { const i = y * W2 + x; gx[i] = (G[i + 1] - G[i - 1]) * .5; gy[i] = (G[i + W2] - G[i - W2]) * .5; }
+      lv.gx = gx; lv.gy = gy;
+    }
+    return L;
+  }
+  const samp = (a, W2, H2, x, y) => { if (x < 0) x = 0; if (y < 0) y = 0; if (x > W2 - 1.001) x = W2 - 1.001; if (y > H2 - 1.001) y = H2 - 1.001;
+    const x0 = x | 0, y0 = y | 0, fx = x - x0, fy = y - y0, i = y0 * W2 + x0; return (a[i] * (1 - fx) + a[i + 1] * fx) * (1 - fy) + (a[i + W2] * (1 - fx) + a[i + W2 + 1] * fx) * fy; };
+  const NW = (2 * WIN + 1) * (2 * WIN + 1), WA = new Float32Array(NW), WX = new Float32Array(NW), WY = new Float32Array(NW);
+  function lk(P, N, x, y) { // pyramidal Lucas-Kanade: where did point (x,y) of P go in N?
+    let gxs = 0, gys = 0;
+    for (let l = LEVELS - 1; l >= 0; l--) {
+      const A = P[l], B = N[l], s = 1 << l, px = x / s, py = y / s;
+      let a11 = 0, a12 = 0, a22 = 0, n = 0;
+      for (let j = -WIN; j <= WIN; j++) for (let i = -WIN; i <= WIN; i++, n++) { const ix = samp(A.gx, A.w, A.h, px + i, py + j), iy = samp(A.gy, A.w, A.h, px + i, py + j);
+        WA[n] = samp(A.g, A.w, A.h, px + i, py + j); WX[n] = ix; WY[n] = iy; a11 += ix * ix; a12 += ix * iy; a22 += iy * iy; }
+      const det = a11 * a22 - a12 * a12; if (det < 1e-3) return null;
+      let vx = 0, vy = 0;
+      for (let k = 0; k < ITERS; k++) {
+        let b1 = 0, b2 = 0, m = 0; const ox = px + gxs + vx, oy = py + gys + vy;
+        for (let j = -WIN; j <= WIN; j++) for (let i = -WIN; i <= WIN; i++, m++) { const dI = WA[m] - samp(B.g, B.w, B.h, ox + i, oy + j); b1 += dI * WX[m]; b2 += dI * WY[m]; }
+        const ex = (a22 * b1 - a12 * b2) / det, ey = (a11 * b2 - a12 * b1) / det; vx += ex; vy += ey;
+        if (ex * ex + ey * ey < .0009) break;
+      }
+      if (l > 0) { gxs = (gxs + vx) * 2; gys = (gys + vy) * 2; } else { gxs += vx; gys += vy; }
+    }
+    const nx = x + gxs, ny = y + gys; if (nx < 0 || ny < 0 || nx >= w || ny >= h) return null;
+    return [nx, ny];
+  }
+  // homography from the unit square to the image, and its inverse
+  const unit = [[0, 0], [1, 0], [1, 1], [0, 1]];
+  const apply = (H, x, y) => { const z = H[6] * x + H[7] * y + 1; return [(H[0] * x + H[1] * y + H[2]) / z, (H[3] * x + H[4] * y + H[5]) / z]; };
+  function fitH(src, dst) { // least squares through all pairs (normal equations)
+    const M = Array.from({ length: 8 }, () => new Float64Array(9));
+    for (let k = 0; k < src.length; k++) { const [x, y] = src[k], [u, v] = dst[k];
+      const r1 = [x, y, 1, 0, 0, 0, -u * x, -u * y, u], r2 = [0, 0, 0, x, y, 1, -v * x, -v * y, v];
+      for (const r of [r1, r2]) for (let i = 0; i < 8; i++) { for (let j = 0; j < 8; j++) M[i][j] += r[i] * r[j]; M[i][8] += r[i] * r[8]; } }
+    for (let c = 0; c < 8; c++) { let p = c; for (let r = c + 1; r < 8; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r; [M[c], M[p]] = [M[p], M[c]];
+      if (Math.abs(M[c][c]) < 1e-12) return null;
+      for (let r = 0; r < 8; r++) if (r !== c) { const f = M[r][c] / M[c][c]; for (let k = c; k < 9; k++) M[r][k] -= f * M[c][k]; } }
+    return Array.from({ length: 8 }, (_, i) => M[i][8] / M[i][i]).concat([1]);
+  }
+  function seed(g, Q) { // good corners (Shi-Tomasi) spread over the inside of the rectangle
+    const cand = [], E = homography(unit, Q), grow = [[-.15, -.15], [1.15, -.15], [1.15, 1.15], [-.15, 1.15]].map(([u, v]) => apply(E, u, v));
+    const xs = grow.map(p => p[0]), ys = grow.map(p => p[1]);
+    const x0 = Math.max(WIN + 2, Math.floor(Math.min(...xs))), x1 = Math.min(w - WIN - 3, Math.ceil(Math.max(...xs))), y0 = Math.max(WIN + 2, Math.floor(Math.min(...ys))), y1 = Math.min(h - WIN - 3, Math.ceil(Math.max(...ys)));
+    const L0 = prevPyr[0];
+    for (let y = y0; y <= y1; y += 2) for (let x = x0; x <= x1; x += 2) {
+      if (!inQuad(grow, x, y)) continue;
+      let a = 0, b = 0, c = 0;
+      for (let j = -2; j <= 2; j++) for (let i = -2; i <= 2; i++) { const k = (y + j) * w + x + i, ix = L0.gx[k], iy = L0.gy[k]; a += ix * ix; b += ix * iy; c += iy * iy; }
+      const tr = a + c, mn = tr / 2 - Math.sqrt(Math.max(0, tr * tr / 4 - (a * c - b * b)));
+      if (mn > 60) cand.push([mn, x, y]);
+    }
+    cand.sort((p, q) => q[0] - p[0]);
+    const Hi = homography(Q, unit), out = [], cell = Math.max(6, Math.sqrt((x1 - x0) * (y1 - y0) / 140));
+    const taken = new Set();
+    let inner = 0;
+    for (const [, x, y] of cand) { const key = Math.floor(x / cell) + ',' + Math.floor(y / cell); if (taken.has(key)) continue;
+      const uv = apply(Hi, x, y), inside = uv[0] > .12 && uv[0] < .88 && uv[1] > .12 && uv[1] < .88;
+      if (inside && inner >= 30) continue; // keep most points on the edges and around the shape
+      taken.add(key); if (inside) inner++; out.push({ x, y, uv }); if (out.length >= 70) break; }
+    return out;
+  }
+  // smoothing that stays still when you hold still and keeps up when you move (one-euro filter)
+  function euro(prev, val, dt, dprev) {
+    const mc = opts.minCutoff || 1.2, beta = opts.beta != null ? opts.beta : .08, dc = 1;
+    const al = c => 1 / (1 + 1 / (2 * Math.PI * c * dt));
+    const d = (val - prev) / dt, ad = al(dc), ds = dprev + ad * (d - dprev);
+    const a = al(mc + beta * Math.abs(ds)); return [prev + a * (val - prev), ds];
+  }
+  function update(src, sw, sh, now) {
+    now = now || performance.now(); frame++; const t0 = performance.now();
+    const g = gray(src, sw, sh); if (!g) return null;
+    const pyr = pyramid(g); let tracked = null;
+    // 1. follow the points from the last frame
+    if (quad && prevPyr && pts.length >= 8) {
+      const keep = [];
+      for (const p of pts) { const n = lk(prevPyr, pyr, p.x, p.y); if (!n) continue; const back = lk(pyr, prevPyr, n[0], n[1]); if (!back || Math.hypot(back[0] - p.x, back[1] - p.y) > 1) continue; keep.push({ x: n[0], y: n[1], uv: p.uv }); }
+      if (keep.length >= 8) { // robust fit: try a few 4-point guesses, keep the one most points agree with
+        let best = null, bestIn = null;
+        for (let it = 0; it < 40; it++) {
+          const s = []; while (s.length < 4) { const k = keep[(Math.random() * keep.length) | 0]; if (!s.includes(k)) s.push(k); }
+          let H; try { H = homography(s.map(k => k.uv), s.map(k => [k.x, k.y])); } catch (e) { continue; }
+          if (!H.every(Number.isFinite)) continue;
+          const inl = keep.filter(k => { const q = apply(H, k.uv[0], k.uv[1]); return Math.hypot(q[0] - k.x, q[1] - k.y) < 2.5; });
+          if (!bestIn || inl.length > bestIn.length) { best = H; bestIn = inl; }
+        }
+        if (bestIn && bestIn.length >= Math.max(8, keep.length * .5)) {
+          const H = fitH(bestIn.map(k => k.uv), bestIn.map(k => [k.x, k.y])) || best;
+          const Q = unit.map(([u, v]) => apply(H, u, v));
+          if (Q.every(p => p.every(Number.isFinite)) && convex(Q)) { tracked = Q; pts = bestIn; mode = 'track'; }
+        }
+      }
+    }
+    // 2. look for the rectangle: always when lost, and every few frames to correct drift and refresh points
+    if (!tracked || frame - lastDetectF > (pts.length < 25 || disagree ? 3 : 10)) {
+      lastDetectF = frame;
+      const r = findRect(src, sw, sh);
+      if (r) {
+        const D = r.c.map(([x, y]) => [x * w, y * h]);
+        if (!tracked) { tracked = D; mode = 'find'; }
+        else { const off = D.reduce((s, p, i) => s + Math.hypot(p[0] - tracked[i][0], p[1] - tracked[i][1]), 0) / 4;
+          if (off < Math.max(4, w * .02)) { tracked = tracked.map((p, i) => [p[0] + (D[i][0] - p[0]) * .25, p[1] + (D[i][1] - p[1]) * .25]); disagree = 0; }
+          else if (++disagree >= 2) { tracked = D; disagree = 0; mode = 'find'; } }
+        prevPyr = pyr; pts = seed(g, tracked);
+      }
+    }
+    prevPyr = pyr;
+    if (!tracked) { lostFor++; if (lostFor > 4) { quad = null; sm = null; pts = []; mode = 'none'; } return quad ? { c: quad.map(([x, y]) => [x / w, y / h]), mode: 'hold' } : null; }
+    lostFor = 0; quad = tracked;
+    if (pts.length < 20 && frame % 6 === 0) pts = pts.concat(seed(g, quad)).slice(0, 70);
+    // 3. smooth the corners
+    const dt = Math.max(1 / 120, Math.min(.1, (now - lastT) / 1000 || 1 / 30)); lastT = now;
+    if (!sm || mode === 'find' && sm.jump) sm = { v: quad.flat(), d: new Array(8).fill(0) };
+    else for (let i = 0; i < 8; i++) { const r = euro(sm.v[i], quad.flat()[i], dt, sm.d[i]); sm.v[i] = r[0]; sm.d[i] = r[1]; }
+    const out = opts.raw ? quad.map(([x, y]) => [x / w, y / h]) : [0, 1, 2, 3].map(k => [sm.v[k * 2] / w, sm.v[k * 2 + 1] / h]);
+    cost = cost * .9 + (performance.now() - t0) * .1;
+    if (!opts.width && cost > 14 && TW > 240) { TW = 240; prevPyr = null; pts = []; } // slower phones: smaller frames
+    return { c: out, mode, points: pts.length };
+  }
+  return { update, reset() { quad = null; sm = null; pts = []; prevPyr = null; prevC = null; mode = 'none'; }, get mode() { return mode; } };
+}
+
+/* ── one full-screen panel, reused for the camera and the crop tool ── */
+let root = null, talkOn = true, lastTalk = 0;
+const VOICE = { map: null, base: '' };
+try { const src = document.currentScript && document.currentScript.src; VOICE.base = src ? new URL('voice/', src).href : new URL('../voice/', location.href).href;
+  if (location.protocol !== 'file:') fetch(VOICE.base + 'voice.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(m => { VOICE.map = m; }).catch(() => {}); } catch (e) {}
+let voiceAudio = null;
+function speak(t, force) { if (!talkOn) return; if (!force && performance.now() - lastTalk < 2200) return; lastTalk = performance.now();
+  const f = VOICE.map && VOICE.map[String(t).trim().replace(/\s+/g, ' ')]; if (f) { try { speechSynthesis.cancel(); if (voiceAudio) voiceAudio.pause(); voiceAudio = new Audio(VOICE.base + f); voiceAudio.play().catch(() => {}); return; } catch (e) {} }
+  try { if (voiceAudio) voiceAudio.pause(); speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.rate = 1.08; speechSynthesis.speak(u); } catch (e) {} }
+function panel(title) {
+  if (root && root._close) root._close(true);
+  const prevFocus = document.activeElement;
+  const r = document.createElement('div'); r.className = 'aacap'; r.setAttribute('role', 'dialog'); r.setAttribute('aria-modal', 'true'); r.setAttribute('aria-labelledby', 'aacapH');
+  r.innerHTML = `<div class="aacap-top"><h2 id="aacapH"></h2><button type="button" class="x">Cancel</button></div><div class="aacap-view"></div><div class="aacap-bar"></div>`;
+  r.querySelector('h2').textContent = title;
+  document.body.appendChild(r); root = r;
+  const P = { root: r, view: r.querySelector('.aacap-view'), bar: r.querySelector('.aacap-bar'), q: s => r.querySelector(s), cleanup: [] };
+  const esc = e => { if (e.key === 'Escape') { e.preventDefault(); P.close(); } };
+  document.addEventListener('keydown', esc);
+  P.title = t => { r.querySelector('h2').textContent = t; };
+  P.close = quiet => { P.cleanup.forEach(f => f()); P.cleanup = []; document.removeEventListener('keydown', esc); try { speechSynthesis.cancel(); } catch (e) {} r.remove(); if (root === r) root = null; if (!quiet && prevFocus && prevFocus.focus) prevFocus.focus(); };
+  r._close = P.close;
+  r.querySelector('.x').onclick = () => P.close();
+  return P;
+}
+const RECT_ICON = `<svg viewBox="0 0 120 90" aria-hidden="true"><rect x="22" y="14" width="76" height="62" rx="3" fill="rgba(255,122,42,.12)" stroke="#ff7a2a" stroke-width="4"/>
+  <path d="M10 22V8h14M110 22V8H96M10 68v14h14M110 68v14H96" fill="none" stroke="#3ddc84" stroke-width="5" stroke-linecap="round"/><path d="M54 45h12M60 39v12" stroke="#f2ede4" stroke-width="3" stroke-linecap="round"/></svg>`;
+
+/* ── Take photo: instructions, then the camera that guides you ── */
+function open(opts) {
+  opts = opts || {};
+  const P = panel('Take a photo');
+  P.view.innerHTML = `<div class="aacap-intro">${RECT_ICON}
+    <h3>Photograph anything square or rectangle</h3>
+    <ul><li>A painting, poster, photo, card, book cover or a sheet of paper.</li>
+    <li><b>Center it</b> in the frame, with <b>all four corners showing</b>.</li>
+    <li>Hold still. It snaps on its own when it’s lined up, then you can crop it tight.</li></ul></div>`;
+  P.bar.innerHTML = `<label><input type="checkbox" class="talk" ${talkOn ? 'checked' : ''}> Spoken help</label><button type="button" class="go start">Open camera</button>`;
+  P.q('.talk').onchange = e => { talkOn = e.target.checked; };
+  P.q('.start').onclick = () => camera(P, opts);
+  P.q('.start').focus();
+  speak('Take a photo of anything square or rectangle. Center it, with all four corners showing. Then press Open camera.', true);
+}
+function camera(P, opts) {
+  P.title('Center your rectangle');
+  P.view.innerHTML = `<video playsinline muted autoplay></video><canvas class="aacap-ov"></canvas>
+    <p class="aacap-head">Center a square or rectangle. Keep all four corners in view.</p>
+    <p class="aacap-tip" aria-live="polite">Starting the camera…</p>`;
+  P.bar.innerHTML = `<label><input type="checkbox" class="auto" checked> Snap when steady</label>
+    <button type="button" class="shoot" aria-label="Take photo now">Take photo</button>
+    <label><input type="checkbox" class="talk" ${talkOn ? 'checked' : ''}> Spoken help</label>`;
+  P.q('.talk').onchange = e => { talkOn = e.target.checked; };
+  const video = P.q('video'), ov = P.q('.aacap-ov'), tip = P.q('.aacap-tip'), view = P.view;
+  let stream = null, raf = 0, quad = null, steady = 0, lastQ = null, lastTip = '', nextBeep = 0, stopped = false, lastDet = 0;
+  const stop = () => { stopped = true; cancelAnimationFrame(raf); if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; };
+  P.cleanup.push(stop);
+  const say = (t, good) => { if (t === lastTip) return; lastTip = t; tip.textContent = t; tip.classList.toggle('good', !!good); speak(t); };
+  P.q('.shoot').onclick = () => snap();
+  P.q('.shoot').focus();
+  prevC = null;
+  const box = () => { const r = view.getBoundingClientRect(), vw = video.videoWidth, vh = video.videoHeight; const s = Math.min(r.width / vw, r.height / vh); const w = vw * s, h = vh * s; return { x: (r.width - w) / 2, y: (r.height - h) / 2, w, h, rw: r.width, rh: r.height }; };
+  function drawOverlay() {
+    const b = box(), dpr = devicePixelRatio || 1; ov.width = b.rw * dpr; ov.height = b.rh * dpr; const c = ov.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, b.rw, b.rh);
+    const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+    // a guide frame in the middle, so people know where to aim
+    const gw = b.w * .72, gh = b.h * .62; c.strokeStyle = 'rgba(242,237,228,.55)'; c.lineWidth = 3; c.setLineDash([]);
+    const L2 = Math.min(gw, gh) * .14; [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([sx, sy]) => { const x = cx + sx * gw / 2, y = cy + sy * gh / 2; c.beginPath(); c.moveTo(x - sx * L2, y); c.lineTo(x, y); c.lineTo(x, y - sy * L2); c.stroke(); });
+    c.lineWidth = 2; c.beginPath(); c.moveTo(cx - 14, cy); c.lineTo(cx + 14, cy); c.moveTo(cx, cy - 14); c.lineTo(cx, cy + 14); c.stroke();
+    if (!quad) return;
+    const Pq = quad.map(([x, y]) => [b.x + x * b.w, b.y + y * b.h]), ok = steady > 0;
+    c.lineWidth = 5; c.strokeStyle = ok ? '#3ddc84' : '#ff7a2a'; c.fillStyle = ok ? 'rgba(61,220,132,.14)' : 'rgba(255,122,42,.1)';
+    c.beginPath(); Pq.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); c.fill(); c.stroke();
+    for (const p of Pq) { c.beginPath(); c.arc(p[0], p[1], 9, 0, Math.PI * 2); c.fillStyle = '#f2ede4'; c.fill(); }
+    if (ok) { c.strokeStyle = '#3ddc84'; c.lineWidth = 6; c.beginPath(); c.arc(cx, cy, 30, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, steady / 1.2)); c.stroke(); }
+  }
+  function guide(dt) {
+    if (!quad) { steady = 0; say('Point at a square or rectangle. Center it, with all four corners in view.'); if (performance.now() > nextBeep) { beep(330, .08, .05); nextBeep = performance.now() + 1100; } return; }
+    const area = quadArea(quad), mx = quad.reduce((s, p) => s + p[0], 0) / 4, my = quad.reduce((s, p) => s + p[1], 0) / 4, off = Math.hypot(mx - .5, my - .5);
+    const move = lastQ ? quad.reduce((s, p, i) => s + dist(p, lastQ[i]), 0) / 4 : 1; lastQ = quad;
+    let t = '', good = false;
+    if (area < .18) t = 'Move closer.';
+    else if (quad.some(p => p[0] < .02 || p[0] > .98 || p[1] < .02 || p[1] > .98) || area > .9) t = 'Step back a little. Keep all four corners in view.';
+    else if (off > .1) { const h = mx < .45 ? 'left' : mx > .55 ? 'right' : '', v = my < .45 ? 'up' : my > .55 ? 'down' : ''; t = 'Move your phone ' + [h, v].filter(Boolean).join(' and ') + ' to center it.'; }
+    else { t = 'Centered. Hold still…'; good = true; }
+    say(t, good);
+    if (good && move < .012) steady += dt; else if (!good) steady = 0; else steady = Math.max(0, steady - dt);
+    if (performance.now() > nextBeep) { const score = clamp(area / .5, 0, 1) * (1 - clamp(off / .3, 0, 1)); beep(440 + score * 660 + steady * 300, .07, .08); nextBeep = performance.now() + (good ? 260 : 700); }
+    if (good && steady >= 1.2 && P.q('.auto') && P.q('.auto').checked) snap();
+  }
+  let last = performance.now();
+  function loop(now) {
+    if (stopped) return; raf = requestAnimationFrame(loop);
+    const dt = Math.min(.1, (now - last) / 1000); last = now;
+    if (video.readyState >= 2 && now - lastDet > 110) { lastDet = now; const r = detect(video, video.videoWidth, video.videoHeight); quad = r ? r.c : null; guide(.11); }
+    drawOverlay();
+  }
+  function snap() {
+    if (!video.videoWidth || stopped) return;
+    beep(1320, .12, .15); setTimeout(() => beep(1760, .18, .12), 90); buzz([40, 30, 60]);
+    const W0 = video.videoWidth, H0 = video.videoHeight, ph = document.createElement('canvas'); ph.width = W0; ph.height = H0; ph.getContext('2d').drawImage(video, 0, 0, W0, H0);
+    const Q = quad ? quad.map(p => p.slice()) : null; stop();
+    cropIn(P, ph, Q, opts, () => camera(P, opts), 'Retake');
+  }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { say('This browser can’t open the camera. Use Upload image instead.'); return; }
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false })
+    .then(s => { if (stopped) { s.getTracks().forEach(t => t.stop()); return; } stream = s; video.srcObject = s; video.play().catch(() => {}); raf = requestAnimationFrame(loop); })
+    .catch(() => say('The camera wasn’t allowed. Use Upload image instead, or allow the camera and try again.'));
+}
+
+/* ── Crop: four corners onto the rectangle, then straighten ── */
+function crop(src, opts) {
+  opts = opts || {};
+  const im = new Image();
+  im.onload = () => {
+    const k = Math.min(1, 2200 / Math.max(im.naturalWidth, im.naturalHeight)), ph = document.createElement('canvas');
+    ph.width = Math.round(im.naturalWidth * k); ph.height = Math.round(im.naturalHeight * k); ph.getContext('2d').drawImage(im, 0, 0, ph.width, ph.height);
+    prevC = null; const r = detect(ph, ph.width, ph.height);
+    const P = panel('Crop your image');
+    cropIn(P, ph, r ? r.c : null, opts, null, null);
+  };
+  im.onerror = () => opts.onDone && opts.onDone(src);
+  im.src = src;
+}
+function cropIn(P, ph, Qin, opts, again, againLabel) {
+  const W0 = ph.width, H0 = ph.height, found = !!Qin;
+  const FULL = () => [[0, 0], [1, 0], [1, 1], [0, 1]];
+  let Q = Qin ? Qin.map(p => p.slice()) : [[.08, .08], [.92, .08], [.92, .92], [.08, .92]];
+  P.title('Crop to your rectangle');
+  P.view.innerHTML = ''; ph.className = 'aacap-ph'; P.view.appendChild(ph);
+  const ov = document.createElement('canvas'); ov.className = 'aacap-ov'; P.view.appendChild(ov);
+  const head = document.createElement('p'); head.className = 'aacap-head';
+  head.innerHTML = '<b>Crop:</b> drag the 4 orange corners onto the corners of your square or rectangle, as close to its edges as you can.'; P.view.appendChild(head);
+  const tip = document.createElement('p'); tip.className = 'aacap-tip good'; tip.setAttribute('aria-live', 'polite');
+  tip.textContent = found ? 'We found the edges. Check the corners, then press Crop and straighten.' : 'Drag each corner onto a corner of your rectangle.'; P.view.appendChild(tip);
+  speak(found ? 'Found the edges. Check the four corners, then press Crop and straighten.' : 'Drag the four corners onto the corners of your rectangle.', true);
+  P.bar.innerHTML = `${again ? `<button type="button" class="again">${againLabel}</button>` : ''}
+    <button type="button" class="find">Find edges for me</button>
+    <button type="button" class="whole">Use without cropping</button>
+    <button type="button" class="go use">Crop and straighten</button>`;
+  const bx = () => { const r = P.view.getBoundingClientRect(), pr = ph.getBoundingClientRect(); return { x: pr.left - r.left, y: pr.top - r.top, w: pr.width, h: pr.height, rw: r.width, rh: r.height }; };
+  let drag = -1, ptr = null;
+  const NAMES = ['Top left', 'Top right', 'Bottom right', 'Bottom left'];
+  function draw() {
+    const b = bx(), dpr = devicePixelRatio || 1; ov.width = b.rw * dpr; ov.height = b.rh * dpr; const c = ov.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const Pq = Q.map(([x, y]) => [b.x + x * b.w, b.y + y * b.h]);
+    // darken everything outside the crop
+    c.fillStyle = 'rgba(0,0,0,.55)'; c.beginPath(); c.rect(0, 0, b.rw, b.rh); c.moveTo(Pq[0][0], Pq[0][1]); for (let i = 3; i >= 1; i--) c.lineTo(Pq[i][0], Pq[i][1]); c.closePath(); c.fill('evenodd');
+    c.strokeStyle = '#3ddc84'; c.lineWidth = 3; c.beginPath(); Pq.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); c.stroke();
+    // thirds inside the crop help line things up
+    c.strokeStyle = 'rgba(242,237,228,.35)'; c.lineWidth = 1;
+    for (const t of [1 / 3, 2 / 3]) { const a = lerp2(Pq[0], Pq[1], t), b2 = lerp2(Pq[3], Pq[2], t), d = lerp2(Pq[0], Pq[3], t), e = lerp2(Pq[1], Pq[2], t); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b2[0], b2[1]); c.moveTo(d[0], d[1]); c.lineTo(e[0], e[1]); c.stroke(); }
+    Pq.forEach((p, i) => { c.beginPath(); c.arc(p[0], p[1], drag === i ? 20 : 15, 0, Math.PI * 2); c.fillStyle = 'rgba(255,122,42,.95)'; c.fill(); c.lineWidth = 3; c.strokeStyle = '#fff'; c.stroke(); });
+    // a magnifier while dragging, placed away from the finger
+    if (drag >= 0) {
+      const p = Pq[drag], R = Math.min(70, b.w * .18), mx = p[0] < b.rw / 2 ? p[0] + R + 30 : p[0] - R - 30, my = clamp(p[1] - R - 30, R + 6, b.rh - R - 6), zoom = 3;
+      c.save(); c.beginPath(); c.arc(mx, my, R, 0, Math.PI * 2); c.clip();
+      const sx = Q[drag][0] * W0, sy = Q[drag][1] * H0, sw = (R * 2 / zoom) * (W0 / b.w), sh = (R * 2 / zoom) * (H0 / b.h);
+      c.fillStyle = '#000'; c.fillRect(mx - R, my - R, R * 2, R * 2); c.drawImage(ph, sx - sw / 2, sy - sh / 2, sw, sh, mx - R, my - R, R * 2, R * 2);
+      c.strokeStyle = '#ff7a2a'; c.lineWidth = 2; c.beginPath(); c.moveTo(mx - R, my); c.lineTo(mx + R, my); c.moveTo(mx, my - R); c.lineTo(mx, my + R); c.stroke(); c.restore();
+      c.beginPath(); c.arc(mx, my, R, 0, Math.PI * 2); c.lineWidth = 4; c.strokeStyle = '#f2ede4'; c.stroke();
+    }
+  }
+  const lerp2 = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  const pt = e => { const r = ov.getBoundingClientRect(), b = bx(); return [clamp((e.clientX - r.left - b.x) / b.w, 0, 1), clamp((e.clientY - r.top - b.y) / b.h, 0, 1)]; };
+  ov.addEventListener('pointerdown', e => { const p = pt(e), b = bx(); let bd = 64; drag = -1; Q.forEach((c2, i) => { const d2 = Math.hypot((c2[0] - p[0]) * b.w, (c2[1] - p[1]) * b.h); if (d2 < bd) { bd = d2; drag = i; } });
+    if (drag >= 0) { ptr = { id: e.pointerId, off: [Q[drag][0] - p[0], Q[drag][1] - p[1]] }; ov.setPointerCapture(e.pointerId); beep(660, .04, .05); draw(); } });
+  ov.addEventListener('pointermove', e => { if (drag < 0 || !ptr || e.pointerId !== ptr.id) return; const p = pt(e); Q[drag] = [clamp(p[0] + ptr.off[0], 0, 1), clamp(p[1] + ptr.off[1], 0, 1)]; draw(); });
+  const up = () => { if (drag >= 0) { beep(880, .05, .06); tip.textContent = NAMES[drag] + ' corner set.'; } drag = -1; ptr = null; draw(); };
+  ov.addEventListener('pointerup', up); ov.addEventListener('pointercancel', up);
+  // keyboard: Tab to a corner and use the arrow keys (Shift for bigger steps)
+  const kb = document.createElement('div'); kb.className = 'aa-sr';
+  NAMES.forEach((n, i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = n + ' crop corner. Arrow keys move it, Shift for bigger steps.';
+    b.onkeydown = e => { const s = e.shiftKey ? .02 : .004, m = { ArrowLeft: [-s, 0], ArrowRight: [s, 0], ArrowUp: [0, -s], ArrowDown: [0, s] }[e.key]; if (!m) return; e.preventDefault(); Q[i] = [clamp(Q[i][0] + m[0], 0, 1), clamp(Q[i][1] + m[1], 0, 1)]; draw(); };
+    b.onfocus = () => { drag = i; draw(); }; b.onblur = () => { drag = -1; draw(); };
+    kb.appendChild(b); });
+  P.bar.prepend(kb);
+  addEventListener('resize', draw); P.cleanup.push(() => removeEventListener('resize', draw));
+  if (ph.complete === false) ph.onload = draw; requestAnimationFrame(draw); setTimeout(draw, 120);
+  const finish = url => { const cb = opts.onDone; P.close(); cb && cb(url); };
+  if (again) P.q('.again').onclick = () => again();
+  P.q('.find').onclick = () => { prevC = null; const r = detect(ph, W0, H0); if (r) { Q = r.c.map(p => p.slice()); tip.textContent = 'Found the edges. Check the corners.'; speak('Found the edges.', true); buzz(30); } else { Q = [[.08, .08], [.92, .08], [.92, .92], [.08, .92]]; tip.textContent = 'Couldn’t find clear edges. Drag the corners yourself.'; speak('Couldn’t find clear edges. Drag the corners yourself.', true); } draw(); };
+  P.q('.whole').onclick = () => { const k = Math.min(1, 1400 / Math.max(W0, H0)), c = document.createElement('canvas'); c.width = Math.round(W0 * k); c.height = Math.round(H0 * k); c.getContext('2d').drawImage(ph, 0, 0, c.width, c.height); finish(c.toDataURL('image/jpeg', .9)); };
+  P.q('.use').onclick = () => { P.q('.use').textContent = 'Straightening…'; setTimeout(() => finish(straighten(ph, W0, H0, Q, 1400)), 30); };
+  P.q('.use').focus();
+}
+
+/* ── record from the microphone ── */
+let micStream = null, active = null;
+const MIME = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m)) || '';
+function recordButton(label, onAudio, cls) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = (cls || 'act') + ' aarec'; b.innerHTML = `<i aria-hidden="true"></i><span>${label}</span>`;
+  const sp = b.querySelector('span'); let rec = null, t0 = 0, tick = 0;
+  b.onclick = async () => {
+    if (rec) { rec.stop(); return; }
+    if (active) active.stop();
+    if (!window.MediaRecorder || !navigator.mediaDevices) { sp.textContent = 'Recording isn’t available here'; return; }
+    try { if (!micStream || !micStream.active) micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
+    catch (e) { sp.textContent = 'Microphone not allowed'; setTimeout(() => { sp.textContent = label; }, 2500); return; }
+    const chunks = []; rec = new MediaRecorder(micStream, MIME ? { mimeType: MIME } : undefined); active = rec; t0 = performance.now();
+    rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = () => { clearInterval(tick); b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); const secs = Math.round((performance.now() - t0) / 1000); rec = null; active = null;
+      const blob = new Blob(chunks, { type: (chunks[0] && chunks[0].type) || MIME || 'audio/webm' });
+      if (blob.size < 800) { sp.textContent = 'Too short. ' + label; return; }
+      const fr = new FileReader(); fr.onload = () => { sp.textContent = `Recorded ${secs} s · record again`; onAudio(fr.result, secs); }; fr.readAsDataURL(blob); };
+    rec.start(); b.classList.add('on'); b.setAttribute('aria-pressed', 'true'); beep(880, .06, .08);
+    tick = setInterval(() => { const s = (performance.now() - t0) / 1000; sp.textContent = `Stop · ${s.toFixed(0)} s`; if (s > 60) rec && rec.stop(); }, 250);
+  };
+  return b;
+}
+
+window.AACapture = { open, crop, recordButton, straighten, detect, homography, tracker, resetTracking: () => { prevC = null; } };
+})();
+</script>
+<script>/* Art Alive Game Maker: art → game → build → look → voice → play. Everything stays in the browser. */
+(function () {
+'use strict';
+const A = window.AAGame, TAU = Math.PI * 2, clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const live = t => { const h = $('#ehelp'); if (h) h.dataset.say = t; };
+
+const SAMPLES = [
+  { src: '../demo/p-tunnel.jpg', title: 'Tunnel of Light', alt: 'A lone traveller in a swirling tunnel of light', about: 'A lone traveller stands in a tunnel of light. Swirls of deep blue and gold spin around him, and the light ahead is warm and bright.' },
+  { src: '../demo/p-cane.jpg', title: 'Into the Light', alt: 'A figure with a white cane walking toward fiery colour', about: 'A figure with a white cane walks into a blaze of orange, red and blue. The paint drips and runs like rain on a window.' },
+  { src: '../demo/p-tree.jpg', title: 'The Glowing Tree', alt: 'A great glowing tree with people gathered beneath it', about: 'A great tree glows from within. Its branches spread across a sky of orange and blue, and a crowd of people stands beneath it.' }
+];
+const TYPES = [
+  { id: 'collect', name: 'Marble Collect', line: 'Roll a marble around your art to collect stars.', icon: '<circle cx="14" cy="30" r="8"/><path d="M33 6l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/>' },
+  { id: 'maze', name: 'Marble Maze', line: 'Roll the marble through a maze to the goal.', icon: '<path d="M4 4h36v10H14v10h26v14H4" fill="none" stroke-width="4"/><circle cx="10" cy="40" r="5"/>' },
+  { id: 'bowl', name: 'Marble Bowling', line: 'Aim, roll and knock down the pins.', icon: '<circle cx="22" cy="38" r="7"/><circle cx="22" cy="8" r="4"/><circle cx="15" cy="16" r="4"/><circle cx="29" cy="16" r="4"/>' },
+  { id: 'treasure', name: 'Hidden Treasures', line: 'Hide treasures. Players follow the beeps to find them.', icon: '<circle cx="19" cy="19" r="11" fill="none" stroke-width="4"/><path d="M27 27l12 12" stroke-width="5"/><path d="M19 13l2 4 4 1-3 3 1 4-4-2-4 2 1-4-3-3 4-1z"/>' },
+  { id: 'puzzle', name: 'Slide Puzzle', line: 'Your art in pieces. Slide them back.', icon: '<rect x="4" y="4" width="17" height="17" rx="3"/><rect x="24" y="4" width="17" height="17" rx="3"/><rect x="4" y="24" width="17" height="17" rx="3"/>' },
+  { id: 'memory', name: 'Memory Match', line: 'Flip cards to find matching details. Each pair has its own note.', icon: '<rect x="3" y="8" width="18" height="28" rx="4"/><rect x="24" y="8" width="18" height="28" rx="4" fill="none" stroke-width="3"/>' }
+];
+const FX = [['breathe', 'Breathe'], ['sparkles', 'Sparkles'], ['glow', 'Glow'], ['embers', 'Embers'], ['rain', 'Rain'], ['snow', 'Snow']];
+const MARBLES = [['eye', 'Eyeball'], ['glass', 'Glass'], ['sun', 'Sun'], ['paint', 'Paint drop']];
+const ITEMS = [['star', 'Stars'], ['heart', 'Hearts'], ['gem', 'Gems'], ['note', 'Music notes']];
+const MARBLE_GAMES = ['collect', 'maze', 'bowl'];
+
+/* ── the game being made ── */
+let G = {
+  v: 1, title: 'Tunnel of Light', artist: '', img: '', type: 'collect',
+  items: [], itemStyle: 'star', start: { x: .5, y: .82 }, walls: [], mStart: { x: .1, y: .9 }, goal: { x: .85, y: .12 }, pins: { x: .5, y: .3, n: 10 }, ball: { x: .5, y: .88 },
+  treasures: [], fog: true, size: 3, pairs: 6, crops: [],
+  marble: 'eye', fx: { breathe: true, sparkles: true, glow: true }, view: 'full', controls: 'joystick', lines: {}
+};
+const edited = {};
+
+/* ── voice lines and their suggested words ── */
+const LINES = [
+  ['welcome', 'Welcome', 'Plays when someone presses Play.'],
+  ['about', 'About your art', 'Plays when they press “Hear about it”. Describe what’s in the picture.'],
+  ['hint', 'Hint', 'Plays when they press Hint.'],
+  ['good', 'Nice one!', 'Plays now and then when they score.'],
+  ['win', 'The win', 'Plays when they finish.']
+];
+function suggestES(key) {
+  const t = G.title || 'mi pintura', by = G.artist ? ' de ' + G.artist : '';
+  const n = { star: 'estrella', heart: 'corazón', gem: 'gema', note: 'nota' }[G.itemStyle] || 'estrella';
+  const intro = {
+    collect: `Rueda la canica por mi pintura y recoge cada ${n}.`, maze: 'Guía la canica por el laberinto hasta la estrella dorada.',
+    bowl: 'Apunta tu canica, pulsa Lanzar y derriba todos los bolos.', treasure: 'Hay tesoros escondidos en mi pintura. Escucha: los pitidos se aceleran cuando te acercas.',
+    puzzle: 'Mi pintura se rompió en pedazos. Desliza las piezas a su lugar.', memory: 'Voltea las cartas y encuentra las parejas. Cada pareja tiene su propia nota, así que puedes emparejarlas de oído.'
+  }[G.type];
+  const hint = {
+    collect: `Escucha los pitidos. Te llevan a la ${n} más cercana. Más rápido significa más cerca.`, maze: 'Sigue los pitidos. Se aceleran cuando te acercas a la meta.',
+    bowl: 'Apunta directo al bolo de adelante y pulsa Lanzar cuando la barra esté casi llena.', treasure: 'Muévete despacio y escucha. Cuando los pitidos corren y el teléfono vibra, estás encima.',
+    puzzle: 'Empieza por la fila de arriba. Pulsa Mirar para ver toda la pintura.', memory: 'Escucha las notas. Dos cartas que cantan la misma nota son pareja.'
+  }[G.type];
+  return { welcome: `¡Bienvenidos a ${t}${by}! ${intro}`, about: `Esta es ${t}${by}. Cuéntales qué están viendo: los colores, las formas y la historia detrás.`,
+    hint, good: '¡Muy bien!', win: `¡Lo lograste! Gracias por jugar con ${t}.` }[key];
+}
+function suggest(key) {
+  if (G.lang === 'es') return suggestES(key);
+  const t = G.title || 'my painting', by = G.artist ? ' by ' + G.artist : '';
+  const n = (A.NOUN[G.itemStyle] || A.NOUN.star)[1];
+  const intro = {
+    collect: `Roll the marble around my painting and collect every ${n.replace(/s$/, '')}.`,
+    maze: 'Guide the marble through the maze to the golden star.',
+    bowl: 'Aim your marble, press Roll, and knock down all the pins.',
+    treasure: 'Treasures are hidden in my painting. Listen closely: the beeps get faster as you get closer.',
+    puzzle: 'My painting has been broken into pieces. Slide them back into place.',
+    memory: 'Flip the cards and find the matching pairs. Every pair plays its own note, so you can match them by ear.'
+  }[G.type];
+  const hint = {
+    collect: `Listen to the beeps. They point you to the nearest ${n.replace(/s$/, '')}. Faster means closer.`,
+    maze: 'Follow the beeps. They get faster as you get closer to the goal.',
+    bowl: 'Aim straight at the front pin, and press Roll when the power bar is nearly full.',
+    treasure: 'Move slowly and listen. When the beeps race and your phone buzzes, you are right on top of it.',
+    puzzle: 'Start with the top row. Press Peek to see the whole painting.',
+    memory: 'Listen for the notes. Two cards that sing the same note are a pair.'
+  }[G.type];
+  return {
+    welcome: `Welcome to ${t}${by}! ${intro}`,
+    about: (SAMPLES.find(s => s.title === G.title) || {}).about || `This is ${t}${by}. Tell your players what they are looking at: the colours, the shapes, and the story behind it.`,
+    hint,
+    good: 'Nice one!',
+    win: `You did it! Thank you for playing with ${t}.`
+  }[key];
+}
+function refreshSuggestions() {
+  for (const [k] of LINES) { G.lines[k] = G.lines[k] || {}; if (!edited[k]) G.lines[k].text = suggest(k); }
+  $$('#lines textarea').forEach(ta => { if (!edited[ta.dataset.k]) ta.value = G.lines[ta.dataset.k].text; });
+}
+
+/* ── the editing picture ── */
+const cv = $('#ecv'), ctx = cv.getContext('2d');
+let W = 900, H = 900, M = 900, art = null, fxr = null, img = null, T = 0, last = performance.now();
+function setImage(src, cb) {
+  const im = new Image();
+  im.onload = () => {
+    // keep games light: the long side at most 1400 pixels
+    const long = Math.max(im.naturalWidth, im.naturalHeight), k = Math.min(1, 1400 / long);
+    const c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+    let url; try { url = c.toDataURL('image/jpeg', .86); } catch (e) { url = src; }
+    G.img = url;
+    const im2 = new Image(); im2.onload = () => { img = im2; [W, H] = A.sizeFor(im2, 900); M = Math.min(W, H); cv.width = W; cv.height = H; $('#ewrap').style.aspectRatio = W + '/' + H; $('#ewrap').style.setProperty('--ar', (W / H).toFixed(4)); art = A.prepArt(im2, W, H); fxr = A.makeFx(W, H); if (G.type === 'maze' && !G.walls.length) autoMaze(); cb && cb(); }; im2.src = url;
+  };
+  im.onerror = () => say('That picture could not be opened. Try a JPG or PNG.');
+  im.src = src;
+}
+const P = p => ({ x: p.x * W, y: p.y * H }), N = p => ({ x: clamp(p.x / W, 0, 1), y: clamp(p.y / H, 0, 1) });
+let sel = -1, drag = null, wallDraft = null, tool = 'add';
+function points() {
+  // everything the creator can grab and move, in this game
+  const t = G.type, out = [];
+  if (t === 'collect') { G.items.forEach((p, i) => out.push({ kind: 'item', i, p })); out.push({ kind: 'start', p: G.start }); }
+  if (t === 'maze') { out.push({ kind: 'start', p: G.mStart }); out.push({ kind: 'goal', p: G.goal }); }
+  if (t === 'bowl') { out.push({ kind: 'pins', p: G.pins }); out.push({ kind: 'start', p: G.ball }); }
+  if (t === 'treasure') G.treasures.forEach((p, i) => out.push({ kind: 'treasure', i, p }));
+  if (t === 'memory') G.crops.slice(0, G.pairs).forEach((p, i) => out.push({ kind: 'crop', i, p }));
+  return out;
+}
+function hitPoint(q) { let best = null, bd = M * .06; for (const o of points()) { const pp = P(o.p), d = Math.hypot(pp.x - q.x, pp.y - q.y); if (d < bd) { bd = d; best = o; } } return best; }
+const toCv = e => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H }; };
+cv.addEventListener('pointerdown', e => {
+  if (!art) return; const q = toCv(e); cv.setPointerCapture(e.pointerId); A.ac();
+  if (G.type === 'maze' && (tool === 'wall' || tool === 'erase')) {
+    if (tool === 'erase') { eraseWall(q); return; }
+    wallDraft = { a: q, b: q }; return;
+  }
+  const h = hitPoint(q);
+  drag = { o: h, q0: q, moved: false };
+  if (h && h.kind === 'treasure') { sel = h.i; renderBuild(); }
+});
+cv.addEventListener('pointermove', e => {
+  const q = toCv(e);
+  if (wallDraft) { wallDraft.b = snap(wallDraft.a, q); return; }
+  if (!drag) return;
+  if (Math.hypot(q.x - drag.q0.x, q.y - drag.q0.y) > 6) drag.moved = true;
+  if (drag.moved && drag.o) { const n = N(q); drag.o.p.x = n.x; drag.o.p.y = n.y; }
+});
+cv.addEventListener('pointerup', e => {
+  const q = toCv(e);
+  if (wallDraft) {
+    const a = N(wallDraft.a), b = N(snap(wallDraft.a, q)); wallDraft = null;
+    if (Math.hypot((a.x - b.x) * W, (a.y - b.y) * H) > M * .04) { G.walls.push([a.x, a.y, b.x, b.y]); A.SFX.slide(); say(`Wall added. ${G.walls.length} walls.`); }
+    return;
+  }
+  if (!drag) return; const d = drag; drag = null;
+  if (d.moved) { if (d.o) { A.SFX.tick(); say(labelOf(d.o) + ' moved.'); if (d.o.kind === 'treasure') renderBuild(); } return; }
+  tapAt(q, d.o);
+});
+function snap(a, b) { // walls snap to straight across, straight down, or diagonal
+  const dx = b.x - a.x, dy = b.y - a.y, ang = Math.atan2(dy, dx), s = Math.round(ang / (Math.PI / 4)) * Math.PI / 4, L = Math.hypot(dx, dy);
+  return { x: a.x + Math.cos(s) * L, y: a.y + Math.sin(s) * L };
+}
+function eraseWall(q) {
+  let bi = -1, bd = M * .05;
+  G.walls.forEach((w, i) => { const x1 = w[0] * W, y1 = w[1] * H, x2 = w[2] * W, y2 = w[3] * H, dx = x2 - x1, dy = y2 - y1, t = clamp(((q.x - x1) * dx + (q.y - y1) * dy) / (dx * dx + dy * dy || 1), 0, 1), d = Math.hypot(q.x - x1 - dx * t, q.y - y1 - dy * t); if (d < bd) { bd = d; bi = i; } });
+  if (bi >= 0) { G.walls.splice(bi, 1); A.SFX.flip(); say('Wall removed.'); }
+}
+function labelOf(o) { return { item: 'Item', start: 'Start', goal: 'Goal', pins: 'Pins', treasure: 'Treasure', crop: 'Card picture' }[o.kind] || 'It'; }
+function tapAt(q, hit) {
+  const n = N(q), t = G.type;
+  if (t === 'collect') {
+    if (tool === 'start') { G.start = n; say('Start moved.'); return; }
+    if (hit && hit.kind === 'item') { G.items.splice(hit.i, 1); A.SFX.flip(); say(`Removed. ${G.items.length} left.`); return; }
+    if (G.items.length >= 24) { say('That’s the most: 24.'); return; }
+    G.items.push(n); A.SFX.collect(G.items.length); fxr.burst(q.x, q.y, '#ffd27a', 12); say(`Added. ${G.items.length} to collect.`);
+  }
+  if (t === 'maze') { if (tool === 'start') { G.mStart = n; say('Start moved.'); } if (tool === 'goal') { G.goal = n; say('Goal moved.'); } }
+  if (t === 'bowl') { if (tool === 'ball') { G.ball = n; say('Ball start moved.'); } else { G.pins.x = n.x; G.pins.y = n.y; say('Pins moved.'); } }
+  if (t === 'treasure') {
+    if (hit && hit.kind === 'treasure') { sel = hit.i; renderBuild(); const el = $(`#tr${sel} input`); if (el) el.focus({ preventScroll: false }); return; }
+    if (G.treasures.length >= 8) { say('That’s the most: 8 treasures.'); return; }
+    G.treasures.push({ x: n.x, y: n.y, name: 'Treasure ' + (G.treasures.length + 1), line: { text: '' } }); sel = G.treasures.length - 1;
+    A.SFX.found(); fxr.burst(q.x, q.y, '#ffd27a', 16); renderBuild(); say(`Treasure ${G.treasures.length} hidden. Give it a name below.`);
+  }
+  if (t === 'memory' && hit && hit.kind === 'crop') { say(`Card picture ${hit.i + 1}. Drag to move it.`); }
+}
+
+/* auto helpers */
+function autoItems(k) {
+  G.items = []; let tries = 0;
+  while (G.items.length < k && tries++ < 500) {
+    const p = { x: .08 + Math.random() * .84, y: .08 + Math.random() * .84 };
+    if (Math.hypot((p.x - G.start.x) * W, (p.y - G.start.y) * H) < M * .15) continue;
+    if (G.items.some(q => Math.hypot((p.x - q.x) * W, (p.y - q.y) * H) < M * .14)) continue;
+    G.items.push(p);
+  }
+}
+function autoMaze() {
+  const asp = W / H, cols = Math.max(3, Math.round(6 * Math.sqrt(asp))), rows = Math.max(3, Math.round(6 / Math.sqrt(asp)));
+  const seen = new Array(cols * rows).fill(false), right = new Array(cols * rows).fill(true), down = new Array(cols * rows).fill(true);
+  const stack = [0]; seen[0] = true;
+  while (stack.length) {
+    const c = stack[stack.length - 1], x = c % cols, y = Math.floor(c / cols), nb = [];
+    if (x > 0 && !seen[c - 1]) nb.push(c - 1); if (x < cols - 1 && !seen[c + 1]) nb.push(c + 1);
+    if (y > 0 && !seen[c - cols]) nb.push(c - cols); if (y < rows - 1 && !seen[c + cols]) nb.push(c + cols);
+    if (!nb.length) { stack.pop(); continue; }
+    const n = nb[Math.floor(Math.random() * nb.length)];
+    if (n === c + 1) right[c] = false; else if (n === c - 1) right[n] = false; else if (n === c + cols) down[c] = false; else down[n] = false;
+    seen[n] = true; stack.push(n);
+  }
+  G.walls = [];
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+    const c = y * cols + x;
+    if (x < cols - 1 && right[c]) G.walls.push([(x + 1) / cols, y / rows, (x + 1) / cols, (y + 1) / rows]);
+    if (y < rows - 1 && down[c]) G.walls.push([x / cols, (y + 1) / rows, (x + 1) / cols, (y + 1) / rows]);
+  }
+  // join straight runs so the maze draws cleanly
+  G.walls = mergeWalls(G.walls);
+  G.mStart = { x: .5 / cols, y: (rows - .5) / rows }; G.goal = { x: (cols - .5) / cols, y: .5 / rows };
+}
+function mergeWalls(ws) {
+  let changed = true;
+  while (changed) {
+    changed = false;
+    outer: for (let i = 0; i < ws.length; i++) for (let j = i + 1; j < ws.length; j++) {
+      const a = ws[i], b = ws[j], e = 1e-6;
+      const hor = Math.abs(a[1] - a[3]) < e && Math.abs(b[1] - b[3]) < e && Math.abs(a[1] - b[1]) < e;
+      const ver = Math.abs(a[0] - a[2]) < e && Math.abs(b[0] - b[2]) < e && Math.abs(a[0] - b[0]) < e;
+      if ((hor || ver) && ((Math.abs(a[2] - b[0]) < e && Math.abs(a[3] - b[1]) < e))) { ws[i] = [a[0], a[1], b[2], b[3]]; ws.splice(j, 1); changed = true; break outer; }
+      if ((hor || ver) && ((Math.abs(b[2] - a[0]) < e && Math.abs(b[3] - a[1]) < e))) { ws[i] = [b[0], b[1], a[2], a[3]]; ws.splice(j, 1); changed = true; break outer; }
+    }
+  }
+  return ws;
+}
+function autoTreasures(k) {
+  const names = ['the light', 'a hidden spark', 'a secret colour', 'the heart of the painting', 'a lost star', 'a whisper'];
+  G.treasures = []; let tries = 0;
+  while (G.treasures.length < k && tries++ < 500) {
+    const p = { x: .1 + Math.random() * .8, y: .1 + Math.random() * .8 };
+    if (G.treasures.some(q => Math.hypot((p.x - q.x) * W, (p.y - q.y) * H) < M * .25)) continue;
+    G.treasures.push({ ...p, name: names[G.treasures.length % names.length], line: { text: '' } });
+  }
+}
+
+/* ── draw the editing picture ── */
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(.05, (now - last) / 1000); last = now; T += dt;
+  if (!art || cur === 'play') return;
+  const k = G.fx.breathe ? 1 + .012 * (1 + Math.sin(T * 1.3)) : 1;
+  const im = G.view === 'blur' && cur === 'look' ? art.blur : G.view === 'contrast' && cur === 'look' ? art.contrast : art.full;
+  ctx.clearRect(0, 0, W, H);
+  ctx.save(); ctx.translate(W / 2, H / 2); ctx.scale(k, k); ctx.drawImage(im, -W / 2, -H / 2, W, H); ctx.restore();
+  fxr.update(dt, G.fx); fxr.glow(ctx, T, G.fx);
+  if (cur !== 'art' && cur !== 'look') { ctx.fillStyle = 'rgba(10,12,16,.25)'; ctx.fillRect(0, 0, W, H); }
+  overlay();
+  fxr.draw(ctx, T);
+}
+function label(x, y, txt, col) {
+  ctx.save(); ctx.font = `800 ${Math.round(M * .03)}px Archivo, Arial Black, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const w = ctx.measureText(txt).width + M * .03, h = M * .045;
+  ctx.fillStyle = 'rgba(10,12,16,.82)'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - w / 2, y - h / 2, w, h, h / 2) : ctx.rect(x - w / 2, y - h / 2, w, h); ctx.fill();
+  ctx.fillStyle = col || '#f2ede4'; ctx.fillText(txt, x, y + 1); ctx.restore();
+}
+function overlay() {
+  const t = G.type;
+  if (t === 'collect') {
+    G.items.forEach(p => { const q = P(p); A.drawItem(ctx, G.itemStyle, q.x, q.y, M * .032, T); });
+    const s = P(G.start); A.drawMarble(ctx, G.marble, s.x, s.y, M * .04, 0, 0, T, { x: 0, y: -.3 }); label(s.x, s.y + M * .075, 'START');
+  }
+  if (t === 'maze') {
+    const lw = M * .018; ctx.save(); ctx.lineCap = 'round';
+    ctx.strokeStyle = 'rgba(10,10,14,.8)'; ctx.lineWidth = lw + 6; ctx.beginPath(); for (const w of G.walls) { ctx.moveTo(w[0] * W, w[1] * H); ctx.lineTo(w[2] * W, w[3] * H); } ctx.stroke();
+    ctx.strokeStyle = '#f2ede4'; ctx.lineWidth = lw; ctx.stroke();
+    if (wallDraft) { ctx.strokeStyle = '#ff7a2a'; ctx.beginPath(); ctx.moveTo(wallDraft.a.x, wallDraft.a.y); ctx.lineTo(wallDraft.b.x, wallDraft.b.y); ctx.stroke(); }
+    ctx.restore();
+    const s = P(G.mStart), g = P(G.goal);
+    A.drawMarble(ctx, G.marble, s.x, s.y, M * .028, 0, 0, T, { x: .3, y: -.3 }); label(s.x, s.y + M * .06, 'START');
+    A.drawItem(ctx, 'star', g.x, g.y, M * .035, T); label(g.x, g.y + M * .07, 'GOAL', '#ffd27a');
+  }
+  if (t === 'bowl') {
+    const c = P(G.pins), sp = M * .075;
+    A.pinRack(G.pins).forEach(o => { const x = c.x + o.dx * sp, y = c.y - o.dy * sp * .9, r = M * .03; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.strokeStyle = '#e8433a'; ctx.lineWidth = r * .25; ctx.beginPath(); ctx.arc(x, y, r * .62, 0, TAU); ctx.stroke(); });
+    label(c.x, c.y + M * .09, 'PINS');
+    const s = P(G.ball); A.drawMarble(ctx, G.marble, s.x, s.y, M * .045, 0, 0, T, { x: 0, y: -.4 }); label(s.x, s.y - M * .085, 'BALL');
+  }
+  if (t === 'treasure') {
+    G.treasures.forEach((p, i) => {
+      const q = P(p), on = i === sel;
+      ctx.save(); ctx.strokeStyle = on ? '#ff7a2a' : '#ffd27a'; ctx.lineWidth = M * (on ? .01 : .006); ctx.setLineDash(on ? [] : [M * .012, M * .01]);
+      ctx.beginPath(); ctx.arc(q.x, q.y, M * .07, 0, TAU); ctx.stroke(); ctx.restore();
+      A.drawItem(ctx, 'gem', q.x, q.y, M * .025, T); label(q.x, q.y + M * .1, String(i + 1), on ? '#ff7a2a' : '#ffd27a');
+    });
+  }
+  if (t === 'puzzle') {
+    const n = G.size; ctx.save(); ctx.strokeStyle = 'rgba(242,237,228,.85)'; ctx.lineWidth = Math.max(2, M * .005);
+    for (let i = 1; i < n; i++) { ctx.beginPath(); ctx.moveTo(i * W / n, 0); ctx.lineTo(i * W / n, H); ctx.moveTo(0, i * H / n); ctx.lineTo(W, i * H / n); ctx.stroke(); }
+    ctx.fillStyle = 'rgba(10,12,16,.8)'; ctx.fillRect((n - 1) * W / n + 3, (n - 1) * H / n + 3, W / n - 6, H / n - 6);
+    label((n - .5) * W / n, (n - .5) * H / n, 'GAP'); ctx.restore();
+  }
+  if (t === 'memory') {
+    const s = M * .3;
+    G.crops.slice(0, G.pairs).forEach((p, i) => {
+      const x = clamp(p.x * W - s / 2, 0, W - s), y = clamp(p.y * H - s / 2, 0, H - s);
+      ctx.save(); ctx.strokeStyle = ['#ff7a2a', '#2aa8e0', '#ffd27a', '#e8433a'][i % 4]; ctx.lineWidth = M * .007; ctx.strokeRect(x, y, s, s); ctx.restore();
+      label(x + s / 2, y + s / 2, String(i + 1));
+    });
+  }
+}
+requestAnimationFrame(frame);
+
+/* ── panels ── */
+let cur = 'art';
+const ORDER = ['art', 'game', 'build', 'look', 'voice', 'play'];
+let game = null;
+function go(step, focus) {
+  cur = step;
+  $$('.gm-panel').forEach(p => p.hidden = p.dataset.step !== step);
+  $$('.gm-steps button').forEach(b => { if (b.dataset.go === step) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+  const playing = step === 'play';
+  $('.gm-body').classList.toggle('playing', playing); $('.gm-body').dataset.step = step;
+  $('#ewrap').hidden = playing; $('#playRoot').hidden = !playing; $('#ehelp').hidden = playing;
+  if (game) { game.destroy(); game = null; }
+  if (playing) { A.stopVoice(); game = A.create($('#playRoot'), G); }
+  if (step === 'build') renderBuild();
+  if (step === 'look') renderLook();
+  if (step === 'voice') renderLines();
+  help();
+  if (focus) { const h = $(`.gm-panel[data-step="${step}"] h2`); h.tabIndex = -1; h.focus({ preventScroll: true }); }
+  const top = $('.gm-steps').getBoundingClientRect().top; if (top < 0 || top > innerHeight * .6) $('.gm-steps').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+$$('.gm-steps button').forEach(b => b.addEventListener('click', () => go(b.dataset.go, true)));
+$$('[data-next]').forEach(b => b.addEventListener('click', () => go(ORDER[ORDER.indexOf(cur) + 1], true)));
+$$('[data-back]').forEach(b => b.addEventListener('click', () => go(ORDER[Math.max(0, ORDER.indexOf(cur) - 1)], true)));
+
+function help() {
+  const t = G.type, h = {
+    art: 'This is your art. Upload your own, or try one of ours.',
+    game: 'Pick a game. The picture shows what you’ve placed so far.',
+    look: 'The effects play in the game, behind the action.',
+    voice: 'Your words play during the game.',
+    build: {
+      collect: tool === 'start' ? 'Tap where the marble starts.' : 'Tap the painting to add a star. Tap a star to remove it. Drag to move one.',
+      maze: { wall: 'Drag across the painting to draw a wall.', erase: 'Tap a wall to remove it.', start: 'Tap where the marble starts, or drag it.', goal: 'Tap where the goal is, or drag it.' }[tool] || 'Draw walls, then set the start and the goal.',
+      bowl: tool === 'ball' ? 'Tap where the ball starts.' : 'Tap where the pins stand.',
+      treasure: 'Tap the painting to hide a treasure. Tap one to choose it, drag to move it.',
+      puzzle: 'The lines show how your painting will be cut. The bottom right piece is the gap.',
+      memory: 'Each square becomes a pair of cards. Drag a square to choose a different detail.'
+    }[t]
+  }[cur];
+  $('#ehelp').textContent = h || '';
+}
+
+/* step 1: art */
+const sampleBox = $('#samples');
+SAMPLES.forEach((s, i) => {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'gm-sample'; b.innerHTML = `<img src="${s.src}" alt=""><span>${s.title}</span>`;
+  b.setAttribute('aria-label', `${s.title}: ${s.alt}`);
+  b.onclick = () => { A.ac(); setImage(s.src, () => { G.title = s.title; G.artist = 'Blind Canvas Project'; $('#tIn').value = G.title; $('#aIn').value = G.artist; fresh(); say(s.title + ' loaded.'); }); };
+  sampleBox.appendChild(b);
+});
+$('#fileIn').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader(); r.onload = () => (window.AACapture ? cb => AACapture.crop(r.result, { onDone: cb }) : cb => cb(r.result))(url => setImage(url, () => { G.title = f.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').slice(0, 60); $('#tIn').value = G.title; fresh(); say('Your picture is in.'); })); r.readAsDataURL(f);
+  e.target.value = '';
+});
+$('#camBtn').onclick = () => { if (!window.AACapture) return; AACapture.open({ onDone: url => setImage(url, () => { G.title = 'My art'; G.artist = ''; $('#tIn').value = G.title; $('#aIn').value = ''; fresh(); say('Your photo is in, straightened and ready.'); }) }); };
+$('#tIn').addEventListener('input', e => { G.title = e.target.value; refreshSuggestions(); });
+$('#aIn').addEventListener('input', e => { G.artist = e.target.value; refreshSuggestions(); });
+function fresh() {
+  // a new picture: place new things on it
+  if (G.type === 'collect' || !G.items.length) autoItems(6);
+  G.start = { x: .5, y: .82 }; G.ball = { x: .5, y: .88 }; G.pins.x = .5; G.pins.y = .3;
+  autoMaze(); autoTreasures(3); G.crops = A.autoCrops(8);
+  sel = -1; refreshSuggestions();
+}
+
+/* step 2: game */
+const typeBox = $('#types');
+TYPES.forEach(t => {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'gm-type'; b.setAttribute('role', 'radio'); b.dataset.t = t.id;
+  b.innerHTML = `<svg viewBox="0 0 44 44" aria-hidden="true" fill="currentColor" stroke="currentColor">${t.icon}</svg><b>${t.name}</b><span>${t.line}</span>`;
+  b.onclick = () => { setType(t.id); A.SFX.note(TYPES.indexOf(t) + 2); say(t.name + ' chosen.'); };
+  typeBox.appendChild(b);
+});
+function setType(id) {
+  G.type = id; tool = { maze: 'wall', bowl: 'pins' }[id] || 'add';
+  if (id === 'maze' && !G.walls.length) autoMaze();
+  $$('.gm-type').forEach(b => { const on = b.dataset.t === id; b.setAttribute('aria-checked', on); });
+  refreshSuggestions(); help();
+}
+
+/* step 3: build */
+function chips(opts, val, on) {
+  const d = document.createElement('div'); d.className = 'gm-chips';
+  opts.forEach(([v, l]) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = l; b.setAttribute('aria-pressed', v === val); b.onclick = () => { d.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', x === b)); on(v); }; d.appendChild(b); });
+  return d;
+}
+function button(txt, fn, cls) { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ' + (cls || 'ghost') + ' small'; b.textContent = txt; b.onclick = fn; return b; }
+function sub(t) { const p = document.createElement('p'); p.className = 'gm-sub'; p.textContent = t; return p; }
+function row(...els) { const d = document.createElement('div'); d.className = 'gm-row'; els.forEach(e => d.appendChild(e)); return d; }
+function renderBuild() {
+  const box = $('#build'); box.innerHTML = '';
+  const t = G.type;
+  const name = TYPES.find(x => x.id === t).name; const p = document.createElement('p'); p.className = 'gm-note'; p.innerHTML = `<b>${name}.</b> ` + ({
+    collect: 'Put the things to collect around your painting.', maze: 'Draw the walls, or let us make a maze for you.', bowl: 'Set where the pins stand and where the ball starts.',
+    treasure: 'Hide treasures in your painting. Each one can say something in your voice when it’s found.', puzzle: 'Choose how many pieces.', memory: 'Choose how many pairs. Each pair shows a detail of your painting.'
+  }[t]); box.appendChild(p);
+  if (t === 'collect') {
+    box.appendChild(sub('Tap mode'));
+    box.appendChild(chips([['add', 'Add or remove'], ['start', 'Move the start']], tool, v => { tool = v; help(); }));
+    box.appendChild(row(button('Scatter 6 for me', () => { autoItems(6); say('6 placed.'); }), button('Scatter 10', () => { autoItems(10); say('10 placed.'); }), button('Clear all', () => { G.items = []; say('Cleared.'); })));
+  }
+  if (t === 'maze') {
+    box.appendChild(sub('Tap mode'));
+    box.appendChild(chips([['wall', 'Draw walls'], ['erase', 'Erase walls'], ['start', 'Start'], ['goal', 'Goal']], tool, v => { tool = v; help(); }));
+    box.appendChild(row(button('Make a maze for me', () => { autoMaze(); A.SFX.start(); say('New maze.'); }, ''), button('Clear walls', () => { G.walls = []; say('Walls cleared.'); })));
+  }
+  if (t === 'bowl') {
+    box.appendChild(sub('Tap mode'));
+    box.appendChild(chips([['pins', 'Move the pins'], ['ball', 'Move the ball']], tool, v => { tool = v; help(); }));
+    box.appendChild(sub('How many pins'));
+    box.appendChild(chips([[3, '3 pins'], [6, '6 pins'], [10, '10 pins']], G.pins.n, v => { G.pins.n = v; }));
+  }
+  if (t === 'treasure') {
+    box.appendChild(row(button('Hide 3 for me', () => { autoTreasures(3); sel = -1; renderBuild(); say('3 hidden.'); }), button('Clear all', () => { G.treasures = []; sel = -1; renderBuild(); })));
+    const fog = document.createElement('label'); fog.className = 'gm-check'; fog.innerHTML = `<input type="checkbox" ${G.fog !== false ? 'checked' : ''}> Cover the painting in mist that clears as players search`;
+    fog.querySelector('input').onchange = e => { G.fog = e.target.checked; }; box.appendChild(fog);
+    if (!G.treasures.length) { const e = document.createElement('p'); e.className = 'gm-note'; e.textContent = 'No treasures yet. Tap the painting to hide one.'; box.appendChild(e); }
+    G.treasures.forEach((tr, i) => {
+      const d = document.createElement('div'); d.className = 'gm-tr' + (i === sel ? ' on' : ''); d.id = 'tr' + i;
+      d.innerHTML = `<div class="gm-trhead"><span class="num">${i + 1}</span><label class="grow">Name<input type="text" maxlength="40" value=""></label><button type="button" class="x" aria-label="Remove treasure ${i + 1}">Remove</button></div>
+        <label>When it’s found, it says<textarea rows="2" placeholder="You found the lighthouse! I painted it for my grandfather."></textarea></label>`;
+      const inp = d.querySelector('input'), ta = d.querySelector('textarea');
+      inp.value = tr.name || ''; ta.value = (tr.line && tr.line.text) || '';
+      inp.oninput = () => { tr.name = inp.value; }; ta.oninput = () => { tr.line = tr.line || {}; tr.line.text = ta.value; };
+      inp.onfocus = ta.onfocus = () => { sel = i; $$('.gm-tr').forEach((x, j) => x.classList.toggle('on', j === i)); };
+      d.querySelector('.x').onclick = () => { G.treasures.splice(i, 1); sel = -1; renderBuild(); say('Treasure removed.'); };
+      tr.line = tr.line || { text: '' };
+      d.appendChild(recorder(tr.line, () => ({ text: ta.value || ('You found ' + (tr.name || 'a treasure') + '!') })));
+      box.appendChild(d);
+    });
+  }
+  if (t === 'puzzle') {
+    box.appendChild(sub('Pieces'));
+    box.appendChild(chips([[3, '3 × 3 · easy'], [4, '4 × 4 · medium'], [5, '5 × 5 · hard']], G.size, v => { G.size = v; }));
+  }
+  if (t === 'memory') {
+    box.appendChild(sub('Pairs'));
+    box.appendChild(chips([[4, '4 pairs'], [6, '6 pairs'], [8, '8 pairs']], G.pairs, v => { G.pairs = v; if (G.crops.length < v) G.crops = A.autoCrops(8); }));
+    box.appendChild(row(button('Pick new details', () => { G.crops = A.autoCrops(8); say('New details.'); })));
+  }
+  help();
+}
+
+/* step 4: look */
+function renderLook() {
+  const fb = $('#fxChips'); fb.innerHTML = '';
+  FX.forEach(([k, l]) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = l; b.setAttribute('aria-pressed', !!G.fx[k]); b.onclick = () => { G.fx[k] = !G.fx[k]; b.setAttribute('aria-pressed', G.fx[k]); say(l + (G.fx[k] ? ' on' : ' off')); }; fb.appendChild(b); });
+  $('#marbleBox').hidden = !MARBLE_GAMES.includes(G.type); $('#itemBox').hidden = G.type !== 'collect';
+  const mb = $('#marbleChips'); mb.replaceWith(Object.assign(chips(MARBLES, G.marble, v => { G.marble = v; }), { id: 'marbleChips' }));
+  const ib = $('#itemChips'); ib.replaceWith(Object.assign(chips(ITEMS, G.itemStyle, v => { G.itemStyle = v; refreshSuggestions(); }), { id: 'itemChips' }));
+  $('#ctrlSel').value = G.controls; $('#viewSel').value = G.view;
+}
+$('#ctrlSel').onchange = e => { G.controls = e.target.value; };
+$('#viewSel').onchange = e => { G.view = e.target.value; };
+
+/* step 5: voice */
+function renderLines() {
+  const ls = $('#langSel'); if (ls) { ls.value = G.lang || 'en'; ls.onchange = () => { G.lang = ls.value; renderLines(); say(ls.value === 'es' ? 'Español. Los botones del juego y la voz estarán en español.' : 'English.'); }; }
+  refreshSuggestions();
+  const box = $('#lines'); box.innerHTML = '';
+  LINES.forEach(([k, l, h]) => {
+    const line = G.lines[k];
+    const d = document.createElement('div'); d.className = 'gm-line';
+    d.innerHTML = `<label><b>${l}</b><small>${h}</small><textarea rows="${k === 'about' ? 4 : 3}" data-k="${k}"></textarea></label>`;
+    const ta = d.querySelector('textarea'); ta.value = line.text || '';
+    ta.oninput = () => { edited[k] = true; line.text = ta.value; };
+    d.appendChild(recorder(line, () => line));
+    box.appendChild(d);
+  });
+}
+
+/* recording */
+let stream = null, rec = null, recFor = null;
+const MIME = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m)) || '';
+function recorder(line, speakable) {
+  const d = document.createElement('div'); d.className = 'gm-rec';
+  d.innerHTML = `<button type="button" class="rec"><i aria-hidden="true"></i><span>Record</span></button><button type="button" class="hear">Hear it</button><label class="up">Upload audio<input type="file" accept="audio/*"></label><button type="button" class="del" hidden>Delete recording</button><span class="st"></span><span class="lvl" aria-hidden="true"><b></b></span>`;
+  const rb = d.querySelector('.rec'), hb = d.querySelector('.hear'), db = d.querySelector('.del'), st = d.querySelector('.st'), lv = d.querySelector('.lvl b');
+  const show = () => { db.hidden = !line.audio; st.textContent = line.audio ? (line.secs ? `Your voice · ${line.secs} s` : 'Your audio file') : 'Computer voice'; d.classList.toggle('has', !!line.audio); };
+  show();
+  d.querySelector('.up input').onchange = e => { const f = e.target.files[0]; if (!f) return; const fr = new FileReader(); fr.onload = () => { line.audio = fr.result; line.secs = ''; show(); say('Audio file added.'); }; fr.readAsDataURL(f); e.target.value = ''; };
+  hb.onclick = () => { A.ac(); if (!A.sayLine(line.audio ? line : speakable())) say('Nothing to say yet.'); };
+  db.onclick = () => { delete line.audio; delete line.secs; show(); say('Recording deleted.'); };
+  rb.onclick = async () => {
+    if (rec && recFor === d) { rec.stop(); return; }
+    if (rec) rec.stop();
+    if (!window.MediaRecorder || !navigator.mediaDevices) { say('Recording isn’t available in this browser. Your words will be read by the computer voice.'); return; }
+    try { if (!stream) stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
+    catch (e) { say('The microphone wasn’t allowed. Your words will be read by the computer voice instead.'); return; }
+    A.stopVoice();
+    const chunks = []; rec = new MediaRecorder(stream, MIME ? { mimeType: MIME } : undefined); recFor = d;
+    const t0 = performance.now(); let an = null, raf2 = 0;
+    try { const a = A.ac(); const srcN = a.createMediaStreamSource(stream); an = a.createAnalyser(); an.fftSize = 512; srcN.connect(an); } catch (e) {}
+    const buf = new Uint8Array(512);
+    const meter = () => { raf2 = requestAnimationFrame(meter); const s = (performance.now() - t0) / 1000; st.textContent = `Recording… ${s.toFixed(0)} s (press Stop)`; if (an) { an.getByteTimeDomainData(buf); let m = 0; for (const v of buf) m = Math.max(m, Math.abs(v - 128)); lv.style.width = Math.min(100, m / 1.1) + '%'; } if (s > 30) rec && rec.stop(); };
+    rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = () => {
+      cancelAnimationFrame(raf2); lv.style.width = '0'; d.classList.remove('on'); rb.querySelector('span').textContent = 'Record again';
+      const secs = Math.round((performance.now() - t0) / 1000); rec = null; recFor = null;
+      const blob = new Blob(chunks, { type: (chunks[0] && chunks[0].type) || MIME || 'audio/webm' });
+      if (blob.size < 800) { say('That was too short. Try again.'); show(); return; }
+      const fr = new FileReader(); fr.onload = () => { line.audio = fr.result; line.secs = secs; show(); say('Saved. Press Hear it to listen.'); }; fr.readAsDataURL(blob);
+    };
+    rec.start(); d.classList.add('on'); rb.querySelector('span').textContent = 'Stop'; A.SFX.tick(); meter();
+  };
+  if (line.audio) rb.querySelector('span').textContent = 'Record again';
+  return d;
+}
+
+/* step 6: save */
+let DL = null;
+try { if (window.claude && typeof claude.use === 'function') claude.use('downloads').then(d => { DL = d; }, () => {}); } catch (e) {}
+function offerSave(blob, name) {
+  const msg = $('#saveMsg');
+  const done = t => { msg.textContent = t; say(t); };
+  if (DL) { DL.save({ filename: name, data: blob }).then(() => done('Saved ' + name), e => { if (!(e && e.code === 'declined')) done('Saving didn’t work. Try again.'); }); return; }
+  try { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000); done('Saved ' + name + ' to your downloads.'); }
+  catch (e) { done('Saving didn’t work in this browser.'); }
+}
+const slug = s => (s || 'my-game').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'my-game';
+const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function gameHTML() {
+  const cap = ($('#aa-capture') || {}).textContent || '';
+  const eng = $('#aa-engine').textContent, css = $('#aa-pcss').textContent, data = JSON.stringify(G).replace(/</g, '\\u003c');
+  const t = esc(G.title || 'My game'), by = G.artist ? `<p class="by">${G.lang === 'es' ? 'de' : 'by'} ${esc(G.artist)}</p>` : '';
+  return `<!doctype html>
+<html lang="${G.lang || 'en'}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>${t} · ${G.lang === 'es' ? 'un juego de Art Alive' : 'an Art Alive game'}</title>
+<meta name="theme-color" content="#15191f">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+html,body{margin:0;background:#15191f;color:#f2ede4;font:18px/1.5 'Atkinson Hyperlegible',Verdana,Arial,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 40px}
+.k{margin:0;font:800 13px/1 'Archivo',Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#f5a623}
+h1{margin:8px 0 2px;font:900 clamp(30px,7vw,52px)/1 'Archivo','Arial Black',Arial,sans-serif;font-stretch:118%;text-transform:uppercase;letter-spacing:-.01em}
+.by{margin:0 0 18px;color:#a7adb6}
+.made{margin-top:28px;text-align:center;font-size:15px;color:#a7adb6}.made a{color:#f2ede4}
+${css}
+</style>
+</head>
+<body>
+<main>
+<p class="k">${G.lang === 'es' ? 'Un juego de Art Alive' : 'An Art Alive game'}</p>
+<h1>${t}</h1>
+${by}
+<div id="game"></div>
+<p class="made">Made with <a href="https://artalivestudio.com/">Art Alive</a> · Blind Canvas Project</p>
+</main>
+<script>${cap}<\/script>
+<script>${eng}<\/script>
+<script>AAGame.create(document.getElementById('game'), ${data});<\/script>
+</body>
+</html>`;
+}
+$('#dlGame').onclick = () => offerSave(new Blob([gameHTML()], { type: 'text/html' }), slug(G.title) + '-game.html');
+$('#dlProj').onclick = () => offerSave(new Blob([JSON.stringify(G)], { type: 'application/json' }), slug(G.title) + '.artalive.json');
+$('#projIn').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return; e.target.value = '';
+  const r = new FileReader(); r.onload = () => {
+    try { const d = JSON.parse(r.result); if (!d.img || !d.type) throw 0; G = Object.assign(G, d); Object.keys(edited).forEach(k => delete edited[k]); LINES.forEach(([k]) => { edited[k] = true; });
+      setImage(G.img, () => { $('#tIn').value = G.title || ''; $('#aIn').value = G.artist || ''; setType(G.type); go('play', true); $('#saveMsg').textContent = 'Opened ' + (G.title || 'your game') + '.'; }); }
+    catch (er) { $('#saveMsg').textContent = 'That file isn’t an Art Alive game.'; }
+  }; r.readAsText(f);
+});
+
+/* screen reader messages */
+const srBox = document.createElement('p'); srBox.className = 'sr'; srBox.setAttribute('aria-live', 'polite'); document.body.appendChild(srBox);
+function say(t) { srBox.textContent = ''; setTimeout(() => { srBox.textContent = t; }, 40); }
+
+/* start: the tunnel painting with six stars, ready to play */
+setImage(SAMPLES[0].src, () => { G.title = SAMPLES[0].title; G.artist = 'Blind Canvas Project'; $('#tIn').value = G.title; $('#aIn').value = G.artist; fresh(); setType('collect'); go('art'); });
+window.AAMaker = { get G() { return G; }, go, setType, gameHTML };
+})();
+</script>
+</body>
+</html>
