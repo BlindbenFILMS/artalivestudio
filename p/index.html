@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Art Alive</title>
+<meta name="description" content="Point your phone at the picture and watch it come alive. No app to download.">
+<meta name="theme-color" content="#15191f">
+<meta property="og:title" content="Art Alive"><meta property="og:description" content="Point your phone at the picture and watch it come alive. No app to download.">
+<meta property="og:image" content="https://artalivestudio.com/share-card.jpg?v=2"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="../favicon.png"><link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="../games/player.css">
+<style>
+[hidden]{display:none!important}
+html,body{touch-action:manipulation}
+html,body{margin:0;background:#15191f;color:#f2ede4;font:18px/1.5 'Atkinson Hyperlegible',Verdana,Arial,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 40px}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:14px;text-decoration:none}.top img{height:44px;width:auto}
+.k{margin:0;font:800 13px/1 'Archivo',Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#f5a623}
+h1{margin:8px 0 2px;font:900 clamp(30px,7vw,52px)/1 'Archivo','Arial Black',Arial,sans-serif;font-stretch:118%;text-transform:uppercase;letter-spacing:-.01em;overflow-wrap:anywhere}
+.by{margin:0 0 18px;color:#a7adb6}
+.msg{padding:22px;border-radius:18px;background:#1d222a;border:1px solid #2c333d;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.msg p{margin:0;color:#c9ced6}
+.msg a,.made a{color:#f2ede4}
+.btn{display:inline-flex;align-items:center;min-height:50px;padding:0 22px;border-radius:999px;background:#ff7a2a;color:#14100c!important;text-decoration:none;font:800 15px/1 'Archivo',Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.made{margin-top:28px;text-align:center;font-size:15px;color:#a7adb6}
+.coll{display:flex;flex-direction:column;gap:14px}.coll .go{min-height:64px;font-size:18px;justify-content:center}
+.pieces{list-style:none;margin:0;padding:0;display:grid;gap:8px}.pieces a{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border-radius:14px;background:#1d222a;border:1px solid #2c333d;color:#f2ede4;text-decoration:none;font-weight:700}
+.pieces small{display:block;color:#a7adb6;font-weight:400}
+.cam{position:fixed;inset:0;z-index:50;background:#000;display:flex;align-items:center;justify-content:center}
+.cam .box{position:relative}.cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.cam canvas{position:absolute;inset:0;width:100%;height:100%}
+.cam .tip{position:fixed;left:50%;top:max(16px,env(safe-area-inset-top));transform:translateX(-50%);margin:0;padding:10px 16px;border-radius:999px;background:rgba(0,0,0,.75);color:#fff;font-weight:700;max-width:calc(100% - 32px);text-align:center}
+.cam .found{position:fixed;left:16px;right:16px;bottom:max(84px,calc(env(safe-area-inset-bottom) + 84px));margin:0 auto;max-width:440px;padding:18px;border-radius:20px;background:#1d222a;border:2px solid #7be08f;display:flex;flex-direction:column;gap:10px;text-align:center}
+.cam .found .btn2{background:transparent;color:#f2ede4!important;border:2px solid #2c333d;cursor:pointer}.cam .found b{font:900 24px/1.1 'Archivo','Arial Black',Arial,sans-serif;text-transform:uppercase}.cam .found .btn{justify-content:center;min-height:60px;font-size:18px}
+.cam .bar{position:fixed;left:16px;right:16px;bottom:max(16px,env(safe-area-inset-bottom));display:flex;justify-content:center}
+.cam .bar button{min-height:54px;min-width:200px;border-radius:999px;border:0;background:rgba(0,0,0,.75);color:#fff;font:800 15px/1 'Archivo',Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.spin{width:38px;height:38px;border-radius:50%;border:4px solid #2c333d;border-top-color:#ff7a2a;animation:s 1s linear infinite}@keyframes s{to{transform:rotate(1turn)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+</style>
+</head>
+<body>
+<main id="main">
+  <a class="top" href="../" aria-label="Art Alive home"><img src="../art-alive-mark.png" alt=""><span class="k">Art Alive</span></a>
+  <h1 id="t">Loading…</h1>
+  <p class="by" id="by"></p>
+  <div class="msg" id="wait"><div class="spin" aria-hidden="true"></div><p role="status">Getting it ready…</p></div>
+  <div id="game"></div>
+  <div class="coll" id="coll" hidden></div>
+  <div class="msg" id="msg" hidden></div>
+  <p class="made">Made with <a href="../">Art Alive</a> · <a href="../studio/index.html">Make your own</a></p>
+</main>
+<script src="../site-config.js"></script>
+<script src="../capture.js"></script>
+<script src="../games/engine.js"></script>
+<script src="../account.js"></script>
+<script>
+(async function () {
+  const $ = id => document.getElementById(id), code = (new URLSearchParams(location.search).get('c') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  function fail(h, t) { $('wait').hidden = true; $('t').textContent = h; $('msg').innerHTML = '<p>' + t + '</p><a class="btn" href="../">See what Art Alive does</a>'; $('msg').hidden = false; document.title = h + ' · Art Alive'; }
+  const qs = new URLSearchParams(location.search), kcode = (qs.get('k') || '').toLowerCase().replace(/[^a-z0-9]/g, ''), cam = qs.get('cam') === '1';
+  if (!window.AAAccount || !AAAccount.configured) return fail('Not ready yet', 'Art Alive is being set up. Please try again soon.');
+  if (kcode) return collection(kcode);
+  if (!code) return fail('Nothing to show here', 'This link is missing its code. Try scanning the QR code again.');
+  try {
+    const p = await AAAccount.published(code);
+    if (!p) return fail('Not available', 'This piece isn’t published right now. It may have been taken down by its creator.');
+    if (p.kind === 'studio') { location.replace('../studio/index.html?play=' + encodeURIComponent(code) + (cam ? '&cam=1' : '')); return; }
+    await AAAccount.fillMedia(p.data); AAAccount.countView(code);
+    const d = p.data, es = d.lang === 'es'; document.documentElement.lang = d.lang || 'en';
+    $('t').textContent = p.title; document.title = p.title + (es ? ' · un juego de Art Alive' : ' · an Art Alive game');
+    $('by').textContent = d.artist ? (es ? 'de ' : 'by ') + d.artist : ''; $('wait').hidden = true;
+    AAGame.create($('game'), Object.assign(d, { title: p.title }));
+    if (cam) setTimeout(() => { const b = document.querySelector('.aag-arbtn'); if (b && !b.hidden) b.click(); }, 600);   // came from a collection: go straight to the camera
+  } catch (e) { fail('Couldn’t load it', 'Check your connection and try again. (' + (e && e.message ? e.message.replace(/</g, '&lt;') : 'error') + ')'); }
+
+  /* a collection: one QR code, up to 50 pieces; the camera works out which picture you're looking at */
+  async function collection(kc) {
+    let col; try { col = await AAAccount.publishedCollection(kc); } catch (e) { return fail('Couldn’t load it', 'Check your connection and try again.'); }
+    if (!col) return fail('Not available', 'This collection isn’t published right now.');
+    const items = (col.items || []).filter(i => i.code), esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    // animations play by themselves in the camera, so collections with any animations open there (the list is one tap away)
+    const auto = '../studio/index.html?k=' + kc, hasAnim = items.some(it => it.kind === 'studio');
+    if (hasAnim && !qs.has('list')) { location.replace(auto); return; }
+    document.title = col.title + ' · Art Alive'; $('t').textContent = col.title; $('by').textContent = items.length + (items.length === 1 ? ' piece' : ' pieces') + ' · point your phone at any of them'; $('wait').hidden = true;
+    const link = it => '?c=' + it.code + '&cam=1';
+    $('coll').innerHTML = '<button type="button" class="btn go" id="camGo">Point at a picture</button><h2 style="margin:6px 0 0;font:900 22px/1 Archivo,Arial,sans-serif;text-transform:uppercase">Or choose one</h2><ul class="pieces">' +
+      items.map(it => '<li><a href="?c=' + it.code + '">' + esc(it.title) + '<small>' + (it.kind === 'game' ? 'Game' : 'Animation') + '</small></a></li>').join('') + '</ul>';
+    $('coll').hidden = false;
+    const known = items.filter(it => it.fp).map(it => ({ it, f: AAAccount.FP.decode(it.fp) }));
+    $('camGo').onclick = () => {
+      if (hasAnim) { location.href = auto; return; }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.AACapture) { alertMsg('This browser can’t use the camera here. Choose a piece from the list instead.'); return; }
+      const ov = document.createElement('div'); ov.className = 'cam'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Camera');
+      ov.innerHTML = '<div class="box"><video playsinline muted autoplay></video><canvas aria-hidden="true"></canvas></div><p class="tip" aria-live="polite">Point at any picture in ' + esc(col.title) + '. Keep all four corners in view.</p><div class="found" hidden></div><div class="bar"><button type="button">Back</button></div>';
+      document.body.appendChild(ov); document.body.style.overflow = 'hidden';
+      const vid = ov.querySelector('video'), box = ov.querySelector('.box'), cv = ov.querySelector('canvas'), tip = ov.querySelector('.tip'), found = ov.querySelector('.found');
+      let st = null, run = true, trk = null, last = 0, streak = { code: '', n: 0 }; const gc = document.createElement('canvas'), gx = gc.getContext('2d', { willReadFrequently: true });
+      const close = () => { run = false; if (st) st.getTracks().forEach(t => t.stop()); ov.remove(); document.body.style.overflow = ''; $('camGo').focus(); };
+      ov.querySelector('.bar button').onclick = close;
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false }).then(s => { st = s; vid.srcObject = s; vid.play().catch(() => {}); if (AACapture.resetTracking) AACapture.resetTracking(); requestAnimationFrame(tick); })
+        .catch(() => { close(); alertMsg('The camera wasn’t allowed. Choose a piece from the list instead.'); });
+      function tick(now) {
+        if (!run) return; requestAnimationFrame(tick); const vw = vid.videoWidth, vh = vid.videoHeight; if (!vw) return;
+        const s = Math.min(innerWidth / vw, innerHeight / vh), bw = Math.round(vw * s), bh = Math.round(vh * s); box.style.width = bw + 'px'; box.style.height = bh + 'px';
+        if (cv.width !== bw) { cv.width = bw; cv.height = bh; } const g = cv.getContext('2d'); g.clearRect(0, 0, bw, bh);
+        if (!trk && AACapture.tracker) trk = AACapture.tracker(); const r = trk ? trk.update(vid, vw, vh) : AACapture.detect(vid, vw, vh);
+        if (!r) return; g.strokeStyle = found.hidden ? '#ffd23f' : '#7be08f'; g.lineWidth = 4; g.beginPath(); r.c.forEach(([x, y], i) => i ? g.lineTo(x * bw, y * bh) : g.moveTo(x * bw, y * bh)); g.closePath(); g.stroke();
+        if (!found.hidden || now - last < 250 || !known.length) return; last = now;
+        // which piece is it? compare the inside of the shape with each piece's fingerprint, in all four turns
+        const GW = 480, GH = Math.round(480 * vh / vw); if (gc.width !== GW) { gc.width = GW; gc.height = GH; } gx.drawImage(vid, 0, 0, GW, GH);
+        const d = gx.getImageData(0, 0, GW, GH).data, f = AAAccount.FP.fromQuad(d, GW, GH, r.c.map(([x, y]) => [x * GW, y * GH]));
+        const qa = (Math.hypot(r.c[1][0] - r.c[0][0], (r.c[1][1] - r.c[0][1]) * vh / vw) + Math.hypot(r.c[2][0] - r.c[3][0], (r.c[2][1] - r.c[3][1]) * vh / vw)) / (Math.hypot((r.c[3][0] - r.c[0][0]), (r.c[3][1] - r.c[0][1]) * vh / vw) + Math.hypot((r.c[2][0] - r.c[1][0]), (r.c[2][1] - r.c[1][1]) * vh / vw) || 1);
+        let best = null, second = -1;
+        for (const k of known) { let sc = AAAccount.FP.score(f, k.f); const ratio = Math.max(qa, k.it.aspect || 1) / Math.min(qa, k.it.aspect || 1); if (ratio > 1.45) sc -= .12;
+          if (!best || sc > best.sc) { if (best) second = Math.max(second, best.sc); best = { it: k.it, sc }; } else second = Math.max(second, sc); }
+        window.__aaScores = (window.__aaScores || []).concat([known.map(k => k.it.title.slice(0, 8) + ':' + AAAccount.FP.score(f, k.f).toFixed(2)).join(' ')]).slice(-4);
+        if (best && best.sc > .6 && best.sc - second > .1) { streak = streak.code === best.it.code ? { code: best.it.code, n: streak.n + 1 } : { code: best.it.code, n: 1 }; } else streak = { code: '', n: 0 };
+        if (streak.n >= 2) { const it = best.it; found.hidden = false; tip.textContent = 'Found it!'; try { navigator.vibrate && navigator.vibrate([30, 30, 60]); } catch (e) {}
+          found.innerHTML = '<span>Found</span><b>' + esc(it.title) + '</b><a class="btn" href="' + link(it) + '">Play it</a><button type="button" class="btn btn2">Keep looking</button>';
+          found.querySelector('button').onclick = () => { found.hidden = true; streak = { code: '', n: 0 }; tip.textContent = 'Point at any picture in ' + col.title + '.'; };
+          found.querySelector('a').focus(); window.__aaFound = it.code; }
+      }
+    };
+    function alertMsg(t) { let m = document.getElementById('collMsg'); if (!m) { m = document.createElement('p'); m.id = 'collMsg'; m.setAttribute('role', 'alert'); $('coll').prepend(m); } m.textContent = t; }
+  }
+})();
+</script>
+</body>
+</html>

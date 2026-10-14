@@ -221,7 +221,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
     <section class="stagecol" aria-label="Painting">
       <div class="modes" role="group" aria-label="Mode">
         <button class="act" id="modeEdit" type="button" aria-pressed="true">Edit</button>
-        <button class="act" id="modeTry" type="button" aria-pressed="false">Try as a visitor</button>
+        <button class="act" id="modeTry" type="button" aria-pressed="false">See it</button>
       </div>
       <div class="stage" id="stage" tabindex="0" role="application" aria-roledescription="painting"
         aria-label="Painting. Arrow keys move a cursor and say the colour under it. In Edit mode, Enter applies the current tool there, and Shift with an arrow paints Flow in that direction. In Try mode, Enter taps.">
@@ -242,19 +242,19 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
         <button class="act" id="redo" type="button" disabled>Redo</button>
         <button class="act primary" id="play" type="button" aria-pressed="true">Pause</button>
         <button class="act toggle" id="compare" type="button" aria-pressed="false">Compare</button>
-        <button class="act" id="recBtn" type="button" aria-pressed="false">Record</button>
+        <button class="act" id="recBtn" type="button" aria-pressed="false" title="Optional: record a short video of your animation to post or send. You don’t need this for Art Alive to play it." aria-label="Record a video to share (optional)">Record video</button>
       </div>
       <div class="recbox hide" id="recBox">
         <span class="label">Your recorded loop</span>
         <video id="recVideo" controls loop playsinline></video>
-        <p class="hint">The finished animation with its sound, as one video. In the creator portal it would be saved and placed on the painting in the AR viewer.</p>
+        <p class="hint">The finished animation with its sound, as one video to post or send. You don’t need this for Art Alive: to put it on the real picture, press Publish.</p>
       </div>
     </section>
 
     <div class="rail">
       <div class="seg" role="group" aria-label="Studio size">
-        <button id="simpleBtn" type="button" aria-pressed="true">Simple</button>
-        <button id="advBtn" type="button" aria-pressed="false">Full studio</button>
+        <button id="simpleBtn" type="button" aria-pressed="false">Lite version</button>
+        <button id="advBtn" type="button" aria-pressed="true">Full studio</button>
       </div>
 
       <div class="group" id="pickGroup">
@@ -501,7 +501,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
           <div class="group">
             <div class="ghead"><span class="label">Try it in AR</span><span class="tag">preview</span></div>
             <button class="act blue" id="arBtn" type="button">Preview on a gallery wall</button>
-            <p class="hint">See it the way a visitor will: a phone pointed at the painting on the wall, and the painting comes alive on the screen. Putting it on the real painting comes with the creator portal.</p>
+            <p class="hint">See it the way a visitor will: a phone pointed at the painting on the wall, and the painting comes alive on the screen. To put it on the real painting, press Publish and scan your QR code.</p>
             <div class="qrrow" id="qrRow"><div id="qr" role="img" aria-label="QR code for the Blind Canvas AR gallery"></div><p class="hint">Scan with your phone to open the live Blind Canvas AR gallery now.</p></div>
           </div>
         </div>
@@ -520,7 +520,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
     </div>
   </div>
 
-  <p class="note"><b>Art Alive Creator Studio, preview:</b> our own animator, running free in the browser with nothing uploaded anywhere. Recipes get first-time artists moving in one tap; the full studio adds Magic select, path movers, emitters, a moving light, scenes, narration, a tactile version to feel, social exports and a gallery preview. In the creator portal it would save the result onto the painting in the AR viewer.</p>
+  <p class="note"><b>Art Alive Creator Studio, preview:</b> our own animator, running free in the browser with nothing uploaded anywhere. Recipes get first-time artists moving in one tap; the full studio adds Magic select, path movers, emitters, a moving light, scenes, narration, a tactile version to feel, social exports and a gallery preview. Press Save to my account to keep it, and Publish to put it on the real painting with a QR code.</p>
   <div class="armodal hide" id="arModal" role="dialog" aria-modal="true" aria-label="Gallery preview">
     <canvas id="arCv" aria-hidden="true"></canvas>
     <p class="arcap" id="arCap" aria-live="polite"></p>
@@ -1391,14 +1391,14 @@ function drawPreviews(t) {
 /* ── modes, tabs, simple / full studio ── */
 function setMode(md) { mode = md; $('modeEdit').setAttribute('aria-pressed', md === 'edit'); $('modeTry').setAttribute('aria-pressed', md === 'try');
   if (md === 'edit') { lensAt = null; silence(); lookTarget = [0, 0]; } else hover = null;
-  $('capState').textContent = md === 'try' ? 'Tap, drag or explore with the arrow keys' : 'Editing'; live(md === 'try' ? 'Try as a visitor: tap and drag to explore' : 'Edit mode'); }
+  $('capState').textContent = md === 'try' ? 'Tap, drag or explore with the arrow keys' : 'Editing'; live(md === 'try' ? 'See it: tap and drag to explore, just like a visitor' : 'Edit mode'); }
 $('modeEdit').onclick = () => setMode('edit'); $('modeTry').onclick = () => setMode('try');
 const TABS = ['layers', 'paint', 'scene', 'sound', 'story', 'access', 'export'];
 function showTab(id) { for (const t of TABS) { const on = t === id; $('tab-' + t).setAttribute('aria-selected', on); $('tab-' + t).tabIndex = on ? 0 : -1; $('p-' + t).classList.toggle('hide', !on); } }
 TABS.forEach((t, i) => { $('tab-' + t).onclick = () => showTab(t);
   $('tab-' + t).onkeydown = e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const n = TABS[(i + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length]; showTab(n); $('tab-' + n).focus(); } }; });
 function setStudio(adv) { $('simpleBtn').setAttribute('aria-pressed', !adv); $('advBtn').setAttribute('aria-pressed', adv);
-  $('simple').classList.toggle('hide', adv); $('advanced').classList.toggle('hide', !adv); store.set('lps-adv', adv ? '1' : '0'); live(adv ? 'Full studio' : 'Simple: recipes'); }
+  $('simple').classList.toggle('hide', adv); $('advanced').classList.toggle('hide', !adv); store.set('lps-adv', adv ? '1' : '0'); live(adv ? 'Full studio' : 'Lite version: one-tap recipes'); }
 $('simpleBtn').onclick = () => setStudio(false); $('advBtn').onclick = () => setStudio(true); $('toAdv').onclick = () => { setStudio(true); showTab('paint'); };
 
 /* transport */
@@ -1568,16 +1568,17 @@ $('loadProj').onclick = () => { try { const pr = JSON.parse($('projText').value)
 
 /* ── first-time tour ── */
 const TOUR = [
-  ['pickGroup', 'Step 1 of 4', 'Pick a painting, Upload image, or Take a photo of your art on the wall.'],
-  ['recipeGroup', 'Step 2 of 4', 'Choose a recipe. One tap sets up motion, light, weather and sound to fit the painting.'],
-  ['stage', 'Step 3 of 4', 'Open the full studio to brush your own motion onto the painting. The dashed circle shows your brush. Undo is under the painting.'],
-  ['modeTry', 'Step 4 of 4', 'Then try it as a visitor: tap, drag a finger to hear the colours, and listen.'],
+  ['pickGroup', 'Step 1 of 5', 'Pick a painting, Upload image, or Take a photo of your art on the wall.'],
+  ['recipeGroup', 'Step 2 of 5', 'In a hurry? The Lite version has one-tap recipes that set up motion, light, weather and sound to fit the painting.'],
+  ['stage', 'Step 3 of 5', 'The full studio lets you brush your own motion onto the painting. The dashed circle shows your brush. Undo is under the painting.'],
+  ['modeTry', 'Step 4 of 5', 'Press See it: tap, drag a finger to hear the colours, and listen, just like a visitor.'],
+  ['aaSave', 'Step 5 of 5', 'Press Save to my account to keep it. Press Publish for a link and QR code: visitors scan it and point their phone at your picture. Put up to 50 pieces behind one QR code with a collection in My projects.'],
 ];
 let tourEl = null, ringEl = null, tourI = 0;
 function tour(i) {
   endTour(); if (i >= TOUR.length) { store.set('lps-toured', '1'); return; } tourI = i;
-  if (i === 1) setStudio(false);
-  const [id, k, text] = TOUR[i], t = $(id); t.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+  if (i === 1) setStudio(false); if (i === 2) setStudio(true);
+  const [id, k, text] = TOUR[i], t = $(id); if (!t) { tour(i + 1); return; } t.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
   setTimeout(() => {
     const r = t.getBoundingClientRect();
     ringEl = document.createElement('div'); ringEl.className = 'tourring'; Object.assign(ringEl.style, { left: r.left - 6 + 'px', top: r.top - 6 + 'px', width: r.width + 12 + 'px', height: r.height + 12 + 'px' });
@@ -1615,7 +1616,7 @@ $('recBtn').onclick = () => {
   const chunks = []; rec = new MediaRecorder(stream, type ? { mimeType: type } : {});
   rec.ondataavailable = e => e.data.size && chunks.push(e.data);
   rec.onstop = () => { const blob = new Blob(chunks, { type: rec.mimeType || 'video/webm' }); $('recVideo').src = URL.createObjectURL(blob); $('recBox').classList.remove('hide');
-    rec = null; $('recBtn').textContent = 'Record'; $('recBtn').setAttribute('aria-pressed', 'false'); $('capState').textContent = 'Loop recorded'; live('Loop recorded. It is shown under the painting.'); };
+    rec = null; $('recBtn').textContent = 'Record video'; $('recBtn').setAttribute('aria-pressed', 'false'); $('capState').textContent = 'Loop recorded'; live('Loop recorded. It is shown under the painting.'); };
   const secs = storyOn ? storyLen() : Math.max(6, Math.min(15, val('spd') / 10 * 3));
   rec.start(); setPlaying(true); $('recBtn').textContent = 'Stop'; $('recBtn').setAttribute('aria-pressed', 'true'); $('capState').textContent = `Recording ${Math.round(secs)} s…`;
   setTimeout(() => { if (rec) rec.stop(); }, secs * 1000);
@@ -2242,7 +2243,7 @@ $('mixOn').onchange = () => { if (!$('mixOn').checked) mix.clear(); else if (rec
 /* ── start ── */
 let blinkT = 0, nextBlink = 3;
 setTool('flow'); setErase(false); setMood('natural'); buildTimeline(); renderScenes(); renderNarr(); renderVersions(); setLightUI(); renderMix(); makeQR(); showMoverSteps();
-setStudio(store.get('lps-adv') === '1');
+setStudio(store.get('lps-adv') !== '0');   // the full studio first; the Lite version is one tap away
 const draft = store.get('lps-draft');
 window.__aaBoot = true; choose(PAINTINGS[0], $('paintings').querySelector('.thumb[data-id]')); window.__aaBoot = false;
 ['pointerdown', 'pointerup', 'mousedown', 'touchstart', 'keydown'].forEach(ev => $('startCard').addEventListener(ev, e => e.stopPropagation()));
@@ -2293,24 +2294,240 @@ else if (!store.get('lps-toured')) window.__aaTourWait = true;
 </script>
 
 <script>
-(function () {
-  const A = window.AAAccount; if (!A) return;
-  let pid = new URLSearchParams(location.search).get('project');
-  const st = (t, html) => { if (html) $('savedState').innerHTML = html; else $('savedState').textContent = t; live(t); };
-  $('myProj').onclick = () => { location.href = '../projects.html'; };
-  $('cloudSave').onclick = async () => {
-    const b = $('cloudSave'); b.disabled = true; st('Saving to your account…');
-    try { const pr = project(); pid = await A.saveProject({ id: pid, kind: 'studio', title: pr.title || 'My animation', data: pr, thumbSrc: painting && painting.src });
-      history.replaceState(null, '', '?project=' + pid); st('Saved to your account'); }
-    catch (er) { if (er.code === 'signin') st('Log in first, then press Save again', '<a href="../login.html" target="_blank" rel="noopener" style="color:inherit">Log in</a> in a new tab, then press Save again');
-      else st(er.message || 'Couldn’t save. Check your connection and try again.'); }
-    finally { b.disabled = false; } };
-  if (pid) {
-    const open = () => { st('Opening your project…'); try { $('restoreBar').classList.add('hide'); } catch (e) {}
-      A.getProject(pid).then(p => { if (p.kind !== 'studio') throw new Error('That project is a game. Open it in the Game Maker.'); try { pushUndo(); } catch (e) {} p.data.title = p.title; loadProject(p.data); const m = 'Opened ' + p.title + ' from your account'; st(m); setTimeout(() => st(m), 1600); })
-        .catch(er => { pid = null; st(er.code === 'signin' ? 'Log in to open this project' : er.message || 'Couldn’t open that project'); }); };
-    if (document.readyState === 'complete') setTimeout(open, 400); else addEventListener('load', () => setTimeout(open, 400));
+
+function aaPlayer(code) {
+  const A = window.AAAccount;
+  document.body.classList.add('aa-play'); window.__aaTourWait = false;
+  const vp = document.querySelector('meta[name=viewport]'); if (vp) vp.content = 'width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover'; document.documentElement.style.touchAction = 'manipulation'; store.set = () => true;   // never touch the visitor's own drafts
+  try { hideStart(); } catch (e) {} $('restoreBar').classList.add('hide');
+  const css = document.createElement('style'); css.textContent = `
+body.aa-play .wrap>header,body.aa-play #restoreBar,body.aa-play .modes,body.aa-play .zoombar,body.aa-play .transport,body.aa-play .recbox,body.aa-play .note,body.aa-play #startCard,body.aa-play .aa-save,body.aa-play .tour,body.aa-play .tourring{display:none!important}
+body.aa-play .bench{display:block!important}body.aa-play .bench>:not(.stagecol){display:none!important}body.aa-play .stagecol{max-width:min(860px,100%);margin:0 auto}
+.aa-pl{max-width:860px;margin:0 auto 14px;display:flex;flex-direction:column;gap:10px}
+.aa-pl-top{display:flex;align-items:center;gap:12px}.aa-pl-top img{height:44px;width:auto}.aa-pl-k{margin:0;font:800 13px/1 Archivo,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.aa-pl h1{margin:0;font:900 clamp(28px,6vw,48px)/1 Archivo,"Arial Black",Arial,sans-serif;text-transform:uppercase;overflow-wrap:anywhere}.aa-pl-by{margin:0;color:var(--soft)}
+.aa-pl-bar{display:flex;flex-wrap:wrap;gap:10px;margin:14px auto 0;max-width:860px}
+.aa-pl-bar button,.aa-pl-bar a{flex:1 1 180px;min-height:54px;padding:0 18px;border-radius:999px;border:2px solid var(--line);background:transparent;color:var(--text);font:800 15px/1 Archivo,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.aa-pl-bar .pri{background:var(--orange);border-color:var(--orange);color:#14100c}
+.aa-pl-go{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(10,12,16,.55);text-align:center;padding:16px}
+.aa-pl-go button{min-height:68px;min-width:220px;padding:0 34px;border:0;border-radius:999px;background:var(--orange);color:#14100c;font:900 22px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 10px 30px -8px rgba(0,0,0,.8)}
+.aa-pl-go p{margin:0;max-width:30ch;color:#fff;font-size:17px;text-shadow:0 1px 3px #000}
+.aa-pl-made{max-width:860px;margin:18px auto 0;text-align:center;color:var(--soft);font-size:15px}.aa-pl-made a{color:var(--text)}
+.aa-ar{position:fixed;inset:0;z-index:90;background:#000;display:flex;align-items:center;justify-content:center}
+.aa-ar-box{position:relative;overflow:hidden}.aa-ar-box video{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.aa-ar-live{position:absolute;left:0;top:0;transform-origin:0 0;opacity:0;pointer-events:none}
+.aa-ar-tip{position:fixed;left:50%;top:max(16px,env(safe-area-inset-top));transform:translateX(-50%);margin:0;padding:10px 16px;border-radius:999px;background:rgba(0,0,0,.72);color:#fff;font:700 16px/1.3 "Atkinson Hyperlegible",Verdana,sans-serif;max-width:calc(100% - 32px);text-align:center}
+.aa-ar-tip.hide{display:none}
+.aa-ar-bar{position:fixed;left:16px;right:16px;bottom:max(16px,env(safe-area-inset-bottom));display:flex;gap:10px;justify-content:center}
+.aa-ar-bar button{flex:0 1 220px;min-height:54px;border-radius:999px;border:0;background:rgba(0,0,0,.75);color:#fff;font:800 15px/1 Archivo,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}`;
+  document.head.appendChild(css);
+  const top = document.createElement('div'); top.className = 'aa-pl';
+  top.innerHTML = '<a class="aa-pl-top" href="../" aria-label="Art Alive home" style="text-decoration:none"><img src="../art-alive-mark.png" alt=""><span class="aa-pl-k">Art Alive</span></a><h1 id="plT">Loading…</h1><p class="aa-pl-by" id="plBy"></p>';
+  const sc = document.querySelector('.stagecol'), bench = document.querySelector('.bench'); bench.parentNode.insertBefore(top, bench);
+  const bar = document.createElement('div'); bar.className = 'aa-pl-bar'; bar.hidden = true;
+  bar.innerHTML = '<button type="button" class="pri" id="plAR">Point at the picture</button><button type="button" id="plSnd" aria-pressed="true">Sound on</button>';
+  sc.appendChild(bar);
+  const made = document.createElement('p'); made.className = 'aa-pl-made'; made.innerHTML = 'Made with <a href="../">Art Alive</a> · <a href="index.html">Make your own</a>'; sc.appendChild(made);
+  const go = document.createElement('div'); go.className = 'aa-pl-go'; go.innerHTML = '<button type="button" id="plGo" disabled>Loading…</button><p>Sound on. Then tap or drag across the picture to explore it.</p>'; $('stage').appendChild(go);
+  ['pointerdown', 'pointerup', 'mousedown', 'touchstart', 'keydown'].forEach(ev => go.addEventListener(ev, e => e.stopPropagation()));
+  const fail = t => { $('plT').textContent = 'Not available'; $('plBy').textContent = t; go.innerHTML = '<p>' + t + '</p><a href="../" style="color:#fff">See what Art Alive does</a>'; document.title = 'Not available · Art Alive'; };
+  if (!A || !A.configured) return fail('Art Alive is being set up. Please try again soon.');
+  A.getPublished(code).then(p => {
+    if (!p) return fail('This piece isn’t published right now. It may have been taken down by its creator.');
+    if (p.kind !== 'studio') { location.replace('../p/?c=' + encodeURIComponent(code)); return; }
+    p.data.title = p.title; loadProject(p.data); setMode('try');
+    $('plT').textContent = p.title; $('plBy').textContent = p.data.artist && p.data.artist !== 'Your image' ? 'by ' + p.data.artist : ''; document.title = p.title + ' · Art Alive';
+    const b = $('plGo'); b.disabled = false; b.textContent = 'Start'; b.focus({ preventScroll: true }); live(p.title + ' is ready. Press Start.');
+  }).catch(e => fail('Couldn’t load it. Check your connection and try again.'));
+  const camFirst = new URLSearchParams(location.search).get('cam') === '1';
+  if (camFirst) go.querySelector('p').textContent = 'Sound on. Then point your phone at the picture.';
+  $('plGo').onclick = () => { ensureAudio(); soundLive = true; setMode('try'); setPlaying(true); go.remove(); bar.hidden = false; $('stage').focus({ preventScroll: true }); live('Playing. Tap or drag across the picture to explore. Or press Point at the picture to see it on the real one.');
+    if (camFirst) $('plAR').click(); };
+  let soundOn = true;
+  $('plSnd').onclick = () => { soundOn = !soundOn; if (AC) { if (soundOn) AC.resume(); else AC.suspend(); } $('plSnd').textContent = soundOn ? 'Sound on' : 'Sound off'; $('plSnd').setAttribute('aria-pressed', soundOn); };
+  /* point the camera at the real picture: the living version sits right on it */
+  let P = null;
+  $('plAR').onclick = () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.AACapture) { live('This browser can’t use the camera here. Try Chrome or Safari on your phone.'); return; }
+    ensureAudio(); setPlaying(true);
+    const ov = document.createElement('div'); ov.className = 'aa-ar'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Camera view');
+    ov.innerHTML = '<div class="aa-ar-box"><video playsinline muted autoplay></video><canvas class="aa-ar-live" aria-hidden="true"></canvas></div><p class="aa-ar-tip" aria-live="polite">Point your camera at the picture. Keep all four corners in view.</p><div class="aa-ar-bar"><button type="button" class="aa-ar-x">Back</button></div>';
+    document.body.appendChild(ov); document.body.style.overflow = 'hidden';
+    const vid = ov.querySelector('video'), tip = ov.querySelector('.aa-ar-tip'); ov.querySelector('.aa-ar-x').onclick = close; ov.querySelector('.aa-ar-x').focus();
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false }).then(st => {
+      vid.srcObject = st; vid.play().catch(() => {}); P = { ov, vid, tip, st, box: ov.querySelector('.aa-ar-box'), lc: ov.querySelector('.aa-ar-live'), trk: null, q: null, seen: 0, lost: 0 };
+      if (AACapture.resetTracking) AACapture.resetTracking(); arOn = true; drawAR = frameAR; live('Camera on. Point at the picture.');
+    }).catch(() => { close(); live('The camera wasn’t allowed. You can still enjoy it on the screen.'); });
+    function close() { if (P && P.st) P.st.getTracks().forEach(t => t.stop()); arOn = false; P = null; ov.remove(); document.body.style.overflow = ''; $('plAR').focus({ preventScroll: true }); }
+    addEventListener('keydown', function esc(e) { if (e.key === 'Escape' && P) { close(); removeEventListener('keydown', esc); } });
+  };
+  function frameAR() {
+    if (!P) return; const { vid, box, lc, tip } = P, vw = vid.videoWidth, vh = vid.videoHeight; if (!vw) return;
+    const s = Math.min(innerWidth / vw, innerHeight / vh), bw = vw * s, bh = vh * s; box.style.width = bw + 'px'; box.style.height = bh + 'px';
+    if (lc.width !== cv.width || lc.height !== cv.height) { lc.width = cv.width; lc.height = cv.height; }
+    const g = lc.getContext('2d'); g.clearRect(0, 0, lc.width, lc.height); g.drawImage(cv, 0, 0); g.drawImage($('fx'), 0, 0, lc.width, lc.height);
+    if (!P.trk && AACapture.tracker) P.trk = AACapture.tracker();
+    const r = P.trk ? P.trk.update(vid, vw, vh) : AACapture.detect(vid, vw, vh);
+    if (r) { P.q = r.c.map(([x, y]) => [x * bw, y * bh]); P.lost = 0;
+      if (!P.seen) { P.seen = 1; tip.textContent = 'Found it!'; live('Found the picture. It is alive.'); try { navigator.vibrate && navigator.vibrate([30, 30, 60]); } catch (e) {} setTimeout(() => { if (P) tip.classList.add('hide'); }, 2000); } }
+    else if (P.q && ++P.lost === 20) { tip.textContent = 'Lost it. Point back at the picture.'; tip.classList.remove('hide'); }
+    if (P.q) { const H = AACapture.homography([[0, 0], [lc.width, 0], [lc.width, lc.height], [0, lc.height]], P.q);
+      lc.style.transform = `matrix3d(${H[0]},${H[3]},0,${H[6]},${H[1]},${H[4]},0,${H[7]},0,0,1,0,${H[2]},${H[5]},0,1)`; lc.style.opacity = P.lost > 20 ? .3 : 1; }
   }
+}
+
+/* ── a collection in the camera: studio/index.html?k=CODE ──
+   Point at any picture and its animation plays right on it, on a loop.
+   Point away and it stops; point at the next picture and that one plays.
+   Games get a button instead, because a game needs a moment to start. */
+function aaCollection(kc) {
+  const A = window.AAAccount;
+  document.body.classList.add('aa-play'); window.__aaTourWait = false;
+  const vp = document.querySelector('meta[name=viewport]'); if (vp) vp.content = 'width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover'; document.documentElement.style.touchAction = 'manipulation'; store.set = () => true;   // never touch the visitor's own drafts
+  try { hideStart(); } catch (e) {} $('restoreBar').classList.add('hide');
+  const css = document.createElement('style'); css.textContent = `
+body.aa-play .wrap>header,body.aa-play #restoreBar,body.aa-play .modes,body.aa-play .zoombar,body.aa-play .transport,body.aa-play .recbox,body.aa-play .note,body.aa-play #startCard,body.aa-play .aa-save,body.aa-play .tour,body.aa-play .tourring{display:none!important}
+body.aa-play .bench{display:block!important}body.aa-play .bench>:not(.stagecol){display:none!important}body.aa-play .stagecol{max-width:min(860px,100%);margin:0 auto}
+.aa-pl{max-width:860px;margin:0 auto 14px;display:flex;flex-direction:column;gap:10px}
+.aa-pl-top{display:flex;align-items:center;gap:12px}.aa-pl-top img{height:44px;width:auto}.aa-pl-k{margin:0;font:800 13px/1 Archivo,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.aa-pl h1{margin:0;font:900 clamp(28px,6vw,48px)/1 Archivo,"Arial Black",Arial,sans-serif;text-transform:uppercase;overflow-wrap:anywhere}.aa-pl-by{margin:0;color:var(--soft)}
+.aa-pl-bar{display:flex;flex-wrap:wrap;gap:10px;margin:14px auto 0;max-width:860px}
+.aa-pl-bar button,.aa-pl-bar a{flex:1 1 180px;min-height:54px;padding:0 18px;border-radius:999px;border:2px solid var(--line);background:transparent;color:var(--text);font:800 15px/1 Archivo,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.aa-pl-bar .pri{background:var(--orange);border-color:var(--orange);color:#14100c}
+.aa-pl-go{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(10,12,16,.55);text-align:center;padding:16px}
+.aa-pl-go button{min-height:68px;min-width:220px;padding:0 34px;border:0;border-radius:999px;background:var(--orange);color:#14100c;font:900 22px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 10px 30px -8px rgba(0,0,0,.8)}
+.aa-pl-go p{margin:0;max-width:30ch;color:#fff;font-size:17px;text-shadow:0 1px 3px #000}
+.aa-pl-made{max-width:860px;margin:18px auto 0;text-align:center;color:var(--soft);font-size:15px}.aa-pl-made a{color:var(--text)}
+.aa-ar{position:fixed;inset:0;z-index:90;background:#000;display:flex;align-items:center;justify-content:center}
+.aa-ar-box{position:relative;overflow:hidden}.aa-ar-box video{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.aa-ar-live{position:absolute;left:0;top:0;transform-origin:0 0;opacity:0;pointer-events:none}
+.aa-ar-tip{position:fixed;left:50%;top:max(16px,env(safe-area-inset-top));transform:translateX(-50%);margin:0;padding:10px 16px;border-radius:999px;background:rgba(0,0,0,.72);color:#fff;font:700 16px/1.3 "Atkinson Hyperlegible",Verdana,sans-serif;max-width:calc(100% - 32px);text-align:center}
+.aa-ar-tip.hide{display:none}
+.aa-ar-bar{position:fixed;left:16px;right:16px;bottom:max(16px,env(safe-area-inset-bottom));display:flex;gap:10px;justify-content:center}
+.aa-ar-bar button{flex:0 1 220px;min-height:54px;border-radius:999px;border:0;background:rgba(0,0,0,.75);color:#fff;font:800 15px/1 Archivo,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.aa-k{position:fixed;inset:0;z-index:80;background:#15191f;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px 16px;text-align:center}
+.aa-k h1{margin:0;font:900 clamp(30px,7vw,52px)/1 Archivo,"Arial Black",Arial,sans-serif;text-transform:uppercase;overflow-wrap:anywhere;max-width:16ch}
+.aa-k p{margin:0;max-width:34ch;color:var(--soft);font-size:18px}.aa-k a{color:var(--text)}
+.aa-k .aa-k-go{min-height:72px;min-width:240px;padding:0 36px;border:0;border-radius:999px;background:var(--orange);color:#14100c;font:900 24px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.aa-k .aa-k-go:disabled{opacity:.6;cursor:wait}
+.aa-ar .aa-ar-live{transition:opacity .35s}
+.aa-k-found{position:fixed;left:16px;right:16px;bottom:max(84px,calc(env(safe-area-inset-bottom) + 84px));margin:0 auto;max-width:440px;padding:18px;border-radius:20px;background:#1d222a;border:2px solid #7be08f;display:flex;flex-direction:column;gap:10px;text-align:center;color:#f2ede4}
+.aa-k-found[hidden]{display:none}
+.aa-k-found b{font:900 24px/1.1 Archivo,"Arial Black",Arial,sans-serif;text-transform:uppercase}
+.aa-k-found a,.aa-k-found button{display:flex;align-items:center;justify-content:center;min-height:58px;border-radius:999px;font:800 17px/1 Archivo,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;cursor:pointer}
+.aa-k-found a{background:var(--orange);color:#14100c}.aa-k-found button{background:transparent;color:#f2ede4;border:2px solid #2c333d}`;
+  document.head.appendChild(css);
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const home = document.createElement('div'); home.className = 'aa-k';
+  home.innerHTML = '<a href="../" aria-label="Art Alive home"><img src="../art-alive-mark.png" alt="" style="height:56px;width:auto"></a><h1 id="kT">Loading…</h1><p id="kBy">Getting the collection ready…</p>' +
+    '<button type="button" class="aa-k-go" id="kGo" disabled>Loading…</button><p style="font-size:16px">Sound and camera turn on. Point at any picture and it comes alive by itself.</p><p style="font-size:16px"><a href="../p/?k=' + kc + '&list=1">Or choose one from the list</a></p>';
+  document.body.appendChild(home);
+  const fail = t => { $('kT').textContent = 'Not available'; $('kBy').textContent = t; $('kGo').remove(); document.title = 'Not available · Art Alive'; };
+  if (!A || !A.configured) return fail('Art Alive is being set up. Please try again soon.');
+  let items = [], known = [], title = 'Collection';
+  const cache = {}, counted = {};
+  const get = code => cache[code] || (cache[code] = A.published(code).then(async row => { if (!row) throw new Error('gone'); await A.fillMedia(row.data); return row; }).catch(e => { delete cache[code]; throw e; }));
+  A.publishedCollection(kc).then(col => {
+    if (!col) return fail('This collection isn’t published right now.');
+    items = (col.items || []).filter(i => i.code); title = col.title; known = items.filter(it => it.fp).map(it => ({ it, f: A.FP.decode(it.fp) }));
+    $('kT').textContent = title; document.title = title + ' · Art Alive';
+    $('kBy').textContent = items.length + (items.length === 1 ? ' piece' : ' pieces');
+    const b = $('kGo'); b.disabled = false; b.textContent = 'Start'; b.focus({ preventScroll: true }); live(title + '. ' + items.length + ' pieces. Press Start.');
+  }).catch(() => fail('Couldn’t load it. Check your connection and try again.'));
+
+  const LOST = 24;   // frames without the picture before it stops (about half a second)
+  let P = null, cur = null, on = false, dismissed = '', streak = { code: '', n: 0 }, miss = 0, lastCheck = 0;
+  const gc = document.createElement('canvas'), gx = gc.getContext('2d', { willReadFrequently: true });
+  const vol = () => val('vol') / 100 * .8, buzz = () => { try { navigator.vibrate && navigator.vibrate([30, 30, 60]); } catch (e) {} };
+  // recorded voice lines: keep hold of them so they stop when the picture leaves the screen
+  const clips = new Set(), hush = () => { clips.forEach(a => { try { a.pause(); } catch (e) {} }); clips.clear(); try { speechSynthesis.cancel(); } catch (e) {} };
+  sayLine = n => { capText = n.text.trim(); capUntil = clock + Math.max(3, capText.split(/\s+/).length * .42 + 1);
+    if (n.audio) { try { const a = new Audio(n.audio); clips.add(a); a.onended = () => clips.delete(a); if (!snd) a.muted = true; a.play().catch(() => {}); } catch (e) {} } else if (!snd) live(capText); else if ($('narrSpeak').checked) speak(capText); else live(capText); };
+  let snd = true;
+  function pause() { if (!on) return; on = false; setPlaying(false); hush(); try { setNarr(false); } catch (e) {} if (AC && master) master.gain.setTargetAtTime(0, AC.currentTime, .12); }
+  function resume(it) {
+    on = true; dismissed = ''; miss = 0; setMode('try'); setPlaying(true);
+    if (AC && master) { AC.resume(); master.gain.setTargetAtTime(vol(), AC.currentTime, .12); } if (narr.length) setNarr(true);   // the voice starts from the top
+    P.tip.textContent = it.title; P.tip.classList.remove('hide'); clearTimeout(P.tt); P.tt = setTimeout(() => { if (P) P.tip.classList.add('hide'); }, 2200);
+    live(it.title + '. Playing.'); buzz();
+    if (!counted[it.code]) { counted[it.code] = 1; A.countView(it.code); } window.__aaPlaying = it.code;
+  }
+  function show(it) {
+    if (it.kind !== 'studio') {   // a game: offer a button
+      pause(); cur = null; window.__aaPlaying = null; const f = P.found; f.hidden = false;
+      f.innerHTML = '<span>Found a game</span><b>' + esc(it.title) + '</b><a href="../p/?c=' + it.code + '&cam=1">Play the game</a><button type="button">Keep looking</button>';
+      f.querySelector('button').onclick = () => { dismissed = it.code; f.hidden = true; streak = { code: '', n: 0 }; };
+      f.querySelector('a').focus(); live('Found ' + it.title + '. It is a game. Press Play the game.'); buzz(); window.__aaFound = it.code; return;
+    }
+    P.found.hidden = true;
+    if (cur && cur.code === it.code) { if (cur.ready) resume(it); return; }   // the same picture again: carry on
+    pause(); const me = cur = { code: it.code, ready: false }; P.tip.textContent = 'Found ' + it.title + '…'; P.tip.classList.remove('hide');
+    get(it.code).then(row => {
+      if (cur !== me || !P) return; row.data.title = row.title; $('capState').textContent = ''; loadProject(row.data);
+      const t0 = performance.now(), wait = () => { if (cur !== me || !P) return;
+        if ($('capState').textContent === 'Project loaded' || performance.now() - t0 > 6000) { revealT = 4; me.ready = true; if (P.q && P.lost < LOST) resume(it); } else setTimeout(wait, 60); };
+      wait();
+    }).catch(() => { if (cur === me && P) { cur = null; P.tip.textContent = 'Couldn’t load ' + it.title + '. Check your connection.'; } });
+  }
+  function lostIt() { pause(); window.__aaPlaying = null; if (P) { P.tip.textContent = 'Point at any picture in ' + title + '.'; P.tip.classList.remove('hide'); } live('Paused. Point at the next picture.'); }
+  function identify(r, vid, vw, vh) {   // which picture is it? compare the inside of the frame with each piece's fingerprint
+    const GW = 480, GH = Math.round(480 * vh / vw); if (gc.width !== GW) { gc.width = GW; gc.height = GH; } gx.drawImage(vid, 0, 0, GW, GH);
+    const d = gx.getImageData(0, 0, GW, GH).data, f = A.FP.fromQuad(d, GW, GH, r.c.map(([x, y]) => [x * GW, y * GH]));
+    const qa = (Math.hypot(r.c[1][0] - r.c[0][0], (r.c[1][1] - r.c[0][1]) * vh / vw) + Math.hypot(r.c[2][0] - r.c[3][0], (r.c[2][1] - r.c[3][1]) * vh / vw)) / (Math.hypot(r.c[3][0] - r.c[0][0], (r.c[3][1] - r.c[0][1]) * vh / vw) + Math.hypot(r.c[2][0] - r.c[1][0], (r.c[2][1] - r.c[1][1]) * vh / vw) || 1);
+    let best = null, second = -1, curSc = -1;
+    for (const k of known) { let sc = A.FP.score(f, k.f); const ratio = Math.max(qa, k.it.aspect || 1) / Math.min(qa, k.it.aspect || 1); if (ratio > 1.45) sc -= .12;
+      if (cur && k.it.code === cur.code) curSc = sc;
+      if (!best || sc > best.sc) { if (best) second = Math.max(second, best.sc); best = { it: k.it, sc }; } else second = Math.max(second, sc); }
+    window.__aaScores = (window.__aaScores || []).concat([known.map(k => k.it.title.slice(0, 8) + ':' + A.FP.score(f, k.f).toFixed(2)).join(' ')]).slice(-4);
+    if (best && best.sc > .6 && best.sc - second > .1) streak = streak.code === best.it.code ? { code: best.it.code, n: streak.n + 1 } : { code: best.it.code, n: 1 }; else streak = { code: '', n: 0 };
+    // the frame in view isn't the playing picture any more (the camera slid onto another one without losing it)
+    if (on && cur) { if (curSc < .45) { if (++miss >= 3) lostIt(); } else miss = 0; }
+    const busy = cur && cur.code === streak.code && (on || !cur.ready);
+    if (streak.n >= 2 && streak.code !== dismissed && !busy) show(best.it);
+  }
+  function frameColl() {
+    if (!P) return; const { vid, box, lc } = P, vw = vid.videoWidth, vh = vid.videoHeight; if (!vw) return;
+    const s = Math.min(innerWidth / vw, innerHeight / vh), bw = vw * s, bh = vh * s; box.style.width = bw + 'px'; box.style.height = bh + 'px';
+    if (on) { if (lc.width !== cv.width || lc.height !== cv.height) { lc.width = cv.width; lc.height = cv.height; }
+      const g = lc.getContext('2d'); g.clearRect(0, 0, lc.width, lc.height); g.drawImage(cv, 0, 0); g.drawImage($('fx'), 0, 0, lc.width, lc.height); }
+    if (!P.trk && AACapture.tracker) P.trk = AACapture.tracker();
+    const r = P.trk ? P.trk.update(vid, vw, vh) : AACapture.detect(vid, vw, vh), now = performance.now();
+    if (r) { P.q = r.c.map(([x, y]) => [x * bw, y * bh]); P.lost = 0;
+      if (now - lastCheck > (on ? 700 : 250) && known.length) { lastCheck = now; identify(r, vid, vw, vh); } }
+    else if (P.q && ++P.lost === LOST) { if (on) lostIt(); P.found.hidden = true; dismissed = ''; streak = { code: '', n: 0 }; }
+    if (P.q && on && P.lost < LOST) { const H = AACapture.homography([[0, 0], [lc.width, 0], [lc.width, lc.height], [0, lc.height]], P.q);
+      lc.style.transform = `matrix3d(${H[0]},${H[3]},0,${H[6]},${H[1]},${H[4]},0,${H[7]},0,0,1,0,${H[2]},${H[5]},0,1)`; lc.style.opacity = 1; } else lc.style.opacity = 0;
+  }
+  $('kGo').onclick = () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.AACapture) { $('kBy').textContent = 'This browser can’t use the camera here. Choose a piece from the list instead.'; return; }
+    ensureAudio(); soundLive = true; if (master) master.gain.value = 0;
+    const ov = document.createElement('div'); ov.className = 'aa-ar'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Camera view');
+    ov.innerHTML = '<div class="aa-ar-box"><video playsinline muted autoplay></video><canvas class="aa-ar-live" aria-hidden="true" style="opacity:0"></canvas></div><p class="aa-ar-tip" aria-live="polite">Point at any picture in ' + esc(title) + '. Keep all four corners in view.</p><div class="aa-k-found" hidden></div><div class="aa-ar-bar"><button type="button" class="aa-ar-x">Back</button><button type="button" class="aa-k-snd" aria-pressed="true">Sound on</button></div>';
+    document.body.appendChild(ov); document.body.style.overflow = 'hidden';
+    const vid = ov.querySelector('video'); ov.querySelector('.aa-ar-x').onclick = close; ov.querySelector('.aa-ar-x').focus();
+    snd = true; ov.querySelector('.aa-k-snd').onclick = e => { snd = !snd; if (!snd) hush(); if (AC) { if (snd) AC.resume(); else AC.suspend(); } e.target.textContent = snd ? 'Sound on' : 'Sound off'; e.target.setAttribute('aria-pressed', snd); };
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false }).then(st => {
+      vid.srcObject = st; vid.play().catch(() => {});
+      P = { ov, vid, st, tip: ov.querySelector('.aa-ar-tip'), found: ov.querySelector('.aa-k-found'), box: ov.querySelector('.aa-ar-box'), lc: ov.querySelector('.aa-ar-live'), trk: null, q: null, lost: 0 };
+      if (AACapture.resetTracking) AACapture.resetTracking(); arOn = true; drawAR = frameColl; live('Camera on. Point at any picture.');
+      (async () => { for (const it of items) if (it.kind === 'studio') { if (!P) return; try { await get(it.code); } catch (e) {} } })();   // get the animations ready, one at a time
+    }).catch(() => { close(); $('kBy').textContent = 'The camera wasn’t allowed. Choose a piece from the list instead.'; });
+    function close() { pause(); cur = null; window.__aaPlaying = null; if (P && P.st) P.st.getTracks().forEach(t => t.stop()); arOn = false; P = null; ov.remove(); document.body.style.overflow = ''; $('kGo').focus({ preventScroll: true }); }
+  };
+}
+(function () {
+  const kCode = new URLSearchParams(location.search).get('k'); if (kCode) { aaCollection(kCode.toLowerCase().replace(/[^a-z0-9]/g, '')); return; }
+  const playCode = new URLSearchParams(location.search).get('play'); if (playCode) { aaPlayer(playCode.toLowerCase().replace(/[^a-z0-9]/g, '')); return; }
+  const A = window.AAAccount; if (!A) return;
+  $('myProj').onclick = () => { location.href = '../projects.html'; };
+  A.saveBar({ kind: 'studio', buttons: [$('cloudSave')],
+    onStatus: t => { if (t) { $('savedState').textContent = t; live(t); } },
+    get: () => { const pr = project();
+      // keep the recordings too: tap-spot sounds and narration voices
+      pr.triggers = triggers.map(t => ({ ...t })); pr.narr = narr.map(n => ({ t: n.t, text: n.text, audio: n.audio || null }));
+      return { title: pr.title || 'My animation', data: pr, thumbSrc: painting && painting.src }; },
+    open: (p, done) => { const go = () => { try { $('restoreBar').classList.add('hide'); } catch (e) {} try { pushUndo(); } catch (e) {} p.data.title = p.title; loadProject(p.data); done(); setTimeout(done, 1600); };
+      if (document.readyState === 'complete') setTimeout(go, 400); else addEventListener('load', () => setTimeout(go, 400)); } });
 })();
 </script>
 

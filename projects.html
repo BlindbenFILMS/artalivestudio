@@ -34,19 +34,22 @@
   <a class="skip" href="#main">Skip to content</a>
   <header class="top">
     <a class="brand" href="./" aria-label="Art Alive home"><img src="art-alive-mark.png" alt=""><img class="wm" src="art-alive-wordmark.png" alt="Art Alive"></a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <div class="top-act"><a class="btn small acct-btn" data-acct href="login.html?new=1" aria-label="Create a free account" style="color:#14100c;text-decoration:none">Create account</a><button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button></div>
     <nav id="nav" aria-label="Main">
-      <ul class="util"><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to</a></li><li><a href="about.html">About</a></li><li><a href="login.html">Log in</a></li><li><a class="btn small" href="signup.html" style="color:#14100c;text-decoration:none">Join the waitlist</a></li></ul>
+      <ul class="util"><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to</a></li><li><a href="plans.html">Plans</a></li><li><a href="about.html">About</a></li></ul>
       <ul class="aud"><li><a href="for-creators.html">For Creators</a></li><li><a href="for-galleries.html">For Galleries</a></li><li><a href="for-businesses.html">For Businesses</a></li><li><a href="for-everyone.html">For Everyone</a></li><li><a href="games/index.html">Game Maker</a></li><li><a class="studio" href="studio/index.html">Creator Studio</a></li></ul>
     </nav>
   </header>
   <main class="wrap" id="main">
     <section class="pj-head">
-      <div><span class="eyebrow">Your account</span><h1>My projects</h1><p class="pj-who" id="pjWho"></p></div>
+      <div><span class="eyebrow">Your account</span><h1>My projects</h1><p class="pj-who" id="pjWho"></p><p class="pj-who" id="pjPlan"></p></div>
       <div class="pj-new"><a class="btn small" href="studio/index.html">New animation</a><a class="btn small ghost" href="games/index.html">New game</a></div>
     </section>
     <p class="status" id="pjStatus" role="status" aria-live="polite"></p>
     <section id="pjBody" hidden aria-label="Your projects" style="display:flex;flex-direction:column;gap:18px">
+      <section class="pj-coll" aria-labelledby="pjCollH"><div class="pj-ch"><h2 id="pjCollH">Collections</h2><button class="btn small blue" type="button" id="pjNewColl">New collection</button></div>
+        <p class="pj-cn">One QR code for up to 50 pieces. Visitors point their phone at any of them and the right one comes alive.</p><ul class="pj-grid" id="pjCollGrid"></ul></section>
+      <h2 class="pj-h2">Projects</h2>
       <ul class="pj-folders" id="pjFolders" aria-label="Folders"></ul>
       <ul class="pj-grid" id="pjGrid"></ul>
       <div class="pj-empty" id="pjEmpty" hidden><h2 style="margin:0">Nothing here yet</h2><p>Make an animation or a game, then press <b>Save to my account</b>. It will show up here, ready to open on any device.</p>
@@ -54,13 +57,18 @@
       <p><button class="btn small ghost" type="button" id="pjOut">Log out</button></p>
     </section>
     <section class="pj-empty" id="pjLogin" hidden><h2 style="margin:0">Log in to see your projects</h2><p>Your saved animations and games live in your account, so you can open them on any phone or computer.</p><a class="btn small" href="login.html">Log in</a></section>
+    <dialog class="pj-dlg pj-cdlg" id="pjCDlg" aria-labelledby="pjCDlgH"><form method="dialog" id="pjCForm"><h2 id="pjCDlgH">New collection</h2>
+      <div class="field"><label for="pjCName">Collection name</label><input id="pjCName" type="text" maxlength="120" autocomplete="off" required></div>
+      <fieldset class="pj-pick"><legend>Pieces <span id="pjCCount"></span></legend><p class="fine" style="margin:0 0 8px">Choose up to 50. Each one is published so visitors can open it. Pieces with very different pictures are easiest to tell apart.</p><ul id="pjCList"></ul></fieldset>
+      <p class="status" id="pjCStatus" role="status" aria-live="polite"></p>
+      <div class="row"><button class="btn" value="ok" id="pjCSave">Save collection</button><button class="btn ghost" value="cancel" type="button" id="pjCNo">Cancel</button></div></form></dialog>
     <dialog class="pj-dlg" id="pjDlg"><form method="dialog" id="pjDlgForm"><h2 id="pjDlgH"></h2><p id="pjDlgP"></p>
       <div class="field" id="pjDlgField"><label for="pjDlgIn" id="pjDlgL"></label><input id="pjDlgIn" type="text" maxlength="120" list="pjFolderList" autocomplete="off"></div><datalist id="pjFolderList"></datalist>
       <div class="row"><button class="btn" value="ok" id="pjDlgOk"></button><button class="btn ghost" value="cancel" type="button" id="pjDlgNo">Cancel</button></div></form></dialog>
 
   </main>
   <footer>
-    <div class="row"><img src="art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="for-creators.html">For Creators</a></li><li><a href="for-galleries.html">For Galleries</a></li><li><a href="for-businesses.html">For Businesses</a></li><li><a href="for-everyone.html">For Everyone</a></li><li><a href="studio/index.html">Creator Studio</a></li><li><a href="games/index.html">Game Maker</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to make one</a></li><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="presskit.html">Press kit</a></li><li><a href="privacy.html">Privacy</a></li></ul></div>
+    <div class="row"><img src="art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="for-creators.html">For Creators</a></li><li><a href="for-galleries.html">For Galleries</a></li><li><a href="for-businesses.html">For Businesses</a></li><li><a href="for-everyone.html">For Everyone</a></li><li><a href="studio/index.html">Creator Studio</a></li><li><a href="games/index.html">Game Maker</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to make one</a></li><li><a href="plans.html">Plans and pricing</a></li><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="presskit.html">Press kit</a></li><li><a href="privacy.html">Privacy</a></li></ul></div>
     <span>Art Alive is made by the <a href="https://blindcanvasproject.com/" target="_blank" rel="noopener">Blind Canvas Project</a> and Able Art Alliance.</span>
   </footer>
 </div>
@@ -90,28 +98,71 @@ function draw(){
   const list=folder?all.filter(p=>p.folder===folder):all;
   $('pjEmpty').hidden=all.length>0;
   $('pjGrid').innerHTML=list.map(p=>{const open=(p.kind==='game'?'games':'studio')+'/index.html?project='+p.id,kind=p.kind==='game'?'Game':'Animation';
-    return '<li class="pj" data-id="'+p.id+'"><a class="th" href="'+open+'" tabindex="-1" aria-hidden="true">'+(p.thumbUrl?'<img src="'+esc(p.thumbUrl)+'" alt="" loading="lazy">':'')+'</a><div class="tx"><span class="kind">'+kind+'</span><h2>'+esc(p.title)+'</h2><p class="meta">Edited '+when(p.updated_at)+(p.folder?' · in '+esc(p.folder):'')+'</p>'+
-      '<div class="acts"><a class="btn" href="'+open+'" aria-label="Open '+esc(p.title)+'">Open</a><button type="button" class="link" data-a="rename">Rename</button><button type="button" class="link" data-a="move">Folder</button><button type="button" class="link" data-a="copy">Copy</button><button type="button" class="link" data-a="del">Delete</button></div></div></li>';}).join('');
+    return '<li class="pj" data-id="'+p.id+'"><a class="th" href="'+open+'" tabindex="-1" aria-hidden="true">'+(p.thumbUrl?'<img src="'+esc(p.thumbUrl)+'" alt="" loading="lazy">':'')+'</a><div class="tx"><span class="kind">'+kind+'</span><h2>'+esc(p.title)+'</h2><p class="meta">Edited '+when(p.updated_at)+(p.folder?' · in '+esc(p.folder):'')+'</p>'+(p.pub&&p.pub.live?'<p class="pj-live"><span aria-hidden="true">●</span> Live · '+p.pub.views+(p.pub.views===1?' visit':' visits')+'</p>':'')+
+      '<div class="acts"><a class="btn" href="'+open+'" aria-label="Open '+esc(p.title)+'">Open</a>'+(p.pub&&p.pub.live?'<button type="button" class="btn blue" data-a="share">Share</button>':'<button type="button" class="btn blue" data-a="pub">Publish</button>')+'<button type="button" class="link" data-a="rename">Rename</button><button type="button" class="link" data-a="move">Folder</button><button type="button" class="link" data-a="copy">Copy</button>'+(p.pub&&p.pub.live?'<button type="button" class="link" data-a="unpub">Unpublish</button>':'')+'<button type="button" class="link" data-a="del">Delete</button></div></div></li>';}).join('');
   $('pjGrid').querySelectorAll('.pj').forEach(li=>{const p=all.find(x=>x.id===li.dataset.id);li.querySelectorAll('button[data-a]').forEach(b=>{b.setAttribute('aria-label',b.textContent+' '+p.title);b.onclick=()=>act(b.dataset.a,p,b);});});
 }
 async function act(a,p,btn){
   try{
     if(a==='rename'){const t=await ask({title:'Rename',label:'New name',input:p.title,ok:'Rename'});if(!t||t===p.title)return btn.focus();await AAAccount.updateProject(p.id,{title:t});p.title=t;draw();say('Renamed to '+t,'ok');}
     if(a==='move'){const f=await ask({title:'Put in a folder',text:'Type a folder name, pick one you already have, or leave it empty to take it out of its folder.',label:'Folder',input:p.folder||'',ok:'Save'});if(f===null)return btn.focus();await AAAccount.updateProject(p.id,{folder:f});p.folder=f;draw();say(f?p.title+' is now in '+f:p.title+' is out of its folder','ok');}
+    if(a==='pub'){say('Publishing…');const code=await AAAccount.publishProject(p.id);p.pub={code,live:true,views:(p.pub&&p.pub.views)||0};draw();say(p.title+' is live.','ok');await AAAccount.shareDialog(code,p.title);}
+    if(a==='share'){await AAAccount.shareDialog(p.pub.code,p.title);}
+    if(a==='unpub'){const y=await ask({title:'Unpublish '+p.title+'?',text:'People who scan its QR code will see that it isn’t available. Your project stays in your account, and if you publish it again it keeps the same link and QR code.',ok:'Unpublish'});if(!y)return btn.focus();await AAAccount.unpublishProject(p.id);p.pub.live=false;draw();say(p.title+' is no longer public.','ok');}
     if(a==='copy'){say('Making a copy…');await AAAccount.duplicateProject(p.id);await refresh();say('Copied. The copy is at the top.','ok');}
     if(a==='del'){const y=await ask({title:'Delete '+p.title+'?',text:'This removes the project and its pictures and recordings from your account. It can’t be undone.',ok:'Delete'});if(!y)return btn.focus();say('Deleting…');await AAAccount.deleteProject(p.id);all=all.filter(x=>x.id!==p.id);draw();say(p.title+' was deleted.','ok');}
-  }catch(er){say(er.message||'Something went wrong. Please try again.','bad');}
+  }catch(er){sayErr(er);}
+  plan();
 }
-async function refresh(){all=await AAAccount.listProjects();draw();}
+function sayErr(er){if(er&&er.code==='limit'){st.className='status bad';st.innerHTML=esc(er.message)+' <a href="plans.html" style="color:inherit">See plans</a>';}else say((er&&er.message)||'Something went wrong. Please try again.','bad');}
+async function plan(){const p=await AAAccount.myPlan().catch(()=>null);if(!p)return;const names={free:'Free plan',pro20:'Pro 20',pro50:'Pro 50',pro100:'Pro 100',pro250:'Pro 250',custom:'Custom plan',owner:'Owner'};
+  const portal=(window.ART_ALIVE||{}).stripePortal,paid=/^pro/.test(p.tier);
+  $('pjPlan').innerHTML=esc(names[p.tier]||p.tier)+' · '+p.live+' of '+p.max_live+' published · <a href="plans.html">'+(p.tier==='free'?'Publish more':'See plans')+'</a>'+(paid&&portal?' · <a href="'+esc(portal)+'">Manage or cancel</a>':'')+
+    (p.live>p.max_live?'<br><b>Visitors can see your first '+p.max_live+' published pieces.</b> The others are kept safe but hidden until you unpublish some or <a href="plans.html">choose a bigger plan</a>.':'');}
+let colls=[];
+function drawColls(){
+  $('pjCollGrid').innerHTML=colls.length?colls.map(k=>{const n=k.items.length,th=k.items.slice(0,4).map(it=>{const p=all.find(x=>x.id===it.project_id);return p&&p.thumbUrl?'<img src="'+esc(p.thumbUrl)+'" alt="" loading="lazy">':'<span></span>';}).join('');
+    return '<li class="pj" data-c="'+k.id+'"><div class="mosaic n'+Math.min(4,Math.max(1,k.items.length))+'" aria-hidden="true">'+th+'</div><div class="tx"><span class="kind">Collection</span><h2>'+esc(k.title)+'</h2><p class="meta">'+n+(n===1?' piece':' pieces')+' · edited '+when(k.updated_at)+'</p>'+(k.live?'<p class="pj-live"><span aria-hidden="true">●</span> Live · '+k.views+(k.views===1?' visit':' visits')+'</p>':'')+
+      '<div class="acts">'+(k.live?'<button type="button" class="btn blue" data-k="share">Share</button>':'<button type="button" class="btn blue" data-k="pub">Publish</button>')+'<button type="button" class="link" data-k="edit">Edit</button>'+(k.live?'<button type="button" class="link" data-k="unpub">Unpublish</button>':'')+'<button type="button" class="link" data-k="del">Delete</button></div></div></li>';}).join(''):'<li class="pj-cn" style="list-style:none">No collections yet. Press <b>New collection</b> to put several pieces behind one QR code.</li>';
+  $('pjCollGrid').querySelectorAll('[data-c]').forEach(li=>{const k=colls.find(x=>x.id===li.dataset.c);li.querySelectorAll('button[data-k]').forEach(b=>{b.setAttribute('aria-label',b.textContent+' '+k.title);b.onclick=()=>collAct(b.dataset.k,k,b);});});
+}
+async function collAct(a,k,btn){
+  try{
+    if(a==='pub'){say('Publishing the collection…');const code=await AAAccount.publishCollection(k.id);k.code=code;k.live=true;drawColls();say(k.title+' is live.','ok');await AAAccount.shareDialog(code,k.title,true);}
+    if(a==='share'){await AAAccount.shareDialog(k.code,k.title,true);}
+    if(a==='edit'){editColl(k);}
+    if(a==='unpub'){const y=await ask({title:'Unpublish '+k.title+'?',text:'People who scan its QR code will see that it isn’t available. The pieces themselves stay published. Publish again any time with the same QR code.',ok:'Unpublish'});if(!y)return btn.focus();await AAAccount.unpublishCollection(k.id);k.live=false;drawColls();say(k.title+' is no longer public.','ok');}
+    if(a==='del'){const y=await ask({title:'Delete '+k.title+'?',text:'This deletes the collection and its QR code. The pieces in it stay in your account.',ok:'Delete'});if(!y)return btn.focus();await AAAccount.deleteCollection(k.id);colls=colls.filter(x=>x.id!==k.id);drawColls();say(k.title+' was deleted.','ok');}
+  }catch(er){sayErr(er);}
+  plan();
+}
+function editColl(k){
+  const d=$('pjCDlg'),chosen=new Set(k?k.items.map(i=>i.project_id):[]);$('pjCDlgH').textContent=k?'Edit collection':'New collection';$('pjCName').value=k?k.title:'';$('pjCStatus').textContent='';
+  const count=()=>{$('pjCCount').textContent='('+chosen.size+' of 50 chosen)';};
+  $('pjCList').innerHTML=all.length?all.map(p=>'<li><label><input type="checkbox" value="'+p.id+'"'+(chosen.has(p.id)?' checked':'')+'>'+(p.thumbUrl?'<img src="'+esc(p.thumbUrl)+'" alt="">':'<img alt="">')+'<span>'+esc(p.title)+'<small>'+(p.kind==='game'?'Game':'Animation')+(p.pub&&p.pub.live?' · live':'')+'</small></span></label></li>').join(''):'<li>You don’t have any projects yet. Make one first.</li>';
+  $('pjCList').querySelectorAll('input').forEach(i=>i.onchange=()=>{if(i.checked){if(chosen.size>=50){i.checked=false;$('pjCStatus').textContent='A collection holds up to 50 pieces.';return;}chosen.add(i.value);}else chosen.delete(i.value);count();});
+  count();$('pjCNo').onclick=()=>d.close();
+  $('pjCForm').onsubmit=async e=>{e.preventDefault();const name=$('pjCName').value.trim();if(!name){$('pjCStatus').textContent='Give your collection a name.';$('pjCName').focus();return;}
+    if(!chosen.size){$('pjCStatus').textContent='Choose at least one piece.';return;}
+    $('pjCSave').disabled=true;
+    try{const ids=all.filter(p=>chosen.has(p.id)).map(p=>p.id);
+      await AAAccount.saveCollection({id:k&&k.id,title:name,projectIds:ids,onProgress:(i,n)=>{$('pjCStatus').textContent='Getting piece '+i+' of '+n+' ready…';}});
+      d.close();await refresh();say(name+' is saved.','ok');}
+    catch(er){$('pjCStatus').innerHTML=esc(er.message||'Couldn’t save. Please try again.')+(er.code==='limit'?' <a href="plans.html">See plans</a>':'');}
+    finally{$('pjCSave').disabled=false;}};
+  d.showModal();$('pjCName').focus();
+}
+$('pjNewColl').onclick=()=>editColl(null);
+async function refresh(){all=await AAAccount.listProjects();draw();try{colls=await AAAccount.listCollections();}catch(e){colls=[];}drawColls();}
 (async()=>{
   if(!AAAccount.configured){say('Accounts are being set up. Please check back soon.');return;}
   say('Loading your projects…');
   let u=null;try{u=await AAAccount.user();}catch(er){say(er.message,'bad');return;}
-  if(!u){say('');$('pjLogin').hidden=false;return;}
+  if(!u){location.replace('login.html?new=1&next='+encodeURIComponent(location.pathname));return;}
   const next=new URLSearchParams(location.search).get('next');if(next&&/^\/[^\/]/.test(next)){location.replace(next);return;}
   if(location.hash)history.replaceState(null,'',location.pathname);
   $('pjWho').textContent='Logged in as '+u.email;$('pjBody').hidden=false;
-  try{await refresh();say(all.length?all.length+(all.length===1?' project':' projects'):'');}catch(er){say(er.message||'Couldn’t load your projects.','bad');}
+  try{await refresh();plan();say(all.length?all.length+(all.length===1?' project':' projects'):'');}catch(er){say(er.message||'Couldn’t load your projects.','bad');}
 })();
 $('pjOut').onclick=async()=>{await AAAccount.signOut();location.href='login.html';};
 })();

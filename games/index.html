@@ -34,9 +34,9 @@
   <a class="skip" href="#main">Skip to content</a>
   <header class="top">
     <a class="brand" href="../" aria-label="Art Alive home"><img src="../art-alive-mark.png" alt=""><img class="wm" src="../art-alive-wordmark.png" alt="Art Alive"></a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <div class="top-act"><a class="btn small acct-btn" data-acct href="../login.html?new=1" aria-label="Create a free account" style="color:#14100c;text-decoration:none">Create account</a><button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button></div>
     <nav id="nav" aria-label="Main">
-      <ul class="util"><li><a href="../gallery.html">Gallery</a></li><li><a href="../how-to.html">How to</a></li><li><a href="../about.html">About</a></li><li><a href="../login.html">Log in</a></li><li><a class="btn small" href="../signup.html" style="color:#14100c;text-decoration:none">Join the waitlist</a></li></ul>
+      <ul class="util"><li><a href="../gallery.html">Gallery</a></li><li><a href="../how-to.html">How to</a></li><li><a href="../plans.html">Plans</a></li><li><a href="../about.html">About</a></li></ul>
       <ul class="aud"><li><a href="../for-creators.html">For Creators</a></li><li><a href="../for-galleries.html">For Galleries</a></li><li><a href="../for-businesses.html">For Businesses</a></li><li><a href="../for-everyone.html">For Everyone</a></li><li><a href="../games/index.html" aria-current="page">Game Maker</a></li><li><a class="studio" href="../studio/index.html">Creator Studio</a></li></ul>
     </nav>
   </header>
@@ -142,8 +142,8 @@
               <p class="gm-status" id="saveMsg" role="status"></p>
             </div>
             <div class="gm-soon">
-              <b>Coming with creator accounts:</b> publish with one tap, get a QR code, and play your game right on the painting through the Art Alive camera.
-              <a href="../signup.html">Join the waitlist</a>
+              <b>Share it on the wall:</b> press <b>Save to my account</b>, then the blue <b>Publish</b> button at the bottom of the screen. You get a link and a QR code to print beside your art. Visitors scan it and play right on the painting.
+              Showing several pieces? Put up to 50 under one QR code with a collection in <a href="../projects.html">My projects</a>.
             </div>
             <div class="gm-nav"><button type="button" class="btn ghost" data-back>Back to editing</button><span></span></div>
           </section>
@@ -153,7 +153,7 @@
 
   </main>
   <footer>
-    <div class="row"><img src="../art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="../for-creators.html">For Creators</a></li><li><a href="../for-galleries.html">For Galleries</a></li><li><a href="../for-businesses.html">For Businesses</a></li><li><a href="../for-everyone.html">For Everyone</a></li><li><a href="../studio/index.html">Creator Studio</a></li><li><a href="../games/index.html">Game Maker</a></li><li><a href="../gallery.html">Gallery</a></li><li><a href="../how-to.html">How to make one</a></li><li><a href="../about.html">About</a></li><li><a href="../contact.html">Contact</a></li><li><a href="../presskit.html">Press kit</a></li><li><a href="../privacy.html">Privacy</a></li></ul></div>
+    <div class="row"><img src="../art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="../for-creators.html">For Creators</a></li><li><a href="../for-galleries.html">For Galleries</a></li><li><a href="../for-businesses.html">For Businesses</a></li><li><a href="../for-everyone.html">For Everyone</a></li><li><a href="../studio/index.html">Creator Studio</a></li><li><a href="../games/index.html">Game Maker</a></li><li><a href="../gallery.html">Gallery</a></li><li><a href="../how-to.html">How to make one</a></li><li><a href="../plans.html">Plans and pricing</a></li><li><a href="../about.html">About</a></li><li><a href="../contact.html">Contact</a></li><li><a href="../presskit.html">Press kit</a></li><li><a href="../privacy.html">Privacy</a></li></ul></div>
     <span>Art Alive is made by the <a href="https://blindcanvasproject.com/" target="_blank" rel="noopener">Blind Canvas Project</a> and Able Art Alliance.</span>
   </footer>
 </div>
@@ -1867,16 +1867,18 @@ function refreshSuggestions() {
 /* ── the editing picture ── */
 const cv = $('#ecv'), ctx = cv.getContext('2d');
 let W = 900, H = 900, M = 900, art = null, fxr = null, img = null, T = 0, last = performance.now();
+let imgSeq = 0;   // only the newest picture wins if two are loading at once
 function setImage(src, cb) {
-  const im = new Image();
+  const im = new Image(), my = ++imgSeq;
   im.onload = () => {
+    if (my !== imgSeq) return;
     // keep games light: the long side at most 1400 pixels
     const long = Math.max(im.naturalWidth, im.naturalHeight), k = Math.min(1, 1400 / long);
     const c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
     c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
     let url; try { url = c.toDataURL('image/jpeg', .86); } catch (e) { url = src; }
     G.img = url;
-    const im2 = new Image(); im2.onload = () => { img = im2; [W, H] = A.sizeFor(im2, 900); M = Math.min(W, H); cv.width = W; cv.height = H; $('#ewrap').style.aspectRatio = W + '/' + H; $('#ewrap').style.setProperty('--ar', (W / H).toFixed(4)); art = A.prepArt(im2, W, H); fxr = A.makeFx(W, H); if (G.type === 'maze' && !G.walls.length) autoMaze(); cb && cb(); }; im2.src = url;
+    const im2 = new Image(); im2.onload = () => { if (my !== imgSeq) return; img = im2; [W, H] = A.sizeFor(im2, 900); M = Math.min(W, H); cv.width = W; cv.height = H; $('#ewrap').style.aspectRatio = W + '/' + H; $('#ewrap').style.setProperty('--ar', (W / H).toFixed(4)); art = A.prepArt(im2, W, H); fxr = A.makeFx(W, H); if (G.type === 'maze' && !G.walls.length) autoMaze(); cb && cb(); }; im2.src = url;
   };
   im.onerror = () => say('That picture could not be opened. Try a JPG or PNG.');
   im.src = src;
@@ -2337,7 +2339,8 @@ ${by}
 }
 $('#dlGame').onclick = () => offerSave(new Blob([gameHTML()], { type: 'text/html' }), slug(G.title) + '-game.html');
 $('#dlProj').onclick = () => offerSave(new Blob([JSON.stringify(G)], { type: 'application/json' }), slug(G.title) + '.artalive.json');
-function openGame(d, done) { G = Object.assign(G, d); Object.keys(edited).forEach(k => delete edited[k]); LINES.forEach(([k]) => { edited[k] = true; });
+let opened = false;
+function openGame(d, done) { opened = true; G = Object.assign(G, d); Object.keys(edited).forEach(k => delete edited[k]); LINES.forEach(([k]) => { edited[k] = true; });
   setImage(G.img, () => { $('#tIn').value = G.title || ''; $('#aIn').value = G.artist || ''; setType(G.type); go('play', true); $('#saveMsg').textContent = 'Opened ' + (G.title || 'your game') + '.'; if (done) done(); }); }
 $('#projIn').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return; e.target.value = '';
@@ -2352,25 +2355,14 @@ const srBox = document.createElement('p'); srBox.className = 'sr'; srBox.setAttr
 function say(t) { srBox.textContent = ''; setTimeout(() => { srBox.textContent = t; }, 40); }
 
 /* start: the tunnel painting with six stars, ready to play */
-setImage(SAMPLES[0].src, () => { G.title = SAMPLES[0].title; G.artist = 'Blind Canvas Project'; $('#tIn').value = G.title; $('#aIn').value = G.artist; fresh(); setType('collect'); go('art'); });
+setImage(SAMPLES[0].src, () => { if (opened) return; G.title = SAMPLES[0].title; G.artist = 'Blind Canvas Project'; $('#tIn').value = G.title; $('#aIn').value = G.artist; fresh(); setType('collect'); go('art'); });
 window.AAMaker = { get G() { return G; }, go, setType, gameHTML, openGame };
 
 /* ── saving to the creator's account (account.js) ── */
-(function () {
-  const A = window.AAAccount; if (!A) return;
-  let pid = new URLSearchParams(location.search).get('project');
-  const msg = t => { $('#saveMsg').textContent = t; say(t); };
-  $('#cloudSave').onclick = async () => {
-    const btn = $('#cloudSave'); btn.disabled = true; msg('Saving to your account…');
-    try { pid = await A.saveProject({ id: pid, kind: 'game', title: G.title || 'My game', data: G, thumbSrc: G.img });
-      history.replaceState(null, '', '?project=' + pid); msg('Saved to your account. Find it any time in My projects.'); }
-    catch (er) { if (er.code === 'signin' || /log in/i.test(er.message)) { msg('Log in first to save to your account. Your game stays here while you do.');
-        $('#cloudNote').innerHTML = '<a href="../login.html?next=' + encodeURIComponent(location.pathname) + '" target="_blank" rel="noopener">Log in</a> in a new tab, then come back and press Save again.'; }
-      else msg(er.message || 'Couldn’t save. Check your connection and try again.'); }
-    finally { btn.disabled = false; } };
-  if (pid) { msg('Opening your game…'); A.getProject(pid).then(p => { if (p.kind !== 'game') throw new Error('That project is an animation. Open it in the Creator Studio.'); openGame(Object.assign(p.data, { title: p.title }), () => msg('Opened ' + (p.title || 'your game') + ' from your account.')); })
-    .catch(er => { pid = null; msg(er.code === 'signin' ? 'Log in to open this game.' : er.message || 'Couldn’t open that game.'); }); }
-})();
+if (window.AAAccount) AAAccount.saveBar({ kind: 'game', buttons: [$('#cloudSave')],
+  onStatus: t => { if (t) { $('#saveMsg').textContent = t; say(t); } },
+  get: () => ({ title: G.title || 'My game', data: G, thumbSrc: G.img }),
+  open: (p, done) => openGame(Object.assign(p.data, { title: p.title }), done) });
 })();
 </script>
 </body>

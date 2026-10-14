@@ -34,24 +34,25 @@
   <a class="skip" href="#main">Skip to content</a>
   <header class="top">
     <a class="brand" href="./" aria-label="Art Alive home"><img src="art-alive-mark.png" alt=""><img class="wm" src="art-alive-wordmark.png" alt="Art Alive"></a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <div class="top-act"><a class="btn small acct-btn" data-acct href="login.html?new=1" aria-label="Create a free account" style="color:#14100c;text-decoration:none">Create account</a><button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button></div>
     <nav id="nav" aria-label="Main">
-      <ul class="util"><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to</a></li><li><a href="about.html">About</a></li><li><a href="login.html" aria-current="page">Log in</a></li><li><a class="btn small" href="signup.html" style="color:#14100c;text-decoration:none">Join the waitlist</a></li></ul>
+      <ul class="util"><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to</a></li><li><a href="plans.html">Plans</a></li><li><a href="about.html">About</a></li></ul>
       <ul class="aud"><li><a href="for-creators.html">For Creators</a></li><li><a href="for-galleries.html">For Galleries</a></li><li><a href="for-businesses.html">For Businesses</a></li><li><a href="for-everyone.html">For Everyone</a></li><li><a href="games/index.html">Game Maker</a></li><li><a class="studio" href="studio/index.html">Creator Studio</a></li></ul>
     </nav>
   </header>
   <main class="wrap" id="main">
     <section class="auth">
       <form id="authForm" novalidate>
-        <span class="eyebrow">Log in or create an account</span>
-        <h1 id="lgH">Welcome to Art Alive</h1>
+        <span class="eyebrow" id="lgEy">Create account</span>
+        <h1 id="lgH">Create your free account</h1>
         <div id="lgForm" style="display:flex;flex-direction:column;gap:16px">
-          <p class="fine" style="font-size:16px">Type your email and we’ll send you a sign-in link. No password to remember. First time here? The same link creates your free account.</p>
+          <p class="fine" style="font-size:16px">Type your email and we’ll send you a link to start. No password to remember. Then save your creations, publish them with a QR code, and put up to 50 under one QR code.</p>
           <div class="field"><label for="em">Email</label><input id="em" name="email" type="email" autocomplete="email" inputmode="email" required></div>
-          <button class="btn" type="submit" id="lgBtn">Email me a sign-in link</button>
+          <button class="btn" type="submit" id="lgBtn">Email me a link to start</button>
+          <p class="fine"><b>Already have an account?</b> Type the same email and we will email you a link to log back in. Handy if you cleared your cookies or are on a new device.</p>
         </div>
         <div id="lgSent" class="done" hidden>
-          <p class="status ok" style="font-size:17px">Check your email. We sent a sign-in link to <b id="lgTo"></b>. Open it on this device to finish.</p>
+          <p class="status ok" style="font-size:17px">Check your email. We sent a link to <b id="lgTo"></b>. Open it on this phone or computer to finish.</p>
           <p class="fine">Nothing there after a minute? Check your spam folder, or <button type="button" class="link" id="lgAgain" style="background:none;border:0;padding:0;color:var(--cream);text-decoration:underline;font:inherit;cursor:pointer">try again</button>.</p>
         </div>
         <div id="lgIn" class="done" hidden>
@@ -60,13 +61,13 @@
           <button class="btn ghost" type="button" id="lgOut">Log out</button>
         </div>
         <p class="status" id="status" role="status" aria-live="polite"></p>
-        <p class="fine">By logging in you agree to keep only art you have the rights to. See our <a href="privacy.html">privacy notice</a>.</p>
+        <p class="fine">By continuing you agree to share only art you have the rights to. See our <a href="privacy.html">privacy notice</a>.</p>
       </form>
     </section>
 
   </main>
   <footer>
-    <div class="row"><img src="art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="for-creators.html">For Creators</a></li><li><a href="for-galleries.html">For Galleries</a></li><li><a href="for-businesses.html">For Businesses</a></li><li><a href="for-everyone.html">For Everyone</a></li><li><a href="studio/index.html">Creator Studio</a></li><li><a href="games/index.html">Game Maker</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to make one</a></li><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="presskit.html">Press kit</a></li><li><a href="privacy.html">Privacy</a></li></ul></div>
+    <div class="row"><img src="art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="for-creators.html">For Creators</a></li><li><a href="for-galleries.html">For Galleries</a></li><li><a href="for-businesses.html">For Businesses</a></li><li><a href="for-everyone.html">For Everyone</a></li><li><a href="studio/index.html">Creator Studio</a></li><li><a href="games/index.html">Game Maker</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to make one</a></li><li><a href="plans.html">Plans and pricing</a></li><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="presskit.html">Press kit</a></li><li><a href="privacy.html">Privacy</a></li></ul></div>
     <span>Art Alive is made by the <a href="https://blindcanvasproject.com/" target="_blank" rel="noopener">Blind Canvas Project</a> and Able Art Alliance.</span>
   </footer>
 </div>
@@ -80,12 +81,12 @@ addEventListener('keydown',e=>{if(e.key==='Escape'&&n.classList.contains('open')
 const $=id=>document.getElementById(id), st=$('status'), next=new URLSearchParams(location.search).get('next')||'';
 function show(w){$('lgForm').hidden=w!=='form';$('lgSent').hidden=w!=='sent';$('lgIn').hidden=w!=='in';}
 if(!AAAccount.configured){st.textContent='Accounts are being set up. Please check back soon.';$('lgBtn').disabled=true;return;}
-AAAccount.user().then(u=>{if(u){$('lgMe').textContent=u.email;$('lgH').textContent='Welcome back';show('in');}}).catch(()=>{});
+AAAccount.user().then(u=>{if(u&&next&&/^\/[^\/]/.test(next)){location.replace(next);return;}if(u){$('lgMe').textContent=u.email;$('lgH').textContent='Welcome back';show('in');}}).catch(()=>{});
 $('authForm').addEventListener('submit',async e=>{e.preventDefault();const em=$('em').value.trim();
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){st.className='status bad';st.textContent='Please type a full email address, like name@example.com.';$('em').focus();return;}
   $('lgBtn').disabled=true;st.className='status';st.textContent='Sending…';
   try{await AAAccount.signIn(em,next);$('lgTo').textContent=em;st.textContent='';show('sent');if(window.aaCount)aaCount('login-link-sent');}
-  catch(er){st.className='status bad';st.textContent=/rate|security purposes|seconds/i.test(er.message||'')?'Too many tries in a row. Wait a minute, then try again.':/signups? not allowed|not found/i.test(er.message||'')?'Accounts are invite-only for now. Join the waitlist and we’ll invite you.':(er.message||'Something went wrong. Please try again.');}
+  catch(er){st.className='status bad';st.textContent=/rate|security purposes|seconds/i.test(er.message||'')?'Too many tries in a row. Wait a minute, then try again.':/signups? not allowed|not found/i.test(er.message||'')?'Accounts are invite-only right now. Send us a message on the contact page and we’ll invite you.':(er.message||'Something went wrong. Please try again.');}
   finally{$('lgBtn').disabled=false;}});
 $('lgAgain').onclick=()=>{show('form');$('em').focus();};
 $('lgOut').onclick=async()=>{await AAAccount.signOut();show('form');st.className='status';st.textContent='You’re logged out.';};

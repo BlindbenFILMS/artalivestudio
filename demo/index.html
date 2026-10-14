@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>See Art Alive</title>
 <meta name="description" content="Point your phone at a TV that is turned off and watch art come alive on it.">
 <meta name="theme-color" content="#15191f">
@@ -34,6 +34,7 @@ button{font:inherit}
 [hidden]{display:none!important}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
+html,body{touch-action:manipulation}
 .intro{min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:22px;max-width:560px;margin:0 auto;
   padding:calc(28px + env(safe-area-inset-top,0px)) 20px calc(32px + env(safe-area-inset-bottom,0px))}
 .back{align-self:flex-start;color:var(--muted);text-decoration:none;font-size:15px}
@@ -84,8 +85,8 @@ h1 .one{display:block;white-space:nowrap;font-size:min(1em,6.8vw,40px);letter-sp
 <main class="intro" id="intro">
   <a class="back" href="../">← Art Alive</a>
   <img class="mark" src="../art-alive-mark.png" alt="">
-  <button class="btn" id="startBtn" type="button">Start camera</button>
   <h1>Center any <span class="one">rectangle shape</span> to activate</h1>
+  <button class="btn" id="startBtn" type="button">Start camera</button>
   <p class="lede">Like a TV, a poster, a sheet of paper, or even a dollar bill. Keep the whole shape in view, and Art Alive plays right on it.</p>
   <button class="btn ghost" id="noCamBtn" type="button">Watch without the camera</button>
   <p class="err" id="err" role="alert" hidden></p>
