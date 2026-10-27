@@ -5,9 +5,24 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Make a Snow Globe · Art Alive</title>
 <meta name="description" content="Put your photo or video in a snow globe. People shake their phone to make it snow, and your video comes alive.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Art Alive">
+<meta property="og:url" content="https://artalivestudio.com/snowglobe/">
 <meta property="og:title" content="Make your own snow globe">
-<meta property="og:description" content="Your photo or video in a snow globe. Shake your phone to make it snow.">
-<meta property="og:image" content="https://artalivestudio.com/play/holiday-snowglobe-600.jpg">
+<meta property="og:description" content="Your photo or video in a snow globe. Shake your phone to make it snow. Free, no app.">
+<meta property="og:image" content="https://artalivestudio.com/play/share/snowglobe-maker.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Make your own snow globe: your photo, your words, share. A snow globe holding three friends.">
+<meta property="og:video" content="https://artalivestudio.com/play/share/snowglobe-maker.mp4?v=1">
+<meta property="og:video:secure_url" content="https://artalivestudio.com/play/share/snowglobe-maker.mp4?v=1">
+<meta property="og:video:type" content="video/mp4">
+<meta property="og:video:width" content="1200">
+<meta property="og:video:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Make your own snow globe">
+<meta name="twitter:description" content="Your photo or video in a snow globe. Shake your phone to make it snow. Free, no app.">
+<meta name="twitter:image" content="https://artalivestudio.com/play/share/snowglobe-maker.jpg?v=1">
 <meta name="theme-color" content="#15191f">
 <link rel="icon" type="image/png" href="../favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,7 +79,47 @@
 .sg-msg{min-height:1.4em;margin:0;font-weight:700}
 .sg-msg.bad{color:#ff9a8a}.sg-msg.ok{color:#8fe3a2}
 .sg-note{font-size:14px}
-@media (max-width:860px){.mk{grid-template-columns:minmax(0,1fr)}.sg-pvcol{position:relative;top:0;order:-1}.sg-pv{height:min(64vh,560px);min-height:380px}}
+
+/* one step at a time, under (or beside) a live preview */
+.mk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"intro pv" "flow pv";column-gap:clamp(24px,4vw,48px);row-gap:16px;align-items:start;margin:clamp(12px,3vw,32px) 0 60px}
+.sg-intro{grid-area:intro;min-width:0}.sg-intro h1{margin:6px 0 8px}.sg-intro .lede{margin:0}
+.sg-pvcol{grid-area:pv;position:sticky;top:16px;min-width:0}
+.sg-flow{grid-area:flow;display:flex;flex-direction:column;gap:12px;min-width:0}
+.sg-pv{height:min(620px,calc(100vh - 60px))}
+.sg-live{position:absolute;top:10px;left:10px;z-index:3;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(8,12,28,.7);border:1px solid rgba(255,255,255,.2);font:800 11px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:#fff}
+.sg-live i{width:8px;height:8px;border-radius:50%;background:#ff5a4f;box-shadow:0 0 0 0 rgba(255,90,79,.6);animation:liveDot 1.6s ease-out infinite}
+@keyframes liveDot{70%{box-shadow:0 0 0 7px rgba(255,90,79,0)}100%{box-shadow:0 0 0 0 rgba(255,90,79,0)}}
+.sg-pv .sg-ph{padding-top:34px}
+.sg-pvbar{position:absolute;left:10px;right:10px;bottom:10px;z-index:3;display:flex;justify-content:center;gap:8px;flex-wrap:nowrap}
+.sg-pvbar .btn2{min-height:40px;padding:0 16px;font-size:12.5px;flex:0 1 auto;background:rgba(8,12,28,.6)}
+.sg-pvbar .btn2.pri{background:var(--orange)}
+.sg-prog ol{list-style:none;margin:0;padding:0;display:flex;gap:6px;flex-wrap:wrap}
+.sg-prog button{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--muted);font:800 12px/1 var(--display);letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
+.sg-prog button b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--line);color:var(--cream);font-size:11px}
+.sg-prog button[aria-current=step]{border-color:var(--orange);color:var(--cream)}
+.sg-prog button[aria-current=step] b{background:var(--orange);color:#14100c}
+.sg-prog button.done b{background:#3c7d55}
+.sg-prog button:disabled{opacity:.45;cursor:default}
+.sg-prog button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.sg-step h2:focus{outline:none}
+#main,.mk,.sg-flow,.sg-step,.sg-intro,.sg-pvcol{min-width:0;max-width:100%}
+.sg-frames{max-width:100%}
+.sg-nav{display:flex;gap:10px}
+.sg-nav .btn2{flex:1;min-height:52px}
+.sg-nav .btn2[hidden]{display:none}
+.sg-nav .btn2:disabled{opacity:.45;cursor:default}
+@media (max-width:860px){
+  .mk{display:flex;flex-direction:column;gap:12px;margin-top:0}
+  .sg-intro .lede{display:none}.sg-intro h1{font-size:clamp(26px,8vw,40px);margin:2px 0 0}
+  .sg-pvcol{position:sticky;top:0;z-index:6;background:var(--room);padding:6px 0 8px;align-self:stretch;width:100%}
+  .sg-pv{width:100%}
+  .sg-prog ol{flex-wrap:nowrap;gap:4px}.sg-prog li{flex:1 1 auto;min-width:0}
+  .sg-prog button{width:100%;justify-content:center;padding:0 6px;gap:4px;font-size:10.5px;letter-spacing:.02em}
+  .sg-prog button b{width:16px;height:16px;font-size:10px;flex:none}
+  .sg-pv{height:44vh;min-height:280px;max-height:440px}
+  .sg-crop{width:min(100%,260px)}
+}
+@media (max-width:360px){.sg-prog button b{display:none}}
 </style>
 </head>
 <body>
@@ -73,47 +128,52 @@
   <header class="top"><a class="brand" href="../" aria-label="Art Alive home"><img src="../art-alive-mark.png" alt=""><img class="wm" src="../art-alive-wordmark.png" alt="Art Alive"></a></header>
   <main id="main">
     <section class="mk" aria-labelledby="h">
-      <div>
+      <div class="sg-intro">
         <span class="eyebrow">Make your own</span>
         <h1 id="h">Snow globe</h1>
-        <p class="lede">Put your photo or video in a snow globe. People <b>shake their phone</b> to make it snow, and your video comes alive.</p>
-        <ol class="sg-steps">
-          <li class="sg-step" id="s1"><h2>1. Your photo or video</h2>
+        <p class="lede">Your photo or video in a snow globe. People <b>shake their phone</b> to make it snow, and your video comes alive.</p>
+      </div>
+      <div class="sg-pvcol">
+        <div class="sg-pv" id="pv" role="region" aria-label="Live preview of your snow globe">
+          <span class="sg-live" aria-hidden="true"><i></i>Live preview</span>
+          <div class="sg-ph"><b id="pvMsg">Happy Holidays</b><span id="pvHint">Changes show here as you go</span></div>
+          <div class="sg-pvbar"><button type="button" class="btn2 pri" id="pvShake">Shake</button><button type="button" class="btn2" id="pvSnd" aria-pressed="false">Sound off</button></div>
+        </div>
+      </div>
+      <div class="sg-flow" id="flow">
+        <nav class="sg-prog" aria-label="Steps"><ol id="dots"></ol></nav>
+        <div class="sg-step" id="s1"><h2 tabindex="-1">Your photo or video</h2>
             <p>Take one now or choose one you have. Videos up to a minute.</p>
             <div class="sg-pick">
               <label class="btn2 pri" for="fCam">Take a photo or video<input class="file" id="fCam" type="file" accept="image/*,video/*" capture="environment"></label>
               <label class="btn2" for="fLib">Choose one<input class="file" id="fLib" type="file" accept="image/*,video/*"></label>
             </div>
-            <p class="sg-msg" id="fMsg" role="status"></p></li>
-          <li class="sg-step" id="s2" hidden><h2>2. Fit it in the globe</h2>
+            <p class="sg-msg" id="fMsg" role="status"></p></div>
+        <div class="sg-step" id="s2" hidden><h2 tabindex="-1">Fit it in the globe</h2>
             <p>Drag to move it. Pinch or use the slider to zoom.</p>
             <div class="sg-cropw"><div class="sg-crop" id="crop" aria-label="Crop: drag to move the picture inside the circle"><canvas id="cropC"></canvas></div>
-              <div class="sg-row"><label for="zoom">Zoom</label><input id="zoom" type="range" min="1" max="4" step="0.01" value="1"></div></div></li>
-          <li class="sg-step" id="s3" hidden><h2>3. Pick the still</h2>
+              <div class="sg-row"><label for="zoom">Zoom</label><input id="zoom" type="range" min="1" max="4" step="0.01" value="1"></div></div></div>
+        <div class="sg-step" id="s3" hidden><h2 tabindex="-1">Pick the still</h2>
             <p>This frame shows until someone shakes the globe. Then your video plays from here to the end, and fades back to this frame.</p>
             <div class="sg-frames" id="frames" role="group" aria-label="Frames from your video"></div>
             <div class="sg-row"><label for="tpos">Exact</label><input id="tpos" type="range" min="0" max="1" step="0.01" value="0"><span id="tlab" aria-live="off">0:00</span></div>
-            <p class="sg-msg" id="pickMsg" role="status"></p></li>
-          <li class="sg-step" id="s4" hidden><h2><span class="n">4</span>. Your words</h2>
+            <p class="sg-msg" id="pickMsg" role="status"></p></div>
+        <div class="sg-step" id="s4" hidden><h2 tabindex="-1">Your words</h2>
             <div class="sg-field"><label for="msgIn">At the top</label><input type="text" id="msgIn" maxlength="24" value="Happy Holidays" autocomplete="off"></div>
             <div class="sg-field"><label for="nameIn">From (on the base)</label><input type="text" id="nameIn" maxlength="32" placeholder="The Fox Family" autocomplete="off"></div>
             <div class="sg-logo"><label class="btn2" for="fLogo">Or add a logo<input class="file" id="fLogo" type="file" accept="image/*"></label><img id="logoPv" alt="Your logo" hidden><button type="button" class="btn2" id="logoX" hidden>Remove logo</button></div>
             <p class="sg-note">A logo with a see-through background (PNG) looks best. It's shown in gold.</p>
+</div>
+        <div class="sg-step" id="s5" hidden><h2 tabindex="-1">Finish and share</h2>
             <fieldset class="sg-chips"><legend>Base colour</legend>
               <label class="sg-chip"><input type="radio" name="base" value="red" checked><span><i style="background:#9a2a3a"></i>Red</span></label>
               <label class="sg-chip"><input type="radio" name="base" value="green"><span><i style="background:#1f6b44"></i>Green</span></label>
               <label class="sg-chip"><input type="radio" name="base" value="blue"><span><i style="background:#2a5596"></i>Blue</span></label>
               <label class="sg-chip"><input type="radio" name="base" value="black"><span><i style="background:#3c3c43"></i>Black</span></label></fieldset>
-            <div class="sg-field"><label for="descIn">Describe the picture (for people who can't see it)</label><input type="text" id="descIn" maxlength="140" placeholder="Three friends in winter hats waving in the snow" autocomplete="off"></div></li>
-          <li class="sg-step" id="s5" hidden><h2><span class="n">5</span>. Share it</h2>
-            <p>You get a link and a QR code. Free with your Art Alive account.</p>
+            <div class="sg-field"><label for="descIn">Describe the picture (for people who can't see it)</label><input type="text" id="descIn" maxlength="140" placeholder="Three friends in winter hats waving in the snow" autocomplete="off"></div>            <p>You get a link and a QR code. Free with your Art Alive account.</p>
             <button type="button" class="btn2 pri" id="make">Make my snow globe</button>
-            <p class="sg-msg" id="mkMsg" role="status"></p></li>
-        </ol>
-      </div>
-      <div class="sg-pvcol" aria-label="Preview">
-        <div class="sg-pv" id="pv"><div class="sg-ph"><b id="pvMsg">Happy Holidays</b><span id="pvHint">Swipe across the globe to make it snow</span></div></div>
-        <div class="sg-pvbar"><button type="button" class="btn2 pri" id="pvShake">Shake</button><button type="button" class="btn2" id="pvSnd" aria-pressed="false">Sound off</button></div>
+            <p class="sg-msg" id="mkMsg" role="status"></p></div>
+        <div class="sg-nav"><button type="button" class="btn2" id="back" hidden>Back</button><button type="button" class="btn2 pri" id="next" disabled>Next</button></div>
       </div>
     </section>
   </main>
@@ -139,12 +199,38 @@
   // until they add their own, the preview shows our example photo and where their name goes
   const sample = new Image(); sample.src = '../play/holiday-snowglobe.jpg';
   const nameOr = () => $('nameIn').value.trim() || 'Your name here';
-  const G = AAGlobe.create($('pv'), { picture: sample, name: 'Your name here', top: 84, bottom: 6, base: 'red',
+  const G = AAGlobe.create($('pv'), { picture: sample, name: 'Your name here', top: 72, bottom: 58, base: 'red',
     onHint(t, big) { $('pvHint').textContent = t; $('pvHint').classList.toggle('big', big); }, say() {} });
   G.sound(false);
   $('pvShake').onclick = () => G.shake();
   $('pvSnd').onclick = () => { soundOn = !soundOn; if (soundOn) G.start(); G.sound(soundOn); $('pvSnd').textContent = soundOn ? 'Sound on' : 'Sound off'; $('pvSnd').setAttribute('aria-pressed', soundOn); };
 
+
+  /* the steps: one at a time, with Back and Next; the progress row shows where you are and lets you jump back */
+  const NAMES = { s1: 'Photo', s2: 'Fit', s3: 'Still', s4: 'Words', s5: 'Finish' };
+  const order = () => ['s1', 's2'].concat(S.mode === 'video' ? ['s3'] : []).concat(['s4', 's5']);
+  let cur = 's1';
+  function go(id, quiet) {
+    const L = order(); if (!L.includes(id)) id = L[0]; cur = id; const k = L.indexOf(id);
+    for (const s of ['s1', 's2', 's3', 's4', 's5']) $(s).hidden = s !== id;
+    $('dots').innerHTML = L.map((s, i) => '<li><button type="button" data-s="' + s + '"' + (s === id ? ' aria-current="step"' : '') + (i < k ? ' class="done"' : '') + (i > 0 && !S.mode ? ' disabled' : '') + '><b>' + (i + 1) + '</b>' + NAMES[s] + '</button></li>').join('');
+    $('dots').querySelectorAll('button').forEach(b => b.onclick = () => go(b.dataset.s));
+    $('back').hidden = k === 0; $('next').hidden = k === L.length - 1; $('next').disabled = !S.mode;
+    $('next').textContent = k === L.length - 2 ? 'Next: finish' : 'Next';
+    if (id === 's2') setTimeout(drawCrop, 0);
+    if (!quiet) {
+      const pv = document.querySelector('.sg-pvcol'), fl = $('flow');
+      if (innerWidth <= 860) {   // the live preview pins to the top, and the step starts right under it
+        fl.style.minHeight = Math.max(0, innerHeight - pv.offsetHeight) + 'px';   // room for a short step to sit there too
+        scrollTo({ top: Math.max(0, fl.getBoundingClientRect().top + scrollY - pv.offsetHeight - 4), behavior: 'smooth' });
+      } else if (innerWidth > 860) $('flow').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      $(id).querySelector('h2').focus({ preventScroll: true });
+      say('Step ' + (k + 1) + ' of ' + L.length + ': ' + $(id).querySelector('h2').textContent + '.');
+    }
+  }
+  $('next').onclick = () => { const L = order(); go(L[Math.min(L.length - 1, L.indexOf(cur) + 1)]); };
+  $('back').onclick = () => { const L = order(); go(L[Math.max(0, L.indexOf(cur) - 1)]); };
+  go('s1', true);
   /* 1. the photo or video */
   const src = () => S.mode === 'video' ? vid : img;
   async function take(file) {
@@ -165,13 +251,11 @@
       }
     } catch (e) { S.mode = ''; return note('fMsg', isVid ? 'That video couldn’t be opened here. Try one recorded on this phone, or a photo.' : 'That picture couldn’t be opened. Try another.', 'bad'); }
     S.size = Math.min(S.w, S.h); S.zoom = 1; $('zoom').value = 1; S.cx = S.w / 2; S.cy = S.h / 2;
-    $('s2').hidden = false; $('s3').hidden = !isVid; $('s4').hidden = false; $('s5').hidden = false;
-    document.querySelectorAll('.n').forEach((n, i) => { n.textContent = (isVid ? 4 : 3) + i; });
+    go('s2');   // straight on to fitting it in the globe
     note('fMsg', isVid ? 'Got your video (' + Math.round(vid.duration) + ' s).' : 'Got your photo.', 'ok');
     G.set({ video: isVid ? S.url : '', start: 0 });
     drawCrop(); render();
     if (isVid) await frames();
-    $('s2').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
   $('fCam').onchange = e => take(e.target.files[0]); $('fLib').onchange = e => take(e.target.files[0]);
 
@@ -269,7 +353,7 @@
   async function unstash() { const d = await IDB(); return new Promise(ok => { const t = d.transaction('kv', 'readwrite'), st = t.objectStore('kv'), g = st.get('draft'); g.onsuccess = () => { const v = g.result; if (v) st.delete('draft'); t.oncomplete = () => ok(v || null); }; g.onerror = () => ok(null); }); }
   const snapshot = () => ({ at: Date.now(), file: S.file, cx: S.cx, cy: S.cy, zoom: S.zoom, start: S.start, msg: $('msgIn').value, name: $('nameIn').value, desc: $('descIn').value, base: S.base, logoData: S.logoData });
   $('make').onclick = async () => {
-    if (!S.mode) { note('mkMsg', 'First choose a photo or video.', 'bad'); $('fLib').focus(); return; }
+    if (!S.mode) { note('mkMsg', 'First choose a photo or video.', 'bad'); go('s1'); return; }
     if (busy) return note('mkMsg', 'One moment: still looking through your video.', 'bad');
     if (!A || !A.configured) return note('mkMsg', 'Making snow globes isn’t switched on yet. Please try again soon.', 'bad');
     const btn = $('make'); btn.disabled = true;
@@ -292,7 +376,7 @@
       note('mkMsg', 'Making its link and QR code…');
       const code = await A.publishProject(id);
       note('mkMsg', 'Your snow globe is ready!', 'ok');
-      await A.shareDialog(code, msg + ' snow globe');
+      await A.shareDialog(code, msg + ' snow globe', false, new URL('play.html?c=' + code, location.href).href);   // its own link shows the snow globe card in texts
     } catch (e) {
       const t = (e && (e.message || e.details)) || '';
       if (/kind_check|projects_kind/i.test(t)) note('mkMsg', 'Snow globes are almost ready to share. Please try again soon.', 'bad');
@@ -312,7 +396,7 @@
       else G.set({ name: nameOr() });
       await take(o.file); S.zoom = o.zoom || 1; $('zoom').value = S.zoom; S.cx = o.cx; S.cy = o.cy; drawCrop(); render();
       if (S.mode === 'video' && o.start != null) await choose(o.start, null);
-      note('mkMsg', 'Welcome! Your snow globe is back. Press Make my snow globe to finish.', 'ok'); $('make').focus();
+      go('s5'); note('mkMsg', 'Welcome! Your snow globe is back. Press Make my snow globe to finish.', 'ok'); $('make').focus();
     }
   }
 })();

@@ -181,8 +181,8 @@
     g.fillStyle = '#15191f'; g.textAlign = 'center'; g.font = '900 64px Archivo, "Arial Black", Arial, sans-serif'; g.fillText(coll ? 'Scan me, then point at any picture' : 'Scan me, then point at the picture', S / 2, S + 90, S - 80);
     g.font = '700 46px "Atkinson Hyperlegible", Verdana, Arial, sans-serif'; g.fillText(title.slice(0, 48), S / 2, S + 160, S - 80); g.fillStyle = '#5a6270'; g.font = '600 34px Verdana, Arial, sans-serif'; g.fillText('Art Alive · artalivestudio.com', S / 2, S + 220, S - 80);
     return new Promise(ok => cv.toBlob(ok, 'image/png')); }
-  async function shareDialog(code, title, coll) {
-    css(); await loadQR().catch(() => {}); const url = PUB_URL(code, coll); let dlg = document.getElementById('aaShare'); if (dlg) dlg.remove();
+  async function shareDialog(code, title, coll, link) {   // link: optional, a page's own link instead of the usual short one
+    css(); await loadQR().catch(() => {}); const url = link || PUB_URL(code, coll); let dlg = document.getElementById('aaShare'); if (dlg) dlg.remove();
     dlg = document.createElement('dialog'); dlg.id = 'aaShare'; dlg.className = 'aa-share'; dlg.setAttribute('aria-labelledby', 'aaShareH');
     const qr = window.qrcode ? qrPath(url) : null;
     dlg.innerHTML = '<div class="aa-share-in"><p class="aa-share-k">Published</p><h2 id="aaShareH">' + (coll ? 'Your collection is live' : 'Your art is live') + '</h2><p class="aa-share-t">' + esc(title) + '</p>' +

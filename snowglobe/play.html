@@ -5,6 +5,24 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Snow Globe · Art Alive</title>
 <meta name="description" content="Shake your phone to make it snow.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Art Alive">
+<meta property="og:url" content="https://artalivestudio.com/snowglobe/play.html">
+<meta property="og:title" content="Someone sent you a snow globe!">
+<meta property="og:description" content="Open it, then shake your phone to make it snow.">
+<meta property="og:image" content="https://artalivestudio.com/play/share/snowglobe-made.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Someone sent you a snow globe! A snow globe holding a snowy cabin at night.">
+<meta property="og:video" content="https://artalivestudio.com/play/share/snowglobe-made.mp4?v=1">
+<meta property="og:video:secure_url" content="https://artalivestudio.com/play/share/snowglobe-made.mp4?v=1">
+<meta property="og:video:type" content="video/mp4">
+<meta property="og:video:width" content="1200">
+<meta property="og:video:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Someone sent you a snow globe!">
+<meta name="twitter:description" content="Open it, then shake your phone to make it snow.">
+<meta name="twitter:image" content="https://artalivestudio.com/play/share/snowglobe-made.jpg?v=1">
 <meta name="theme-color" content="#0b1530">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="../favicon.png">
@@ -106,7 +124,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #7cc4ff;outline-offset:3p
   $('start').onclick = async () => { await g.start(); $('go').remove(); $('bar').hidden = false; $('shake').focus({ preventScroll: true });
     say(msg + (who ? ', from ' + who : '') + '. Shake your phone, tilt it, or press Shake to make it snow.'); };
   $('shake').onclick = () => g.shake();
-  $('share').onclick = () => AAShareLink.open({ url: AAAccount.PUB_URL ? AAAccount.PUB_URL(code) : location.href, title: msg + ' · Snow Globe', text: msg + (who ? ' from ' + who : '') + '. Shake your phone to make it snow!',
+  $('share').onclick = () => AAShareLink.open({ url: new URL('play.html?c=' + encodeURIComponent(code), location.href).href, title: msg + ' · Snow Globe', text: msg + (who ? ' from ' + who : '') + '. Shake your phone to make it snow!',
     onShare() { if (window.AAStats) AAStats.log(code, 'share'); } });
   $('share2').onclick = () => $('share').click();
   addEventListener('keydown', e => { if ((e.key === 's' || e.key === 'S') && !e.metaKey && !e.ctrlKey && !$('go')) g.shake(); });
