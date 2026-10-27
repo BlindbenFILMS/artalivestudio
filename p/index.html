@@ -54,7 +54,7 @@ h1{margin:8px 0 2px;font:900 clamp(30px,7vw,52px)/1 'Archivo','Arial Black',Aria
 <script src="../site-config.js"></script>
 <script src="../capture.js"></script>
 <script src="../games/engine.js"></script>
-<script src="../account.js"></script>
+<script src="../account.js"></script><script src="../stats.js"></script>
 <script>
 (async function () {
   const $ = id => document.getElementById(id), code = (new URLSearchParams(location.search).get('c') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -67,7 +67,9 @@ h1{margin:8px 0 2px;font:900 clamp(30px,7vw,52px)/1 'Archivo','Arial Black',Aria
     const p = await AAAccount.published(code);
     if (!p) return fail('Not available', 'This piece isn’t published right now. It may have been taken down by its creator.');
     if (p.kind === 'studio') { location.replace('../studio/index.html?play=' + encodeURIComponent(code) + (cam ? '&cam=1' : '')); return; }
-    await AAAccount.fillMedia(p.data); AAAccount.countView(code);
+    if (p.kind === 'postcard') { location.replace('../magicpostcard/play.html?c=' + encodeURIComponent(code) + (cam ? '&cam=1' : '')); return; }
+    if (p.kind === 'snowglobe') { location.replace('../snowglobe/play.html?c=' + encodeURIComponent(code)); return; }
+    await AAAccount.fillMedia(p.data); AAAccount.countView(code); if (window.AAStats) AAStats.log(code, 'open');
     const d = p.data, es = d.lang === 'es'; document.documentElement.lang = d.lang || 'en';
     $('t').textContent = p.title; document.title = p.title + (es ? ' · un juego de Art Alive' : ' · an Art Alive game');
     $('by').textContent = d.artist ? (es ? 'de ' : 'by ') + d.artist : ''; $('wait').hidden = true;
@@ -79,6 +81,7 @@ h1{margin:8px 0 2px;font:900 clamp(30px,7vw,52px)/1 'Archivo','Arial Black',Aria
   async function collection(kc) {
     let col; try { col = await AAAccount.publishedCollection(kc); } catch (e) { return fail('Couldn’t load it', 'Check your connection and try again.'); }
     if (!col) return fail('Not available', 'This collection isn’t published right now.');
+    if (window.AAStats) AAStats.log(kc, 'open');
     const items = (col.items || []).filter(i => i.code), esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     // animations play by themselves in the camera, so collections with any animations open there (the list is one tap away)
     const auto = '../studio/index.html?k=' + kc, hasAnim = items.some(it => it.kind === 'studio');
@@ -90,6 +93,7 @@ h1{margin:8px 0 2px;font:900 clamp(30px,7vw,52px)/1 'Archivo','Arial Black',Aria
     $('coll').hidden = false;
     const known = items.filter(it => it.fp).map(it => ({ it, f: AAAccount.FP.decode(it.fp) }));
     $('camGo').onclick = () => {
+      if (window.AAStats) AAStats.log(kc, 'camera');
       if (hasAnim) { location.href = auto; return; }
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.AACapture) { alertMsg('This browser can’t use the camera here. Choose a piece from the list instead.'); return; }
       const ov = document.createElement('div'); ov.className = 'cam'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Camera');
@@ -110,14 +114,17 @@ h1{margin:8px 0 2px;font:900 clamp(30px,7vw,52px)/1 'Archivo','Arial Black',Aria
         if (!found.hidden || now - last < 250 || !known.length) return; last = now;
         // which piece is it? compare the inside of the shape with each piece's fingerprint, in all four turns
         const GW = 480, GH = Math.round(480 * vh / vw); if (gc.width !== GW) { gc.width = GW; gc.height = GH; } gx.drawImage(vid, 0, 0, GW, GH);
-        const d = gx.getImageData(0, 0, GW, GH).data, f = AAAccount.FP.fromQuad(d, GW, GH, r.c.map(([x, y]) => [x * GW, y * GH]));
+        const d = gx.getImageData(0, 0, GW, GH).data, f = AAAccount.FP.fromQuad(d, GW, GH, r.c.map(([x, y]) => [x * GW, y * GH])), FPX = AAAccount.FP;
+        const Qs = (() => { const Hq = AACapture.homography([[0, 0], [1, 0], [1, 1], [0, 1]], r.c.map(([x, y]) => [x * GW, y * GH]));   // the shape as found, and pulled in past a mat or frame
+      return [0, .06, .12, .18].map(e => [[e, e], [1 - e, e], [1 - e, 1 - e], [e, 1 - e]].map(([u, v]) => { const z = Hq[6] * u + Hq[7] * v + 1; return [(Hq[0] * u + Hq[1] * v + Hq[2]) / z, (Hq[3] * u + Hq[4] * v + Hq[5]) / z]; })); })(),
+      fs = Qs.map(Q => FPX.fromQuad(d, GW, GH, Q)), scoreOf = kf => Math.max(...fs.map(x => FPX.score(x, kf)));
         const qa = (Math.hypot(r.c[1][0] - r.c[0][0], (r.c[1][1] - r.c[0][1]) * vh / vw) + Math.hypot(r.c[2][0] - r.c[3][0], (r.c[2][1] - r.c[3][1]) * vh / vw)) / (Math.hypot((r.c[3][0] - r.c[0][0]), (r.c[3][1] - r.c[0][1]) * vh / vw) + Math.hypot((r.c[2][0] - r.c[1][0]), (r.c[2][1] - r.c[1][1]) * vh / vw) || 1);
         let best = null, second = -1;
-        for (const k of known) { let sc = AAAccount.FP.score(f, k.f); const ratio = Math.max(qa, k.it.aspect || 1) / Math.min(qa, k.it.aspect || 1); if (ratio > 1.45) sc -= .12;
+        for (const k of known) { let sc = scoreOf(k.f); const ratio = Math.max(qa, k.it.aspect || 1) / Math.min(qa, k.it.aspect || 1); if (ratio > 1.45) sc -= .12;
           if (!best || sc > best.sc) { if (best) second = Math.max(second, best.sc); best = { it: k.it, sc }; } else second = Math.max(second, sc); }
         window.__aaScores = (window.__aaScores || []).concat([known.map(k => k.it.title.slice(0, 8) + ':' + AAAccount.FP.score(f, k.f).toFixed(2)).join(' ')]).slice(-4);
         if (best && best.sc > .6 && best.sc - second > .1) { streak = streak.code === best.it.code ? { code: best.it.code, n: streak.n + 1 } : { code: best.it.code, n: 1 }; } else streak = { code: '', n: 0 };
-        if (streak.n >= 2) { const it = best.it; found.hidden = false; tip.textContent = 'Found it!'; try { navigator.vibrate && navigator.vibrate([30, 30, 60]); } catch (e) {}
+        if (streak.n >= 2) { const it = best.it; if (window.AAStats) AAStats.log(it.code, 'found'); found.hidden = false; tip.textContent = 'Found it!'; try { navigator.vibrate && navigator.vibrate([30, 30, 60]); } catch (e) {}
           found.innerHTML = '<span>Found</span><b>' + esc(it.title) + '</b><a class="btn" href="' + link(it) + '">Play it</a><button type="button" class="btn btn2">Keep looking</button>';
           found.querySelector('button').onclick = () => { found.hidden = true; streak = { code: '', n: 0 }; tip.textContent = 'Point at any picture in ' + col.title + '.'; };
           found.querySelector('a').focus(); window.__aaFound = it.code; }

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Locations · Magic Postcards · Art Alive</title>
+<meta name="description" content="Magic Postcards from all 50 states. Each picture turns from day to a starry night, with your own video message under it.">
+<meta name="theme-color" content="#1f3352">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&family=Yellowtail&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../site.css">
+<style>
+:root{--coral:#ec9a72;--navy:#1f3352;--sky:#b9cfe6}
+.pg-hero{margin:clamp(18px,4vw,40px) 0 18px;display:flex;flex-direction:column;gap:12px}
+.pg-hero h1{margin:0;font:900 clamp(36px,6vw,70px)/.95 var(--display);font-stretch:118%;text-transform:uppercase}
+.pg-hero h1 em{font-style:normal;color:var(--coral)}
+.pg-cats{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
+.pg-cats a{min-height:48px;display:inline-flex;align-items:center;padding:0 20px;border-radius:999px;border:2px solid var(--line);color:var(--cream);text-decoration:none;font:800 14px/1 var(--display);letter-spacing:.08em;text-transform:uppercase}
+.pg-cats a[aria-current="page"]{background:var(--coral);border-color:var(--coral);color:#14100c}
+.pg-cats a.make{margin-left:auto;border-color:var(--cream)}
+.pg-sub{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 18px;padding:6px;background:var(--wall);border:1px solid var(--line);border-radius:999px}
+.pg-sub button{min-height:44px;padding:0 16px;border-radius:999px;border:0;background:transparent;color:var(--cream);font:800 13px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.pg-sub button[aria-selected="true"]{background:var(--cream);color:#14100c}
+.pg-sub button:focus-visible,.pg-cats a:focus-visible{outline:3px solid #f2c14e;outline-offset:2px}
+.pg-card{position:relative;width:100%;aspect-ratio:3/2;border-radius:6px;overflow:hidden;background:#16223a;box-shadow:0 24px 50px -25px rgba(0,0,0,.9)}
+.pg-card canvas,.pg-card .pg-live{position:absolute;left:0;top:0;height:100%}
+.pg-card .pg-base{width:100%}
+.pg-card .pg-live,.pg-card .pg-top{width:66.6667%}
+.pg-card .pg-live>*{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .5s}
+.pg-card .pg-top{opacity:0;transition:opacity .5s;pointer-events:none}
+.pg-card.on .pg-live>*,.pg-card.on .pg-top{opacity:1}
+.pg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:22px;list-style:none;margin:0 0 40px;padding:0}
+.pg-item{display:flex;flex-direction:column;gap:10px}
+.pg-item h3{margin:0;font:900 19px/1.15 var(--display);font-stretch:112%}
+.pg-item p{margin:0;color:var(--muted);font-size:15px}
+.pg-item .row{display:flex;gap:8px;flex-wrap:wrap}
+.pg-item .row>*{flex:1 1 130px}
+.pg-tap{all:unset;cursor:pointer;display:block;border-radius:6px}
+.pg-tap:focus-visible{outline:3px solid #f2c14e;outline-offset:3px}
+.pg-feature{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:start;margin-bottom:40px}
+.pg-feature h2{margin:0 0 10px;font:900 clamp(26px,3.6vw,40px)/1.05 var(--display);font-stretch:115%;text-transform:uppercase}
+.pg-feature ul{margin:12px 0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.pg-feature .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.pg-note{background:var(--wall);border:1px dashed var(--line);border-radius:14px;padding:14px 16px;color:var(--muted);font-size:15px;margin:0 0 30px}
+.from-strip{background:#000;color:#fff;border-radius:3px;padding:14px 12px;text-align:center;font:900 clamp(18px,3vw,28px)/1 var(--display);font-stretch:118%;letter-spacing:.06em;text-transform:uppercase}
+.from-vid{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:3px;overflow:hidden}
+.from-vid video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.from-vid .snd{position:absolute;right:10px;bottom:10px;min-height:40px;padding:0 14px;border-radius:999px;border:0;background:rgba(0,0,0,.65);color:#fff;font:800 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+@media (max-width:900px){.pg-feature{grid-template-columns:minmax(0,1fr)}.pg-cats a.make{margin-left:0}}
+@media (max-width:700px){.pg-sub{flex-wrap:nowrap;overflow-x:auto;border-radius:18px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.pg-sub::-webkit-scrollbar{display:none}.pg-sub button{flex:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="../" aria-label="Art Alive home"><img src="../art-alive-mark.png" alt=""><img class="wm" src="../art-alive-wordmark.png" alt="Art Alive"></a>
+    <div class="top-act"><a class="btn small acct-btn" data-acct href="../login.html?new=1" aria-label="Create a free account" style="color:#14100c;text-decoration:none">Create account</a><button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button></div>
+    <nav id="nav" aria-label="Main">
+      <ul class="util"><li><a href="../gallery.html">Gallery</a></li><li><a href="../how-to.html">How to</a></li><li><a href="../plans.html">Plans</a></li><li><a href="../about.html">About</a></li></ul>
+      <ul class="aud"><li><a href="../for-creators.html">For Creators</a></li><li><a href="../for-galleries.html">For Galleries</a></li><li><a href="../for-businesses.html">For Businesses</a></li><li><a href="../for-everyone.html">For Everyone</a></li><li><a href="./" aria-current="page">Magic Postcards</a></li><li><a class="studio" href="../studio/index.html">Creator Studio</a></li></ul>
+    </nav>
+  </header>
+
+  <main id="main">
+    <nav class="pg-cats" aria-label="Magic Postcards"><a href="locations.html" aria-current="page">Locations</a><a href="events.html">Events</a><a href="business.html">For Businesses</a><a class="make" href="./#make">Make yours</a></nav>
+    <section class="pg-hero"><span class="eyebrow">Magic Postcards</span><h1>Greetings from <em>everywhere</em></h1>
+      <p class="lede">A postcard for every state. Each picture comes alive when it's scanned: day turns to a moonlit night, with the sea, the stars, fireflies and northern lights. Tap a card to watch it. Then make it yours and add your own video message.</p></section>
+    <div class="pg-sub" id="sub" aria-label="Regions"></div>
+    <ul class="pg-grid" id="grid" role="tabpanel"></ul>
+  </main>
+
+  <footer>
+    <div class="row"><img src="../art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="../for-creators.html">For Creators</a></li><li><a href="../for-galleries.html">For Galleries</a></li><li><a href="../for-businesses.html">For Businesses</a></li><li><a href="../for-everyone.html">For Everyone</a></li><li><a href="./">Magic Postcards</a></li><li><a href="../studio/index.html">Creator Studio</a></li><li><a href="../games/index.html">Game Maker</a></li><li><a href="../gallery.html">Gallery</a></li><li><a href="../plans.html">Plans and pricing</a></li><li><a href="../about.html">About</a></li><li><a href="../contact.html">Contact</a></li><li><a href="../privacy.html">Privacy</a></li></ul></div>
+    <span>Art Alive is made by the <a href="https://blindcanvasproject.com/" target="_blank" rel="noopener">Blind Canvas Project</a> and Able Art Alliance.</span>
+  </footer>
+</div>
+<script src="../site-config.js"></script><script src="../site.js"></script><script src="../account.js"></script><script src="../qr.js"></script><script src="postcard.js"></script><script src="animate.js"></script><script src="sound.js"></script><script src="gallery.js"></script>
+<script>
+(function(){const b=document.querySelector('.menu-btn'),n=document.getElementById('nav');if(!b)return;
+b.addEventListener('click',()=>{const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'Close':'Menu';});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&n.classList.contains('open')){n.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='Menu';b.focus();}});})();
+</script>
+<script>
+function tabs(box, items, onSel) {
+  box.setAttribute('role', 'tablist'); box.innerHTML = items.map((it, i) => '<button type="button" role="tab" id="tab-' + it.id + '" aria-selected="' + (i ? 'false' : 'true') + '" tabindex="' + (i ? '-1' : '0') + '">' + it.name + '</button>').join('');
+  const bs = [...box.children], sel = i => { bs.forEach((b, k) => { b.setAttribute('aria-selected', k === i); b.tabIndex = k === i ? 0 : -1; }); onSel(items[i], i); };
+  bs.forEach((b, i) => { b.onclick = () => sel(i); b.onkeydown = e => { const n = e.key === 'ArrowRight' ? (i + 1) % bs.length : e.key === 'ArrowLeft' ? (i - 1 + bs.length) % bs.length : -1; if (n >= 0) { e.preventDefault(); bs[n].focus(); sel(n); } }; });
+  const h = location.hash.slice(1), start = Math.max(0, items.findIndex(it => it.id === h)); bs[start].setAttribute('aria-selected', 'true'); sel(start); return sel;
+}
+(async function () {
+  const REG = { 'Northeast': ['Connecticut', 'Delaware', 'Maine', 'Maryland', 'Massachusetts', 'New Hampshire', 'New Jersey', 'New York', 'Pennsylvania', 'Rhode Island', 'Vermont'],
+    'South': ['Alabama', 'Arkansas', 'Florida', 'Georgia', 'Kentucky', 'Louisiana', 'Mississippi', 'North Carolina', 'South Carolina', 'Tennessee', 'Virginia', 'West Virginia'],
+    'Midwest': ['Illinois', 'Indiana', 'Iowa', 'Kansas', 'Michigan', 'Minnesota', 'Missouri', 'Nebraska', 'North Dakota', 'Ohio', 'South Dakota', 'Wisconsin'],
+    'Southwest': ['Arizona', 'New Mexico', 'Oklahoma', 'Texas'],
+    'West & Pacific': ['Alaska', 'California', 'Colorado', 'Hawaii', 'Idaho', 'Montana', 'Nevada', 'Oregon', 'Utah', 'Washington', 'Wyoming'] };
+  const all = (await MPGallery.load()).filter(t => t.cat === 'location'), esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const items = [{ id: 'all', name: 'All ' + all.length }].concat(Object.keys(REG).map(r => ({ id: r.toLowerCase().replace(/[^a-z]+/g, '-'), name: r, states: REG[r] })));
+  let cards = [];
+  tabs(document.getElementById('sub'), items, it => {
+    MPGallery.stopAll(); const list = it.states ? all.filter(t => it.states.includes(t.state)) : all, ul = document.getElementById('grid'); ul.setAttribute('aria-labelledby', 'tab-' + it.id); ul.innerHTML = '';
+    cards = list.map(t => { const c = MPGallery.card(t, { scale: .9 }), li = document.createElement('li'); li.className = 'pg-item';
+      const tap = document.createElement('button'); tap.className = 'pg-tap'; tap.type = 'button'; tap.setAttribute('aria-label', 'Play the ' + t.title + ' postcard'); tap.appendChild(c.el); li.appendChild(tap);
+      li.insertAdjacentHTML('beforeend', '<h3>' + esc(t.title) + '</h3><p>' + esc(t.state) + (t.blurb ? ' \u00b7 ' + esc(t.blurb) : '') + '</p><div class="row"><button type="button" class="btn small ghost" data-play>Play</button><a class="btn small" href="./?t=' + encodeURIComponent(t.id) + '#make">Make this card</a></div>');
+      const pb = li.querySelector('[data-play]'), toggle = () => c.on ? c.stop() : c.play(); tap.onclick = toggle; pb.onclick = toggle;
+      c.el.addEventListener('pgplay', () => { pb.textContent = 'Stop'; }); c.el.addEventListener('pgstop', () => { pb.textContent = 'Play'; });
+      ul.appendChild(li); return c; });
+    MPGallery.lazy(cards); history.replaceState(null, '', '#' + it.id);
+  });
+})();
+</script>
+</body>
+</html>

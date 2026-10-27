@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Stats · Art Alive</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#15191f">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="site.css">
+<style>
+.st-head{display:flex;flex-direction:column;gap:10px;margin:clamp(20px,5vw,48px) 0 18px}
+.st-head h1{margin:0;font:900 clamp(30px,5vw,54px)/1 var(--display);font-stretch:118%;text-transform:uppercase;text-wrap:balance}
+.st-range{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 20px}
+.st-range button{min-height:44px;padding:0 18px;border-radius:999px;border:2px solid var(--line);background:transparent;color:var(--cream);font:800 13px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.st-range button[aria-pressed="true"]{background:var(--cream);border-color:var(--cream);color:#14100c}
+.st-range button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.st-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr));gap:12px;margin:0 0 26px;padding:0;list-style:none}
+.st-tile{background:var(--wall);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.st-tile b{font:900 clamp(30px,4vw,40px)/1 var(--display);font-stretch:112%;font-variant-numeric:tabular-nums}
+.st-tile span{color:var(--muted);font-size:15px}
+.st-tile small{color:var(--muted);font-size:13px}
+.st-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:40px}
+.st-card{background:var(--wall);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0;position:relative}
+.st-card.wide{grid-column:1/-1}
+.st-card h2{margin:0;font:800 16px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase}
+.st-card .sub{margin:0;color:var(--muted);font-size:14px}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .ax{fill:var(--muted);font:12px var(--body)}
+.chart .bar{fill:var(--orange)}
+.chart .bar:hover,.chart .bar.on{fill:#ffa066}
+.chart .hit{fill:transparent;cursor:crosshair}
+.chart .lbl{fill:var(--cream);font:700 12px var(--body)}
+.st-tip{position:absolute;pointer-events:none;background:#0b0d10;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px;color:var(--cream);white-space:nowrap;box-shadow:0 8px 24px -8px #000;z-index:2}
+.st-tip b{display:block;font:800 13px var(--display);letter-spacing:.04em}
+.hbars{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.hbars li{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr) 3.5em;align-items:center;gap:10px;font-size:15px}
+.hbars .track{height:12px;border-radius:0 4px 4px 0;background:transparent;position:relative}
+.hbars .fill{position:absolute;left:0;top:0;bottom:0;border-radius:0 4px 4px 0;background:var(--orange);min-width:2px}
+.hbars .n{text-align:right;font-variant-numeric:tabular-nums;color:var(--cream)}
+.hbars .name{color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details.tbl{margin:-20px 0 40px}
+details.tbl summary{cursor:pointer;color:var(--muted);min-height:44px;display:flex;align-items:center}
+details.tbl table{border-collapse:collapse;font-size:15px;min-width:420px}
+details.tbl th,details.tbl td{padding:6px 12px;border-bottom:1px solid var(--line);text-align:right}
+details.tbl th:first-child,details.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.empty{background:var(--wall);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:10px;align-items:flex-start;margin-bottom:40px}
+.privacy{color:var(--muted);font-size:14px;max-width:70ch;margin:0 0 40px}
+@media (max-width:760px){.st-cards{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="./" aria-label="Art Alive home"><img src="art-alive-mark.png" alt=""><img class="wm" src="art-alive-wordmark.png" alt="Art Alive"></a>
+    <div class="top-act"><a class="btn small" href="projects.html" style="color:#14100c;text-decoration:none">My projects</a></div>
+  </header>
+  <main id="main">
+    <div class="st-head"><span class="eyebrow">Stats</span><h1 id="h">Your piece</h1><p class="lede" id="lede" style="margin:0">How people enjoy it.</p></div>
+    <p class="status" id="st" role="status" aria-live="polite">Loading…</p>
+    <div id="out" hidden>
+      <div class="st-range" role="group" aria-label="How far back"><button type="button" data-d="7" aria-pressed="false">7 days</button><button type="button" data-d="30" aria-pressed="true">30 days</button><button type="button" data-d="90" aria-pressed="false">90 days</button></div>
+      <ul class="st-tiles" id="tiles"></ul>
+      <div class="st-cards">
+        <section class="st-card wide" aria-labelledby="cDay"><h2 id="cDay">Visits each day</h2><div id="byDay"></div></section>
+        <section class="st-card" aria-labelledby="cHour"><h2 id="cHour">What time people visit</h2><p class="sub">Their own local time</p><div id="byHour"></div></section>
+        <section class="st-card" aria-labelledby="cDev"><h2 id="cDev">Phones, tablets, computers</h2><ul class="hbars" id="byDev"></ul></section>
+        <section class="st-card" aria-labelledby="cZone"><h2 id="cZone">Where</h2><p class="sub">By time zone</p><ul class="hbars" id="byZone"></ul></section>
+        <section class="st-card" aria-labelledby="cLang"><h2 id="cLang">Languages</h2><ul class="hbars" id="byLang"></ul></section>
+      </div>
+      <details class="tbl"><summary>See each day as a table</summary><div class="tblwrap"><table id="tbl"><thead><tr><th scope="col">Day</th><th scope="col">Visits</th><th scope="col">Found with the camera</th><th scope="col">Photos</th></tr></thead><tbody></tbody></table></div></details>
+      <p class="privacy">What's counted: when someone opens the piece, turns on the camera, finds it, or takes, shares or saves a photo, with the kind of device, their local hour, language and time zone. No names, emails or IP addresses, nothing that identifies anyone. Browsers set to "do not track" aren't counted.</p>
+    </div>
+  </main>
+</div>
+<script src="site-config.js"></script><script src="site.js"></script><script src="account.js"></script>
+<script>
+(async function () {
+  'use strict';
+  const $ = id => document.getElementById(id), A = window.AAAccount, say = t => { $('st').textContent = t; };
+  const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const nf = n => Number(n || 0).toLocaleString();
+  const code = (new URLSearchParams(location.search).get('c') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (!code) return say('Open this from My projects: each live piece has a Stats link.');
+  if (!A || !A.configured) return say('Accounts aren’t switched on yet.');
+  const u = await A.user().catch(() => null);
+  if (!u) { say(''); $('st').insertAdjacentHTML('afterend', '<div class="empty"><p>Log in to see your stats.</p><a class="btn" href="login.html?next=' + encodeURIComponent(location.pathname + location.search) + '">Log in</a></div>'); return; }
+  const cl = await A.load();
+  // the piece's name
+  try { const { data: pub } = await cl.from('publications').select('project_id').eq('code', code).maybeSingle();
+    if (pub) { const { data: pr } = await cl.from('projects').select('title').eq('id', pub.project_id).maybeSingle(); if (pr) { $('h').textContent = pr.title; document.title = 'Stats: ' + pr.title + ' · Art Alive'; } }
+    else { const { data: col } = await cl.from('collections').select('title').eq('code', code).maybeSingle(); if (col) { $('h').textContent = col.title; document.title = 'Stats: ' + col.title + ' · Art Alive'; } } } catch (e) {}
+
+  let days = 30;
+  document.querySelectorAll('.st-range button').forEach(b => b.onclick = () => { days = +b.dataset.d; document.querySelectorAll('.st-range button').forEach(x => x.setAttribute('aria-pressed', x === b)); load(); });
+  async function load() {
+    say('Loading…');
+    const { data, error } = await cl.rpc('project_stats', { c: code, days });
+    if (error) { say(/does not exist|function/i.test(error.message || '') ? 'Stats are almost ready. (Run setup/analytics-setup.sql in Supabase to switch them on.)' : 'Couldn’t load the stats. Please try again.'); return; }
+    if (!data) { say('These stats belong to someone else, or the piece isn’t published.'); return; }
+    say(''); $('out').hidden = false; render(data);
+  }
+
+  function render(d) {
+    const t = d.totals || {}, open = t.open || 0, cam = t.camera || 0, found = t.found || 0, cap = t.capture || 0, shared = (t.share || 0) + (t.save || 0);
+    $('lede').textContent = 'The last ' + d.days + ' days. ' + nf(d.views) + ' visits since it was published.';
+    const tile = (n, label, small) => '<li class="st-tile"><b>' + nf(n) + '</b><span>' + label + '</span>' + (small ? '<small>' + small + '</small>' : '') + '</li>';
+    $('tiles').innerHTML = tile(open, 'visits') + tile(cam, 'turned on the camera', open ? Math.round(cam / open * 100) + '% of visits' : '') +
+      tile(found, 'found it with the camera', cam ? Math.round(found / cam * 100) + '% of camera starts' : '') + tile(cap, 'photos taken') + tile(shared, 'photos shared or saved') +
+      (t.reply ? tile(t.reply, 'replies') : '');
+    // every day in the range, with the empty ones as zero
+    const by = new Map((d.byDay || []).map(r => [r.day, r])), list = [], today = new Date(); today.setUTCHours(0, 0, 0, 0);
+    for (let i = d.days - 1; i >= 0; i--) { const dt = new Date(today.getTime() - i * 864e5), key = dt.toISOString().slice(0, 10), r = by.get(key) || {}; list.push({ key, dt, open: r.open || 0, found: r.found || 0, capture: r.capture || 0 }); }
+    bars($('byDay'), list.map(r => ({ v: r.open, label: r.dt.toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' }), tip: nf(r.open) + (r.open === 1 ? ' visit' : ' visits') + (r.found ? ' · ' + nf(r.found) + ' found' : '') })), { every: d.days <= 7 ? 1 : d.days <= 30 ? 7 : 14, name: 'Visits each day' });
+    const hours = []; for (let h = 0; h < 24; h++) hours.push({ v: (d.hours || {})[h] || 0, label: h === 0 ? '12a' : h < 12 ? h + 'a' : h === 12 ? '12p' : (h - 12) + 'p', tip: nf((d.hours || {})[h] || 0) + ' visits around ' + (h % 12 || 12) + (h < 12 ? ' am' : ' pm') });
+    bars($('byHour'), hours, { every: 6, name: 'What time people visit' });
+    const dev = d.devices || {}, devs = [['phone', 'Phones'], ['tablet', 'Tablets'], ['computer', 'Computers']].map(([k, n]) => [n, dev[k] || 0]).filter(x => x[1]);
+    hbars($('byDev'), devs);
+    let dn = null; try { dn = new Intl.DisplayNames([navigator.language || 'en'], { type: 'language' }); } catch (e) {}
+    hbars($('byZone'), (d.zones || []).map(z => [z.tz.split('/').pop().replace(/_/g, ' ') + (z.tz.includes('/') ? ' (' + z.tz.split('/')[0] + ')' : ''), z.n]));
+    hbars($('byLang'), (d.langs || []).map(l => [(dn && dn.of(l.lang)) || l.lang, l.n]));
+    $('tbl').tBodies[0].innerHTML = list.slice().reverse().map(r => '<tr><td>' + r.dt.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) + '</td><td>' + nf(r.open) + '</td><td>' + nf(r.found) + '</td><td>' + nf(r.capture) + '</td></tr>').join('');
+  }
+
+  // a simple bar chart: thin bars, a recessive grid, the biggest value labelled, a tooltip on hover or tap
+  function bars(host, rows, o) {
+    const W = Math.max(260, host.clientWidth || 640), H = W < 420 ? 170 : 200, L = 34, B = 26, T = 14, max = Math.max(1, ...rows.map(r => r.v)), step = niceStep(max), top = Math.ceil(max / step) * step;
+    const n = rows.length, gw = (W - L) / n, bw = Math.max(2, Math.min(28, gw - 2)), y = v => T + (H - T - B) * (1 - v / top);
+    let s = '<svg class="chart" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.name) + '. Highest: ' + nf(max) + '. The table has every value.">';
+    for (let v = 0; v <= top; v += step) s += '<line class="grid" x1="' + L + '" x2="' + W + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text class="ax" x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + nf(v) + '</text>';
+    const iMax = rows.reduce((m, r, i) => r.v > rows[m].v ? i : m, 0);
+    rows.forEach((r, i) => { const x = L + i * gw + (gw - bw) / 2, h = Math.max(0, y(0) - y(r.v));
+      if (r.v) s += '<path class="bar" data-i="' + i + '" d="M' + x + ',' + y(0) + 'V' + (y(r.v) + Math.min(4, h)) + 'q0,-' + Math.min(4, h) + ' ' + Math.min(4, bw / 2) + ',-' + Math.min(4, h) + 'H' + (x + bw - Math.min(4, bw / 2)) + 'q' + Math.min(4, bw / 2) + ',0 ' + Math.min(4, bw / 2) + ',' + Math.min(4, h) + 'V' + y(0) + 'Z"/>';
+      s += '<rect class="hit" data-i="' + i + '" x="' + (L + i * gw) + '" y="' + T + '" width="' + gw + '" height="' + (H - T - B) + '"/>';
+      if (i % Math.max(o.every, Math.ceil(n * 44 / (W - L))) === 0) s += '<text class="ax" x="' + (L + i * gw + gw / 2) + '" y="' + (H - 8) + '" text-anchor="middle">' + esc(r.label) + '</text>'; });
+    if (rows[iMax].v) s += '<text class="lbl" x="' + (L + iMax * gw + gw / 2) + '" y="' + (y(rows[iMax].v) - 6) + '" text-anchor="middle">' + nf(rows[iMax].v) + '</text>';
+    host.innerHTML = s + '</svg>'; host._redraw = () => bars(host, rows, o);
+    if (!host._ro && window.ResizeObserver) { let w0 = host.clientWidth; host._ro = new ResizeObserver(() => { if (Math.abs(host.clientWidth - w0) > 8) { w0 = host.clientWidth; host._redraw(); } }); host._ro.observe(host); }
+    const svg = host.querySelector('svg'), card = host.closest('.st-card'); let tip = card.querySelector('.st-tip'); if (!tip) { tip = document.createElement('div'); tip.className = 'st-tip'; tip.hidden = true; card.appendChild(tip); }
+    const showTip = e => { const i = +e.target.dataset.i; if (isNaN(i)) return; const r = rows[i]; tip.innerHTML = '<b>' + esc(r.label) + '</b>' + esc(r.tip); tip.hidden = false;
+      svg.querySelectorAll('.bar').forEach(b => b.classList.toggle('on', +b.dataset.i === i));
+      const cr = card.getBoundingClientRect(), sr = svg.getBoundingClientRect(), x = sr.left - cr.left + (L + i * gw + gw / 2) * sr.width / W;
+      tip.style.left = Math.min(cr.width - tip.offsetWidth - 8, Math.max(8, x - tip.offsetWidth / 2)) + 'px'; tip.style.top = (sr.top - cr.top + y(r.v) * sr.height / H - tip.offsetHeight - 10) + 'px'; };
+    svg.addEventListener('pointermove', showTip); svg.addEventListener('pointerdown', showTip);
+    svg.addEventListener('pointerleave', () => { tip.hidden = true; svg.querySelectorAll('.bar.on').forEach(b => b.classList.remove('on')); });
+  }
+  function niceStep(max) { const raw = max / 4, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return Math.max(1, (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p); }
+  function hbars(host, pairs) {
+    if (!pairs.length) { host.innerHTML = '<li style="color:var(--muted)">Nothing yet</li>'; return; }
+    const max = Math.max(...pairs.map(p => p[1])), tot = pairs.reduce((s, p) => s + p[1], 0);
+    host.innerHTML = pairs.map(([name, n]) => '<li><span class="name" title="' + esc(name) + '">' + esc(name) + '</span><span class="track" aria-hidden="true"><span class="fill" style="width:' + (n / max * 100).toFixed(1) + '%"></span></span><span class="n">' + Math.round(n / tot * 100) + '%</span></li>').join('');
+  }
+  load();
+})();
+</script>
+</body>
+</html>

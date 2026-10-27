@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Your replies · Magic Postcards · Art Alive</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1f3352">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="../site.css">
+<style>
+.rp-head{display:flex;flex-direction:column;gap:12px;margin:clamp(20px,5vw,50px) 0 22px}
+.rp-head h1{margin:0;font:900 clamp(32px,5.4vw,58px)/1 var(--display);font-stretch:118%;text-transform:uppercase}
+.rp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:18px;list-style:none;margin:0 0 50px;padding:0}
+.rp{background:var(--wall);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.rp.new{border-color:#ec9a72;box-shadow:0 0 0 1px #ec9a72}
+.rp video{width:100%;max-height:70vh;border-radius:10px;background:#000}
+.rp .voice{display:flex;flex-direction:column;gap:10px;background:#1f3352;border-radius:10px;padding:18px 14px}
+.rp .voice b{display:flex;align-items:center;gap:10px;font:800 14px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:#b9cfe6}
+.rp .voice audio{width:100%}
+.rp h2{margin:0;font:900 20px/1.2 var(--display);font-stretch:112%}
+.rp .meta{margin:0;color:var(--muted);font-size:15px}
+.rp .note{margin:0;font-size:17px}
+.rp .new-tag{align-self:flex-start;padding:5px 10px;border-radius:999px;background:#ec9a72;color:#14100c;font:800 12px/1 var(--display);letter-spacing:.1em;text-transform:uppercase}
+.rp .row{display:flex;gap:10px;flex-wrap:wrap}
+.rp .row a,.rp .row button{flex:1 1 140px}
+.empty{background:var(--wall);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="../" aria-label="Art Alive home"><img src="../art-alive-mark.png" alt=""><img class="wm" src="../art-alive-wordmark.png" alt="Art Alive"></a>
+    <div class="top-act"><a class="btn small acct-btn" data-acct href="../login.html?new=1" style="color:#14100c;text-decoration:none">Create account</a></div>
+  </header>
+  <main id="main">
+    <div class="rp-head"><span class="eyebrow">Magic Postcards</span><h1>Your replies</h1><p class="lede" id="lede">Video and voice replies from the people you sent postcards to. Only you can see and hear them.</p></div>
+    <p class="status" id="st" role="status" aria-live="polite">Loading…</p>
+    <ul class="rp-list" id="list"></ul>
+  </main>
+</div>
+<script src="../site-config.js"></script><script src="../site.js"></script><script src="../account.js"></script>
+<script>
+(async function () {
+  'use strict';
+  const $ = id => document.getElementById(id), A = window.AAAccount, esc = t => String(t || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const say = t => { $('st').textContent = t; };
+  if (!A || !A.configured) return say('Accounts aren’t switched on yet.');
+  const u = await A.user().catch(() => null);
+  if (!u) { say(''); $('list').outerHTML = '<div class="empty"><p>Log in to see the video and voice replies to your postcards.</p><a class="btn" href="../login.html?next=' + encodeURIComponent(location.pathname) + '">Log in</a></div>'; return; }
+  const cl = await A.load();
+  const { data: rows, error } = await cl.from('postcard_replies').select('*').order('created_at', { ascending: false });
+  if (error) { say(/does not exist|relation/i.test(error.message || '') ? 'Video replies are almost ready. Please check back soon.' : 'Couldn’t load your replies. Please try again.'); return; }
+  if (!rows.length) { say(''); $('list').outerHTML = '<div class="empty"><p>No replies yet. When someone records a reply to one of your postcards, it shows up here and we email you.</p><a class="btn" href="./">Send a Magic Postcard</a></div>'; return; }
+  // which postcard each reply is to
+  const codes = [...new Set(rows.map(r => r.code))], titles = {};
+  const { data: pubs } = await cl.from('publications').select('code, project_id').in('code', codes);
+  if (pubs && pubs.length) { const { data: prj } = await cl.from('projects').select('id, title').in('id', pubs.map(p => p.project_id)); const t = new Map((prj || []).map(p => [p.id, p.title])); pubs.forEach(p => { titles[p.code] = t.get(p.project_id) || ''; }); }
+  // links to watch (good for a day), and links that save the file instead of opening it
+  const { data: urls } = await cl.storage.from('media').createSignedUrls(rows.map(r => r.path), 86400);
+  const url = new Map((urls || []).map(x => [x.path, x.signedUrl]));
+  const { data: dls } = await cl.storage.from('media').createSignedUrls(rows.map(r => r.path), 86400, { download: true });
+  const dl = new Map((dls || []).map(x => [x.path, x.signedUrl]));
+  const voice = r => r.kind === 'audio' || /-voice\./.test(r.path);
+  say(rows.length === 1 ? '1 reply' : rows.length + ' replies');
+  $('list').innerHTML = rows.map(r => '<li class="rp' + (r.seen ? '' : ' new') + '" data-id="' + r.id + '">' + (r.seen ? '' : '<span class="new-tag">New</span>') +
+    '<h2>' + esc(r.from_name || 'Someone') + ' sent you a ' + (voice(r) ? 'voice' : 'video') + ' reply</h2><p class="meta">' + esc(titles[r.code] || 'Your Magic Postcard') + ' · ' + new Date(r.created_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>' +
+    (r.note ? '<p class="note">“' + esc(r.note) + '”</p>' : '') +
+    (voice(r) ? '<div class="voice"><b><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Voice message</b><audio controls preload="metadata" src="' + esc(url.get(r.path) || '') + '" aria-label="Voice reply from ' + esc(r.from_name || 'someone') + '"></audio></div>'
+      : '<video controls playsinline preload="metadata" src="' + esc(url.get(r.path) || '') + '" aria-label="Video reply from ' + esc(r.from_name || 'someone') + '"></video>') +
+    '<div class="row"><a class="btn small ghost" href="' + esc(dl.get(r.path) || url.get(r.path) || '#') + '" download>' + (voice(r) ? 'Save the recording' : 'Save the video') + '</a><a class="btn small ghost" href="play.html?c=' + esc(r.code) + '">See the postcard</a><button class="btn small ghost" type="button" data-del>Delete</button></div></li>').join('');
+  // playing a reply marks it seen; deleting removes it and its video
+  $('list').addEventListener('play', async e => { const li = e.target.closest('.rp'); if (!li || !li.classList.contains('new')) return; li.classList.remove('new'); const tag = li.querySelector('.new-tag'); if (tag) tag.remove();
+    await cl.from('postcard_replies').update({ seen: true }).eq('id', li.dataset.id); }, true);
+  $('list').addEventListener('click', async e => { const b = e.target.closest('[data-del]'); if (!b) return; const li = b.closest('.rp'), r = rows.find(x => x.id === li.dataset.id);
+    if (!confirm('Delete this reply? This can’t be undone.')) return; b.disabled = true;
+    await cl.storage.from('media').remove([r.path]); const { error } = await cl.from('postcard_replies').delete().eq('id', r.id);
+    if (error) { b.disabled = false; say('Couldn’t delete it. Please try again.'); return; } li.remove(); say('Deleted.'); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,8173 @@
+{
+ "about": "Magic Postcard place templates. Each one is a square picture (stock/<id>.jpg, plus a 240px copy in stock/thumbs/) and how it comes alive: 'video' (a made video, MP4 + WebM with the same name) or 'live' (Art Alive effects drawn live on the phone, no video). x and y run 0..1 across and down the picture. See animate.js for what each live setting does. Optional 'sound': a 16-second soundscape loop (see sound.js) that plays in step with the animation.",
+ "templates": [
+  {
+   "id": "asbury-park",
+   "title": "Asbury Park boardwalk",
+   "state": "New Jersey",
+   "city": "Asbury Park",
+   "place": "Asbury Park",
+   "video": "stock/asbury-park.mp4",
+   "blurb": "Day turns to a golden sunset, night falls, the windows light up and fireworks burst over the boardwalk.",
+   "sound": "stock/sounds/asbury-park.mp3"
+  },
+  {
+   "id": "alabama-gulf-shores",
+   "title": "Gulf Shores at sunset",
+   "state": "Alabama",
+   "city": "",
+   "place": "Alabama",
+   "blurb": "The Gulf sunset fades, the moon rises over the water with its silver path, the surf glows blue-green as it breaks and the sky fills with twinkling stars.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.15
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 1
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 1
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.39
+     ],
+     [
+      0,
+      0.395
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.08,
+       0.395
+      ],
+      [
+       1,
+       0.39
+      ],
+      [
+       1,
+       0.63
+      ],
+      [
+       0.85,
+       0.6
+      ],
+      [
+       0.7,
+       0.57
+      ],
+      [
+       0.55,
+       0.54
+      ],
+      [
+       0.45,
+       0.5
+      ],
+      [
+       0.35,
+       0.47
+      ],
+      [
+       0.25,
+       0.43
+      ],
+      [
+       0.15,
+       0.41
+      ]
+     ]
+    ],
+    "sunAt": [
+     0.73,
+     0.385
+    ],
+    "moonAt": [
+     0.74,
+     0.36
+    ],
+    "flare": 0.5,
+    "milkyWay": [
+     0.3,
+     0.39,
+     0.6,
+     0
+    ],
+    "milkyWayA": 0.6,
+    "wave": 1.2,
+    "glint": 1,
+    "biolum": 1,
+    "birds": 1
+   }
+  },
+  {
+   "id": "alaska-denali",
+   "title": "Denali",
+   "state": "Alaska",
+   "city": "",
+   "place": "Alaska",
+   "blurb": "Alpenglow fades on Denali, then the northern lights dance across the sky above the mountain and the stars shine in the tundra pond.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.31
+     ],
+     [
+      0.9,
+      0.32
+     ],
+     [
+      0.8,
+      0.33
+     ],
+     [
+      0.7,
+      0.3
+     ],
+     [
+      0.6,
+      0.28
+     ],
+     [
+      0.55,
+      0.2
+     ],
+     [
+      0.5,
+      0.19
+     ],
+     [
+      0.4,
+      0.21
+     ],
+     [
+      0.3,
+      0.26
+     ],
+     [
+      0.2,
+      0.27
+     ],
+     [
+      0.1,
+      0.27
+     ],
+     [
+      0,
+      0.27
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.22,
+       0.62
+      ],
+      [
+       0.4,
+       0.6
+      ],
+      [
+       0.6,
+       0.61
+      ],
+      [
+       0.8,
+       0.63
+      ],
+      [
+       0.85,
+       0.67
+      ],
+      [
+       0.8,
+       0.72
+      ],
+      [
+       0.6,
+       0.77
+      ],
+      [
+       0.35,
+       0.78
+      ],
+      [
+       0.25,
+       0.72
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.86,
+     0.12
+    ],
+    "flare": 0.5,
+    "aurora": 1.2,
+    "auroraY": 0.22,
+    "wave": 0.25,
+    "glint": 0.6,
+    "nightDark": 0.8
+   }
+  },
+  {
+   "id": "arizona-grand-canyon",
+   "title": "Grand Canyon at golden hour",
+   "state": "Arizona",
+   "city": "",
+   "place": "Arizona",
+   "blurb": "Golden light deepens into sunset, then night falls over the canyon: the moon rises with a shimmering flare, the Milky Way arches overhead, the stars twinkle and a shooting star streaks past.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.15
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 1
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 1
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.26
+     ],
+     [
+      0.9,
+      0.265
+     ],
+     [
+      0.6,
+      0.275
+     ],
+     [
+      0.4,
+      0.27
+     ],
+     [
+      0.15,
+      0.255
+     ],
+     [
+      0,
+      0.25
+     ]
+    ],
+    "sunAt": [
+     -0.04,
+     0.2
+    ],
+    "shadow": 1,
+    "birds": 1,
+    "clouds": 0.7,
+    "moonAt": [
+     0.87,
+     0.16
+    ],
+    "flare": 1,
+    "milkyWay": [
+     0.45,
+     0.27,
+     0.78,
+     -0.02
+    ],
+    "milkyWayA": 1,
+    "nightDark": 0.55
+   }
+  },
+  {
+   "id": "arkansas-buffalo-river",
+   "title": "Buffalo National River",
+   "state": "Arkansas",
+   "city": "",
+   "place": "Arkansas",
+   "blurb": "Autumn leaves drift past the bluffs, night falls over the river, the moon rises with its silver path on the water and the stars come out.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0.3,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.3
+     ],
+     [
+      0.9,
+      0.3
+     ],
+     [
+      0.7,
+      0.29
+     ],
+     [
+      0.55,
+      0.3
+     ],
+     [
+      0.47,
+      0.22
+     ],
+     [
+      0.42,
+      0.14
+     ],
+     [
+      0.36,
+      0.06
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.08,
+       0.56
+      ],
+      [
+       0.4,
+       0.53
+      ],
+      [
+       0.62,
+       0.52
+      ],
+      [
+       0.7,
+       0.55
+      ],
+      [
+       0.55,
+       0.63
+      ],
+      [
+       0.4,
+       0.68
+      ],
+      [
+       0.1,
+       0.7
+      ],
+      [
+       0,
+       0.66
+      ]
+     ],
+     [
+      [
+       0,
+       0.8
+      ],
+      [
+       0.6,
+       0.83
+      ],
+      [
+       1,
+       0.88
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       0,
+       1
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.86,
+     0.3
+    ],
+    "flare": 0.5,
+    "wave": 0.5,
+    "glint": 0.8,
+    "leaves": 0.7
+   }
+  },
+  {
+   "id": "california-yosemite",
+   "title": "Yosemite Valley",
+   "state": "California",
+   "city": "",
+   "place": "California",
+   "blurb": "Night falls in Yosemite, climbers' headlamps twinkle high on El Capitan, the Milky Way rises over Half Dome and the stars shine in the Merced River.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0.3,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.17
+     ],
+     [
+      0.92,
+      0.2
+     ],
+     [
+      0.85,
+      0.24
+     ],
+     [
+      0.8,
+      0.33
+     ],
+     [
+      0.75,
+      0.33
+     ],
+     [
+      0.65,
+      0.33
+     ],
+     [
+      0.6,
+      0.31
+     ],
+     [
+      0.53,
+      0.32
+     ],
+     [
+      0.46,
+      0.37
+     ],
+     [
+      0.4,
+      0.3
+     ],
+     [
+      0.3,
+      0.17
+     ],
+     [
+      0.25,
+      0.12
+     ],
+     [
+      0.28,
+      0.05
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.15,
+       0.6
+      ],
+      [
+       0.4,
+       0.56
+      ],
+      [
+       0.7,
+       0.58
+      ],
+      [
+       1,
+       0.6
+      ],
+      [
+       1,
+       0.85
+      ],
+      [
+       0.6,
+       0.88
+      ],
+      [
+       0.3,
+       0.85
+      ],
+      [
+       0.1,
+       0.8
+      ]
+     ]
+    ],
+    "lamps": [
+     [
+      0.18,
+      0.3,
+      0.003
+     ],
+     [
+      0.22,
+      0.42,
+      0.003
+     ],
+     [
+      0.14,
+      0.5,
+      0.003
+     ]
+    ],
+    "moonAt": [
+     0.86,
+     0.08
+    ],
+    "flare": 0.5,
+    "milkyWay": [
+     0.6,
+     0.4,
+     0.72,
+     -0.02
+    ],
+    "wave": 0.3,
+    "glint": 0.7,
+    "nightDark": 0.85
+   }
+  },
+  {
+   "id": "colorado-maroon-bells",
+   "title": "Maroon Bells",
+   "state": "Colorado",
+   "city": "",
+   "place": "Colorado",
+   "blurb": "Alpenglow lights the peaks, golden aspen leaves drift down, then the Milky Way and moon rise over the Maroon Bells and stars twinkle in the still lake.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.13
+     ],
+     [
+      0.95,
+      0.2
+     ],
+     [
+      0.9,
+      0.28
+     ],
+     [
+      0.85,
+      0.29
+     ],
+     [
+      0.75,
+      0.27
+     ],
+     [
+      0.7,
+      0.25
+     ],
+     [
+      0.62,
+      0.26
+     ],
+     [
+      0.55,
+      0.24
+     ],
+     [
+      0.5,
+      0.23
+     ],
+     [
+      0.45,
+      0.24
+     ],
+     [
+      0.4,
+      0.25
+     ],
+     [
+      0.3,
+      0.28
+     ],
+     [
+      0.25,
+      0.3
+     ],
+     [
+      0.18,
+      0.27
+     ],
+     [
+      0.1,
+      0.2
+     ],
+     [
+      0,
+      0.15
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.52
+      ],
+      [
+       1,
+       0.52
+      ],
+      [
+       1,
+       0.85
+      ],
+      [
+       0.6,
+       0.9
+      ],
+      [
+       0.3,
+       0.92
+      ],
+      [
+       0,
+       0.88
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.88,
+     0.07
+    ],
+    "flare": 0.8,
+    "milkyWay": [
+     0.3,
+     0.27,
+     0.7,
+     -0.05
+    ],
+    "wave": 0.3,
+    "glint": 0.6,
+    "leaves": 0.6,
+    "nightDark": 0.75
+   }
+  },
+  {
+   "id": "connecticut-covered-bridge",
+   "title": "Covered bridge in autumn",
+   "state": "Connecticut",
+   "city": "",
+   "place": "Connecticut",
+   "blurb": "Autumn leaves drift down, lanterns light up inside the old covered bridge and glow on the river, and moonlight shimmers on the water under the stars.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0.3,
+      0
+     ],
+     [
+      0.78,
+      0
+     ],
+     [
+      0.8,
+      0.08
+     ],
+     [
+      0.76,
+      0.16
+     ],
+     [
+      0.7,
+      0.2
+     ],
+     [
+      0.6,
+      0.24
+     ],
+     [
+      0.5,
+      0.26
+     ],
+     [
+      0.42,
+      0.24
+     ],
+     [
+      0.35,
+      0.16
+     ],
+     [
+      0.3,
+      0.08
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.3,
+       0.52
+      ],
+      [
+       0.6,
+       0.51
+      ],
+      [
+       0.85,
+       0.52
+      ],
+      [
+       1,
+       0.53
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       0.55,
+       1
+      ],
+      [
+       0.42,
+       0.9
+      ],
+      [
+       0.33,
+       0.75
+      ],
+      [
+       0.27,
+       0.6
+      ]
+     ]
+    ],
+    "mirror": 0.5,
+    "lamps": [
+     [
+      0.43,
+      0.415,
+      0.014
+     ],
+     [
+      0.5,
+      0.415,
+      0.014
+     ],
+     [
+      0.57,
+      0.415,
+      0.014
+     ],
+     [
+      0.64,
+      0.415,
+      0.014
+     ],
+     [
+      0.36,
+      0.45,
+      0.01
+     ]
+    ],
+    "moonAt": [
+     0.55,
+     -0.07
+    ],
+    "wave": 0.4,
+    "glint": 0.7,
+    "leaves": 0.9
+   }
+  },
+  {
+   "id": "delaware-salt-marsh",
+   "title": "Salt marsh at sunrise",
+   "state": "Delaware",
+   "city": "",
+   "place": "Delaware",
+   "blurb": "The sun sets over the marsh, mist settles, fireflies blink in the grass, and the moon rises low with its silver path on the water under a sky full of twinkling stars.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.19
+     ],
+     [
+      0.9,
+      0.19
+     ],
+     [
+      0.8,
+      0.2
+     ],
+     [
+      0.7,
+      0.21
+     ],
+     [
+      0.6,
+      0.23
+     ],
+     [
+      0.5,
+      0.25
+     ],
+     [
+      0.4,
+      0.27
+     ],
+     [
+      0.3,
+      0.29
+     ],
+     [
+      0.2,
+      0.3
+     ],
+     [
+      0.1,
+      0.31
+     ],
+     [
+      0,
+      0.32
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.57
+      ],
+      [
+       0.2,
+       0.56
+      ],
+      [
+       0.32,
+       0.55
+      ],
+      [
+       0.45,
+       0.59
+      ],
+      [
+       0.5,
+       0.66
+      ],
+      [
+       0.55,
+       0.72
+      ],
+      [
+       0.7,
+       0.77
+      ],
+      [
+       0.9,
+       0.8
+      ],
+      [
+       1,
+       0.84
+      ],
+      [
+       1,
+       0.95
+      ],
+      [
+       0.5,
+       0.93
+      ],
+      [
+       0,
+       0.92
+      ]
+     ],
+     [
+      [
+       0.33,
+       0.43
+      ],
+      [
+       0.5,
+       0.41
+      ],
+      [
+       0.58,
+       0.42
+      ],
+      [
+       0.64,
+       0.45
+      ],
+      [
+       0.6,
+       0.5
+      ],
+      [
+       0.5,
+       0.49
+      ],
+      [
+       0.4,
+       0.48
+      ],
+      [
+       0.34,
+       0.46
+      ]
+     ],
+     [
+      [
+       0.6,
+       0.47
+      ],
+      [
+       0.75,
+       0.46
+      ],
+      [
+       0.92,
+       0.47
+      ],
+      [
+       0.9,
+       0.5
+      ],
+      [
+       0.7,
+       0.5
+      ]
+     ]
+    ],
+    "sunAt": [
+     0.48,
+     0.25
+    ],
+    "moonAt": [
+     0.12,
+     0.29
+    ],
+    "flare": 0.5,
+    "wave": 0.4,
+    "glint": 0.8,
+    "birds": 1,
+    "mist": [
+     0,
+     0.3,
+     0.7,
+     0.42
+    ],
+    "mistA": 0.5,
+    "fireflies": [
+     0,
+     0.35,
+     1,
+     0.8
+    ],
+    "firefliesA": 0.8
+   }
+  },
+  {
+   "id": "florida-everglades",
+   "title": "Everglades at dawn",
+   "state": "Florida",
+   "city": "",
+   "place": "Florida",
+   "blurb": "Mist hangs over the Everglades, the moon glows through the cypress, fireflies drift over the still water and the egret keeps watch under the stars.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.42
+      ],
+      [
+       1,
+       0.42
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       0.55,
+       1
+      ],
+      [
+       0.45,
+       0.75
+      ],
+      [
+       0.35,
+       0.62
+      ],
+      [
+       0,
+       0.55
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.5,
+     0.3
+    ],
+    "flare": 0.4,
+    "wave": 0.25,
+    "glint": 0.6,
+    "mist": [
+     0,
+     0.3,
+     1,
+     0.48
+    ],
+    "mistA": 0.7,
+    "fireflies": [
+     0,
+     0.4,
+     1,
+     0.9
+    ],
+    "firefliesA": 1
+   }
+  },
+  {
+   "id": "georgia-live-oaks",
+   "title": "Live oak avenue",
+   "state": "Georgia",
+   "city": "",
+   "place": "Georgia",
+   "blurb": "Evening falls under the old live oaks, mist drifts along the road, moonlight filters through the Spanish moss and fireflies light up the avenue.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "moonAt": [
+     0.5,
+     -0.08
+    ],
+    "mist": [
+     0.15,
+     0.55,
+     0.85,
+     0.78
+    ],
+    "mistA": 0.6,
+    "fireflies": [
+     0.05,
+     0.45,
+     0.95,
+     0.9
+    ],
+    "firefliesA": 1
+   }
+  },
+  {
+   "id": "hawaii-na-pali-coast",
+   "title": "Na Pali Coast, Kauai",
+   "state": "Hawaii",
+   "city": "",
+   "place": "Hawaii",
+   "blurb": "The sun sets behind the cliffs, the moon rises over the Pacific with its silver path on the waves, the surf glows blue-green as it breaks, mist drifts through the valley and the sky fills with twinkling stars.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.15
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 1
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 1
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.19
+     ],
+     [
+      0.84,
+      0.185
+     ],
+     [
+      0.8,
+      0.25
+     ],
+     [
+      0.7,
+      0.26
+     ],
+     [
+      0.66,
+      0.245
+     ],
+     [
+      0.47,
+      0.25
+     ],
+     [
+      0.4,
+      0.26
+     ],
+     [
+      0.3,
+      0.25
+     ],
+     [
+      0.25,
+      0.235
+     ],
+     [
+      0.18,
+      0.23
+     ],
+     [
+      0.12,
+      0.26
+     ],
+     [
+      0,
+      0.3
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.62
+      ],
+      [
+       0.12,
+       0.66
+      ],
+      [
+       0.25,
+       0.7
+      ],
+      [
+       0.4,
+       0.71
+      ],
+      [
+       0.55,
+       0.77
+      ],
+      [
+       0.65,
+       0.81
+      ],
+      [
+       0.8,
+       0.83
+      ],
+      [
+       1,
+       0.845
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       0,
+       1
+      ]
+     ]
+    ],
+    "sunAt": [
+     0.08,
+     0.12
+    ],
+    "mist": [
+     0.3,
+     0.3,
+     0.72,
+     0.44
+    ],
+    "mistA": 0.9,
+    "wave": 1.2,
+    "glint": 1,
+    "shadow": 0.6,
+    "birds": 1,
+    "moonAt": [
+     0.8,
+     0.13
+    ],
+    "flare": 0.45,
+    "biolum": 1
+   }
+  },
+  {
+   "id": "idaho-sawtooths",
+   "title": "Sawtooth Mountains",
+   "state": "Idaho",
+   "city": "",
+   "place": "Idaho",
+   "blurb": "Night falls over the Sawtooths, the Milky Way and moon rise over the jagged peaks, stars twinkle in the mountain lake and fireflies drift over the wildflowers.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.075
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.5
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0.5
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.28
+     ],
+     [
+      0.9,
+      0.27
+     ],
+     [
+      0.75,
+      0.25
+     ],
+     [
+      0.65,
+      0.24
+     ],
+     [
+      0.55,
+      0.22
+     ],
+     [
+      0.45,
+      0.27
+     ],
+     [
+      0.35,
+      0.26
+     ],
+     [
+      0.25,
+      0.28
+     ],
+     [
+      0.1,
+      0.29
+     ],
+     [
+      0,
+      0.3
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.5
+      ],
+      [
+       1,
+       0.48
+      ],
+      [
+       1,
+       0.75
+      ],
+      [
+       0.7,
+       0.78
+      ],
+      [
+       0.4,
+       0.72
+      ],
+      [
+       0.25,
+       0.7
+      ],
+      [
+       0,
+       0.68
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.85,
+     0.14
+    ],
+    "flare": 0.6,
+    "milkyWay": [
+     0.35,
+     0.29,
+     0.7,
+     -0.02
+    ],
+    "wave": 0.3,
+    "glint": 0.6,
+    "fireflies": [
+     0,
+     0.72,
+     1,
+     1
+    ],
+    "firefliesA": 0.6,
+    "nightDark": 0.75
+   }
+  },
+  {
+   "id": "illinois-starved-rock",
+   "title": "Starved Rock waterfall",
+   "state": "Illinois",
+   "city": "",
+   "place": "Illinois",
+   "blurb": "The waterfall keeps flowing as night falls over the canyon, mist rises from the pool, moonlight glints on the water and fireflies fill the forest.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "water": [
+     [
+      [
+       0.2,
+       0.645
+      ],
+      [
+       0.5,
+       0.64
+      ],
+      [
+       0.6,
+       0.67
+      ],
+      [
+       0.55,
+       0.72
+      ],
+      [
+       0.3,
+       0.73
+      ],
+      [
+       0.2,
+       0.7
+      ]
+     ]
+    ],
+    "falls": [
+     0.365,
+     0.41,
+     0.42,
+     0.66
+    ],
+    "moonAt": [
+     0.45,
+     -0.1
+    ],
+    "wave": 0.6,
+    "glint": 0.8,
+    "mist": [
+     0.25,
+     0.55,
+     0.65,
+     0.7
+    ],
+    "mistA": 0.4,
+    "fireflies": [
+     0.05,
+     0.35,
+     0.95,
+     0.95
+    ],
+    "firefliesA": 1
+   }
+  },
+  {
+   "id": "indiana-dunes",
+   "title": "Indiana Dunes on Lake Michigan",
+   "state": "Indiana",
+   "city": "",
+   "place": "Indiana",
+   "blurb": "Evening settles over the dunes, the moon rises over Lake Michigan with its silver path on the waves, the stars come out and fireflies blink in the dune grass.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.365
+     ],
+     [
+      0.4,
+      0.36
+     ],
+     [
+      0,
+      0.35
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.37
+      ],
+      [
+       1,
+       0.365
+      ],
+      [
+       1,
+       0.55
+      ],
+      [
+       0.85,
+       0.53
+      ],
+      [
+       0.7,
+       0.5
+      ],
+      [
+       0.55,
+       0.49
+      ],
+      [
+       0.45,
+       0.47
+      ],
+      [
+       0.35,
+       0.45
+      ],
+      [
+       0.2,
+       0.42
+      ],
+      [
+       0.08,
+       0.4
+      ],
+      [
+       0,
+       0.4
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.6,
+     0.31
+    ],
+    "flare": 0.5,
+    "milkyWay": [
+     0.2,
+     0.36,
+     0.5,
+     0
+    ],
+    "milkyWayA": 0.6,
+    "wave": 0.8,
+    "glint": 0.9,
+    "birds": 1,
+    "fireflies": [
+     0,
+     0.55,
+     1,
+     0.95
+    ],
+    "firefliesA": 0.5
+   }
+  },
+  {
+   "id": "iowa-farmland",
+   "title": "Farm in summer",
+   "state": "Iowa",
+   "city": "",
+   "place": "Iowa",
+   "blurb": "Cloud shadows roll over the fields, then night falls: the farmhouse windows glow, fireflies rise over the corn, and the Milky Way and moon fill the big sky.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.075
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.5
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0.5
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.39
+     ],
+     [
+      0,
+      0.4
+     ]
+    ],
+    "lamps": [
+     [
+      0.525,
+      0.6,
+      0.007
+     ],
+     [
+      0.55,
+      0.6,
+      0.007
+     ],
+     [
+      0.538,
+      0.565,
+      0.006
+     ],
+     [
+      0.37,
+      0.6,
+      0.008
+     ],
+     [
+      0.18,
+      0.415,
+      0.005
+     ],
+     [
+      0.31,
+      0.413,
+      0.005
+     ],
+     [
+      0.75,
+      0.41,
+      0.005
+     ]
+    ],
+    "moonAt": [
+     0.82,
+     0.12
+    ],
+    "flare": 0.5,
+    "milkyWay": [
+     0.3,
+     0.39,
+     0.9,
+     0
+    ],
+    "shadow": 1,
+    "birds": 1,
+    "fireflies": [
+     0,
+     0.6,
+     1,
+     1
+    ],
+    "firefliesA": 0.9,
+    "nightDark": 0.8
+   }
+  },
+  {
+   "id": "kansas-flint-hills",
+   "title": "Flint Hills prairie at sunset",
+   "state": "Kansas",
+   "city": "",
+   "place": "Kansas",
+   "blurb": "The prairie sunset fades, heat lightning flickers inside the clouds, the Milky Way and moon rise over the hills and fireflies blink in the tallgrass.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.075
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.5
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0.5
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.355
+     ],
+     [
+      0,
+      0.355
+     ]
+    ],
+    "sunAt": [
+     0.31,
+     0.35
+    ],
+    "moonAt": [
+     0.84,
+     0.13
+    ],
+    "flare": 0.8,
+    "milkyWay": [
+     0.15,
+     0.355,
+     0.75,
+     0
+    ],
+    "lightning": 1,
+    "shadow": 0.6,
+    "birds": 1,
+    "fireflies": [
+     0,
+     0.45,
+     1,
+     1
+    ],
+    "firefliesA": 0.8,
+    "nightDark": 0.7
+   }
+  },
+  {
+   "id": "kentucky-horse-farm",
+   "title": "Bluegrass horse farm at dawn",
+   "state": "Kentucky",
+   "city": "",
+   "place": "Kentucky",
+   "blurb": "Dusk falls over the bluegrass, mist fills the valley, fireflies dance over the pasture and the moon rises over the hills under twinkling stars.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      0.62,
+      0
+     ],
+     [
+      0.6,
+      0.15
+     ],
+     [
+      0.55,
+      0.25
+     ],
+     [
+      0.48,
+      0.32
+     ],
+     [
+      0.4,
+      0.37
+     ],
+     [
+      0.3,
+      0.37
+     ],
+     [
+      0.2,
+      0.37
+     ],
+     [
+      0.1,
+      0.38
+     ],
+     [
+      0,
+      0.39
+     ]
+    ],
+    "sunAt": [
+     0.34,
+     0.36
+    ],
+    "moonAt": [
+     0.2,
+     0.3
+    ],
+    "flare": 0.5,
+    "mist": [
+     0,
+     0.36,
+     0.55,
+     0.47
+    ],
+    "mistA": 0.8,
+    "fireflies": [
+     0,
+     0.45,
+     0.65,
+     0.85
+    ]
+   }
+  },
+  {
+   "id": "louisiana-bayou",
+   "title": "Bayou at dawn",
+   "state": "Louisiana",
+   "city": "",
+   "place": "Louisiana",
+   "blurb": "Dusk settles over the bayou, mist drifts between the cypress trees, a lantern glows on the old dock, the moon shines through the haze and fireflies fill the swamp.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.53
+      ],
+      [
+       0.5,
+       0.53
+      ],
+      [
+       1,
+       0.55
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       0,
+       1
+      ]
+     ]
+    ],
+    "lamps": [
+     [
+      0.69,
+      0.6,
+      0.012
+     ]
+    ],
+    "mirror": 0.66,
+    "moonAt": [
+     0.52,
+     0.31
+    ],
+    "flare": 0.4,
+    "wave": 0.25,
+    "glint": 0.5,
+    "mist": [
+     0,
+     0.3,
+     1,
+     0.55
+    ],
+    "mistA": 0.8,
+    "fireflies": [
+     0,
+     0.35,
+     1,
+     0.9
+    ],
+    "firefliesA": 1
+   }
+  },
+  {
+   "id": "maine-coast-lighthouse",
+   "title": "Maine coast at sunrise",
+   "state": "Maine",
+   "city": "",
+   "place": "Maine",
+   "blurb": "The sun goes down and the lighthouse beam sweeps the sea, the moon rises with its silver path on the waves, the breaking surf glows blue-green, and the sky fills with twinkling stars and shooting stars.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6,
+      "beacon": 1
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.15,
+      "beacon": 1
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 1,
+      "beacon": 1
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 1
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.11
+     ],
+     [
+      0.9,
+      0.09
+     ],
+     [
+      0.84,
+      0.2
+     ],
+     [
+      0.8,
+      0.235
+     ],
+     [
+      0.74,
+      0.21
+     ],
+     [
+      0.71,
+      0.24
+     ],
+     [
+      0.68,
+      0.27
+     ],
+     [
+      0.62,
+      0.32
+     ],
+     [
+      0.55,
+      0.39
+     ],
+     [
+      0.53,
+      0.45
+     ],
+     [
+      0.52,
+      0.465
+     ],
+     [
+      0,
+      0.465
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.468
+      ],
+      [
+       0.48,
+       0.468
+      ],
+      [
+       0.53,
+       0.5
+      ],
+      [
+       0.6,
+       0.55
+      ],
+      [
+       0.72,
+       0.62
+      ],
+      [
+       0.78,
+       0.7
+      ],
+      [
+       0.75,
+       0.8
+      ],
+      [
+       0.6,
+       0.85
+      ],
+      [
+       0.3,
+       0.8
+      ],
+      [
+       0.15,
+       0.8
+      ],
+      [
+       0,
+       0.78
+      ]
+     ]
+    ],
+    "sunAt": [
+     0.43,
+     0.452
+    ],
+    "beaconAt": [
+     0.726,
+     0.237
+    ],
+    "wave": 1.2,
+    "glint": 1,
+    "birds": 1,
+    "clouds": 0.8,
+    "moonAt": [
+     0.33,
+     0.38
+    ],
+    "flare": 0.45,
+    "biolum": 1
+   }
+  },
+  {
+   "id": "maryland-chesapeake-bay",
+   "title": "Chesapeake Bay at sunset",
+   "state": "Maryland",
+   "city": "",
+   "place": "Maryland",
+   "blurb": "The bay sunset fades, sailboat anchor lights twinkle on the water, and the moon rises with its silver path past the old pier as the stars come out.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.34
+     ],
+     [
+      0.5,
+      0.34
+     ],
+     [
+      0.3,
+      0.32
+     ],
+     [
+      0.15,
+      0.3
+     ],
+     [
+      0.05,
+      0.25
+     ],
+     [
+      0,
+      0.24
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.1,
+       0.34
+      ],
+      [
+       1,
+       0.34
+      ],
+      [
+       1,
+       0.68
+      ],
+      [
+       0.7,
+       0.68
+      ],
+      [
+       0.62,
+       0.7
+      ],
+      [
+       0.6,
+       0.6
+      ],
+      [
+       0.4,
+       0.5
+      ],
+      [
+       0.3,
+       0.55
+      ],
+      [
+       0.2,
+       0.65
+      ],
+      [
+       0.1,
+       0.4
+      ]
+     ]
+    ],
+    "lamps": [
+     [
+      0.695,
+      0.33,
+      0.004
+     ],
+     [
+      0.77,
+      0.3,
+      0.004
+     ],
+     [
+      0.825,
+      0.35,
+      0.004
+     ],
+     [
+      0.88,
+      0.31,
+      0.004
+     ],
+     [
+      0.935,
+      0.34,
+      0.004
+     ]
+    ],
+    "mirror": 0.36,
+    "sunAt": [
+     0.5,
+     0.33
+    ],
+    "moonAt": [
+     0.4,
+     0.29
+    ],
+    "flare": 0.5,
+    "wave": 0.5,
+    "glint": 0.8,
+    "birds": 1
+   }
+  },
+  {
+   "id": "massachusetts-cape-cod",
+   "title": "Cape Cod lighthouse",
+   "state": "Massachusetts",
+   "city": "",
+   "place": "Massachusetts",
+   "blurb": "The lighthouse beam starts sweeping the sea, the keeper's windows glow, the moon rises over the Atlantic with its silver path and the surf glows as it breaks.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6,
+      "beacon": 1
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0,
+      "beacon": 1
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0,
+      "beacon": 1
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.38
+     ],
+     [
+      0.95,
+      0.39
+     ],
+     [
+      0.9,
+      0.37
+     ],
+     [
+      0.87,
+      0.33
+     ],
+     [
+      0.85,
+      0.2
+     ],
+     [
+      0.82,
+      0.21
+     ],
+     [
+      0.8,
+      0.33
+     ],
+     [
+      0.75,
+      0.4
+     ],
+     [
+      0.7,
+      0.4
+     ],
+     [
+      0,
+      0.4
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.4
+      ],
+      [
+       0.75,
+       0.4
+      ],
+      [
+       0.6,
+       0.45
+      ],
+      [
+       0.48,
+       0.5
+      ],
+      [
+       0.4,
+       0.55
+      ],
+      [
+       0.3,
+       0.6
+      ],
+      [
+       0.2,
+       0.63
+      ],
+      [
+       0,
+       0.66
+      ]
+     ]
+    ],
+    "beaconAt": [
+     0.82,
+     0.23
+    ],
+    "lamps": [
+     [
+      0.9,
+      0.36,
+      0.006
+     ],
+     [
+      0.93,
+      0.36,
+      0.006
+     ]
+    ],
+    "moonAt": [
+     0.3,
+     0.3
+    ],
+    "flare": 0.5,
+    "wave": 1,
+    "glint": 1,
+    "biolum": 0.8,
+    "birds": 1,
+    "fireflies": [
+     0,
+     0.6,
+     1,
+     1
+    ],
+    "firefliesA": 0.4
+   }
+  },
+  {
+   "id": "michigan-pictured-rocks",
+   "title": "Pictured Rocks on Lake Superior",
+   "state": "Michigan",
+   "city": "",
+   "place": "Michigan",
+   "blurb": "Night falls over Lake Superior, the northern lights ripple green and violet over the cliffs, and the moon lays its silver path across the water under twinkling stars.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.1
+     ],
+     [
+      0.95,
+      0.09
+     ],
+     [
+      0.9,
+      0.12
+     ],
+     [
+      0.8,
+      0.15
+     ],
+     [
+      0.7,
+      0.2
+     ],
+     [
+      0.62,
+      0.27
+     ],
+     [
+      0.55,
+      0.3
+     ],
+     [
+      0.4,
+      0.32
+     ],
+     [
+      0.2,
+      0.33
+     ],
+     [
+      0,
+      0.34
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.34
+      ],
+      [
+       0.2,
+       0.34
+      ],
+      [
+       0.18,
+       0.4
+      ],
+      [
+       0.15,
+       0.5
+      ],
+      [
+       0.15,
+       0.6
+      ],
+      [
+       0.3,
+       0.62
+      ],
+      [
+       0.45,
+       0.6
+      ],
+      [
+       0.5,
+       0.62
+      ],
+      [
+       0.55,
+       0.68
+      ],
+      [
+       0.62,
+       0.75
+      ],
+      [
+       0.75,
+       0.85
+      ],
+      [
+       0.85,
+       0.95
+      ],
+      [
+       0.9,
+       1
+      ],
+      [
+       0,
+       1
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.25,
+     0.29
+    ],
+    "flare": 0.5,
+    "aurora": 1,
+    "auroraY": 0.3,
+    "wave": 0.6,
+    "glint": 0.9,
+    "birds": 1
+   }
+  },
+  {
+   "id": "minnesota-northwoods-lake",
+   "title": "Northwoods lake at sunrise",
+   "state": "Minnesota",
+   "city": "",
+   "place": "Minnesota",
+   "blurb": "Mist hangs over the still lake, then night brings the northern lights rippling over the pines, a sky full of stars, and fireflies along the shore by the canoe.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.25
+     ],
+     [
+      0.9,
+      0.25
+     ],
+     [
+      0.8,
+      0.27
+     ],
+     [
+      0.7,
+      0.24
+     ],
+     [
+      0.6,
+      0.19
+     ],
+     [
+      0.5,
+      0.2
+     ],
+     [
+      0.45,
+      0.32
+     ],
+     [
+      0.35,
+      0.34
+     ],
+     [
+      0.2,
+      0.32
+     ],
+     [
+      0.1,
+      0.3
+     ],
+     [
+      0,
+      0.31
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.4
+      ],
+      [
+       1,
+       0.4
+      ],
+      [
+       1,
+       0.7
+      ],
+      [
+       0.78,
+       0.6
+      ],
+      [
+       0.5,
+       0.68
+      ],
+      [
+       0.25,
+       0.75
+      ],
+      [
+       0.15,
+       0.65
+      ],
+      [
+       0,
+       0.6
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.86,
+     0.095
+    ],
+    "flare": 0.5,
+    "aurora": 1,
+    "auroraY": 0.27,
+    "wave": 0.25,
+    "glint": 0.6,
+    "mist": [
+     0,
+     0.36,
+     1,
+     0.46
+    ],
+    "mistA": 0.7,
+    "fireflies": [
+     0,
+     0.5,
+     0.3,
+     0.75
+    ],
+    "firefliesA": 0.5
+   }
+  },
+  {
+   "id": "mississippi-natchez-trace",
+   "title": "Natchez Trace Parkway",
+   "state": "Mississippi",
+   "city": "",
+   "place": "Mississippi",
+   "blurb": "Evening falls on the Natchez Trace, moonbeams slant down through the trees, mist drifts over the road and fireflies light up the forest.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "moonAt": [
+     0.7,
+     -0.08
+    ],
+    "beams": 1,
+    "beamsFrom": [
+     0.72,
+     -0.08
+    ],
+    "mist": [
+     0.35,
+     0.55,
+     0.95,
+     0.8
+    ],
+    "mistA": 0.5,
+    "fireflies": [
+     0,
+     0.4,
+     1,
+     0.9
+    ],
+    "firefliesA": 1
+   }
+  },
+  {
+   "id": "missouri-ozarks",
+   "title": "Ozark river",
+   "state": "Missouri",
+   "city": "",
+   "place": "Missouri",
+   "blurb": "Autumn leaves drift over the clear Ozark river, mist curls above the water, fireflies blink along the banks and moonlight glints on the rapids.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0.28,
+      0.1
+     ],
+     [
+      0.32,
+      0
+     ],
+     [
+      0.75,
+      0
+     ],
+     [
+      0.78,
+      0.12
+     ],
+     [
+      0.7,
+      0.28
+     ],
+     [
+      0.6,
+      0.3
+     ],
+     [
+      0.5,
+      0.3
+     ],
+     [
+      0.4,
+      0.22
+     ],
+     [
+      0.33,
+      0.2
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.5
+      ],
+      [
+       0.35,
+       0.5
+      ],
+      [
+       0.6,
+       0.49
+      ],
+      [
+       1,
+       0.52
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       0,
+       1
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.55,
+     -0.07
+    ],
+    "wave": 0.6,
+    "glint": 0.9,
+    "mist": [
+     0,
+     0.47,
+     1,
+     0.6
+    ],
+    "mistA": 0.8,
+    "fireflies": [
+     0,
+     0.3,
+     1,
+     0.6
+    ],
+    "firefliesA": 0.7,
+    "leaves": 0.5
+   }
+  },
+  {
+   "id": "montana-glacier",
+   "title": "Glacier National Park",
+   "state": "Montana",
+   "city": "",
+   "place": "Montana",
+   "blurb": "Night falls over Glacier, the northern lights ripple above the peaks, the Milky Way rises, and stars twinkle in the clear turquoise lake.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0.15,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.27
+     ],
+     [
+      0.9,
+      0.3
+     ],
+     [
+      0.8,
+      0.28
+     ],
+     [
+      0.7,
+      0.25
+     ],
+     [
+      0.62,
+      0.2
+     ],
+     [
+      0.6,
+      0.19
+     ],
+     [
+      0.55,
+      0.27
+     ],
+     [
+      0.45,
+      0.26
+     ],
+     [
+      0.38,
+      0.25
+     ],
+     [
+      0.3,
+      0.27
+     ],
+     [
+      0.25,
+      0.3
+     ],
+     [
+      0.2,
+      0.27
+     ],
+     [
+      0.17,
+      0.15
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.08,
+       0.49
+      ],
+      [
+       1,
+       0.49
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       0.2,
+       1
+      ],
+      [
+       0.12,
+       0.8
+      ],
+      [
+       0.05,
+       0.6
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.86,
+     0.08
+    ],
+    "flare": 0.6,
+    "milkyWay": [
+     0.35,
+     0.28,
+     0.7,
+     -0.02
+    ],
+    "milkyWayA": 0.8,
+    "aurora": 0.8,
+    "auroraY": 0.24,
+    "wave": 0.3,
+    "glint": 0.6,
+    "nightDark": 0.8
+   }
+  },
+  {
+   "id": "nebraska-chimney-rock",
+   "title": "Chimney Rock",
+   "state": "Nebraska",
+   "city": "",
+   "place": "Nebraska",
+   "blurb": "The prairie sky darkens, heat lightning flickers in the towering clouds, the Milky Way and moon rise beside Chimney Rock and fireflies blink in the grass.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.075
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.5
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0.5
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.5
+     ],
+     [
+      0.7,
+      0.5
+     ],
+     [
+      0.62,
+      0.48
+     ],
+     [
+      0.55,
+      0.42
+     ],
+     [
+      0.52,
+      0.32
+     ],
+     [
+      0.5,
+      0.28
+     ],
+     [
+      0.48,
+      0.31
+     ],
+     [
+      0.45,
+      0.42
+     ],
+     [
+      0.38,
+      0.47
+     ],
+     [
+      0.3,
+      0.5
+     ],
+     [
+      0,
+      0.5
+     ]
+    ],
+    "moonAt": [
+     0.78,
+     0.36
+    ],
+    "flare": 0.6,
+    "milkyWay": [
+     0.2,
+     0.5,
+     0.75,
+     0
+    ],
+    "lightning": 0.8,
+    "shadow": 0.7,
+    "birds": 1,
+    "fireflies": [
+     0,
+     0.55,
+     1,
+     1
+    ],
+    "firefliesA": 0.8,
+    "nightDark": 0.85
+   }
+  },
+  {
+   "id": "nevada-lake-tahoe",
+   "title": "Lake Tahoe",
+   "state": "Nevada",
+   "city": "",
+   "place": "Nevada",
+   "blurb": "Sunrise turns to a starry night over Lake Tahoe, the Milky Way rises over the mountains and the moon lays a silver path across the crystal-clear water.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.075
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.5
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0.5
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0.15,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.3
+     ],
+     [
+      0.8,
+      0.29
+     ],
+     [
+      0.6,
+      0.3
+     ],
+     [
+      0.45,
+      0.31
+     ],
+     [
+      0.35,
+      0.3
+     ],
+     [
+      0.25,
+      0.22
+     ],
+     [
+      0.2,
+      0.2
+     ],
+     [
+      0.15,
+      0.15
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.6,
+       0.385
+      ],
+      [
+       1,
+       0.38
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       0.48,
+       1
+      ],
+      [
+       0.42,
+       0.78
+      ],
+      [
+       0.62,
+       0.68
+      ],
+      [
+       0.64,
+       0.6
+      ],
+      [
+       0.6,
+       0.45
+      ]
+     ],
+     [
+      [
+       0.1,
+       0.385
+      ],
+      [
+       0.6,
+       0.385
+      ],
+      [
+       0.42,
+       0.45
+      ],
+      [
+       0.1,
+       0.45
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.84,
+     0.15
+    ],
+    "flare": 0.6,
+    "milkyWay": [
+     0.3,
+     0.31,
+     0.7,
+     0
+    ],
+    "wave": 0.4,
+    "glint": 0.9,
+    "nightDark": 0.85
+   }
+  },
+  {
+   "id": "new-hampshire-white-mountains",
+   "title": "White Mountains in fall",
+   "state": "New Hampshire",
+   "city": "",
+   "place": "New Hampshire",
+   "blurb": "Mist curls around the White Mountains, autumn leaves drift down, then the moon rises and stars twinkle in the still mountain lake.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.17
+     ],
+     [
+      0.9,
+      0.2
+     ],
+     [
+      0.8,
+      0.2
+     ],
+     [
+      0.7,
+      0.25
+     ],
+     [
+      0.6,
+      0.22
+     ],
+     [
+      0.5,
+      0.18
+     ],
+     [
+      0.45,
+      0.15
+     ],
+     [
+      0.38,
+      0.17
+     ],
+     [
+      0.3,
+      0.22
+     ],
+     [
+      0.2,
+      0.24
+     ],
+     [
+      0.1,
+      0.2
+     ],
+     [
+      0,
+      0.2
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.53
+      ],
+      [
+       1,
+       0.52
+      ],
+      [
+       1,
+       0.9
+      ],
+      [
+       0.8,
+       0.88
+      ],
+      [
+       0.6,
+       0.95
+      ],
+      [
+       0.3,
+       0.92
+      ],
+      [
+       0,
+       0.9
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.88,
+     0.07
+    ],
+    "flare": 0.5,
+    "wave": 0.3,
+    "glint": 0.6,
+    "mist": [
+     0.3,
+     0.15,
+     1,
+     0.3
+    ],
+    "mistA": 0.7,
+    "leaves": 0.9
+   }
+  },
+  {
+   "id": "new-jersey-shore",
+   "title": "Jersey Shore boardwalk",
+   "state": "New Jersey",
+   "city": "",
+   "place": "New Jersey",
+   "blurb": "The sun goes down over the shore, the moon rises above the Atlantic, the breaking surf glows blue-green, and the stars come out over the boardwalk.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.37
+     ],
+     [
+      0.9,
+      0.37
+     ],
+     [
+      0.8,
+      0.38
+     ],
+     [
+      0,
+      0.36
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.36
+      ],
+      [
+       0.8,
+       0.37
+      ],
+      [
+       0.6,
+       0.42
+      ],
+      [
+       0.4,
+       0.46
+      ],
+      [
+       0.25,
+       0.5
+      ],
+      [
+       0.1,
+       0.53
+      ],
+      [
+       0,
+       0.55
+      ]
+     ]
+    ],
+    "sunAt": [
+     0.36,
+     0.34
+    ],
+    "moonAt": [
+     0.8,
+     0.17
+    ],
+    "flare": 0.5,
+    "wave": 1.1,
+    "glint": 1,
+    "biolum": 1,
+    "birds": 1,
+    "fireflies": [
+     0.0,
+     0.5,
+     0.55,
+     1
+    ],
+    "firefliesA": 0.4
+   }
+  },
+  {
+   "id": "new-mexico-white-sands",
+   "title": "White Sands at sunset",
+   "state": "New Mexico",
+   "city": "",
+   "place": "New Mexico",
+   "blurb": "The desert sunset fades, the white dunes glow under the moon, and the Milky Way blazes across one of the darkest skies in America.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.22
+     ],
+     [
+      0.9,
+      0.23
+     ],
+     [
+      0.8,
+      0.22
+     ],
+     [
+      0.7,
+      0.23
+     ],
+     [
+      0.6,
+      0.22
+     ],
+     [
+      0.5,
+      0.23
+     ],
+     [
+      0.4,
+      0.21
+     ],
+     [
+      0.3,
+      0.23
+     ],
+     [
+      0.2,
+      0.24
+     ],
+     [
+      0.1,
+      0.24
+     ],
+     [
+      0,
+      0.24
+     ]
+    ],
+    "moonAt": [
+     0.88,
+     0.08
+    ],
+    "flare": 0.7,
+    "milkyWay": [
+     0.15,
+     0.24,
+     0.7,
+     -0.02
+    ],
+    "nightDark": 0.5
+   }
+  },
+  {
+   "id": "new-york-adirondacks",
+   "title": "Adirondack waterfall",
+   "state": "New York",
+   "city": "",
+   "place": "New York",
+   "blurb": "The Adirondack waterfall keeps tumbling into its pool as night falls, mist rises, moonlight glints on the water and fireflies fill the forest.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "water": [
+     [
+      [
+       0.22,
+       0.62
+      ],
+      [
+       0.75,
+       0.61
+      ],
+      [
+       0.9,
+       0.66
+      ],
+      [
+       0.85,
+       0.78
+      ],
+      [
+       0.6,
+       0.8
+      ],
+      [
+       0.3,
+       0.78
+      ],
+      [
+       0.2,
+       0.72
+      ]
+     ]
+    ],
+    "falls": [
+     0.4,
+     0.32,
+     0.6,
+     0.63
+    ],
+    "moonAt": [
+     0.48,
+     -0.08
+    ],
+    "wave": 0.6,
+    "glint": 0.8,
+    "mist": [
+     0.35,
+     0.55,
+     0.75,
+     0.68
+    ],
+    "mistA": 0.5,
+    "fireflies": [
+     0.05,
+     0.3,
+     0.95,
+     0.9
+    ],
+    "leaves": 0.4
+   }
+  },
+  {
+   "id": "north-carolina-blue-ridge",
+   "title": "Blue Ridge Parkway at sunrise",
+   "state": "North Carolina",
+   "city": "",
+   "place": "North Carolina",
+   "blurb": "Mist fills the Blue Ridge valleys, night falls, headlights wind along the parkway, fireflies blink in the trees and stars fill the sky over the mountains.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.075
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.5
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0.5
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.33
+     ],
+     [
+      0.8,
+      0.33
+     ],
+     [
+      0.6,
+      0.32
+     ],
+     [
+      0.4,
+      0.31
+     ],
+     [
+      0.2,
+      0.3
+     ],
+     [
+      0,
+      0.31
+     ]
+    ],
+    "cars": {
+     "path": [
+      [
+       0.42,
+       0.801
+      ],
+      [
+       0.547,
+       0.752
+      ],
+      [
+       0.664,
+       0.684
+      ],
+      [
+       0.762,
+       0.615
+      ],
+      [
+       0.82,
+       0.557
+      ],
+      [
+       0.82,
+       0.518
+      ],
+      [
+       0.762,
+       0.492
+      ],
+      [
+       0.703,
+       0.488
+      ]
+     ],
+     "n": 3,
+     "speed": 0.05,
+     "size": 0.012
+    },
+    "sunAt": [
+     0.78,
+     0.28
+    ],
+    "moonAt": [
+     0.85,
+     0.15
+    ],
+    "flare": 0.5,
+    "mist": [
+     0,
+     0.35,
+     0.75,
+     0.6
+    ],
+    "mistA": 0.8,
+    "fireflies": [
+     0,
+     0.45,
+     0.7,
+     0.75
+    ],
+    "firefliesA": 0.6
+   }
+  },
+  {
+   "id": "north-dakota-badlands",
+   "title": "Theodore Roosevelt badlands",
+   "state": "North Dakota",
+   "city": "",
+   "place": "North Dakota",
+   "blurb": "Night falls over the badlands, the northern lights ripple above the buttes, the Milky Way rises and moonlight glints on the winding river.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.26
+     ],
+     [
+      0,
+      0.26
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.55,
+       0.42
+      ],
+      [
+       0.62,
+       0.44
+      ],
+      [
+       0.75,
+       0.46
+      ],
+      [
+       0.85,
+       0.48
+      ],
+      [
+       0.83,
+       0.52
+      ],
+      [
+       0.72,
+       0.55
+      ],
+      [
+       0.66,
+       0.62
+      ],
+      [
+       0.7,
+       0.67
+      ],
+      [
+       0.82,
+       0.72
+      ],
+      [
+       1,
+       0.76
+      ],
+      [
+       1,
+       0.8
+      ],
+      [
+       0.75,
+       0.76
+      ],
+      [
+       0.62,
+       0.69
+      ],
+      [
+       0.6,
+       0.62
+      ],
+      [
+       0.64,
+       0.55
+      ],
+      [
+       0.76,
+       0.5
+      ],
+      [
+       0.6,
+       0.47
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.85,
+     0.15
+    ],
+    "flare": 0.5,
+    "milkyWay": [
+     0.2,
+     0.26,
+     0.8,
+     0
+    ],
+    "aurora": 0.8,
+    "auroraY": 0.22,
+    "wave": 0.3,
+    "glint": 0.7,
+    "nightDark": 0.8
+   }
+  },
+  {
+   "id": "ohio-hocking-hills",
+   "title": "Hocking Hills waterfall",
+   "state": "Ohio",
+   "city": "",
+   "place": "Ohio",
+   "blurb": "Autumn leaves drift down the gorge, the waterfall keeps flowing into the pool, mist rises and fireflies glow among the ferns.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "water": [
+     [
+      [
+       0.2,
+       0.65
+      ],
+      [
+       0.8,
+       0.64
+      ],
+      [
+       0.85,
+       0.72
+      ],
+      [
+       0.7,
+       0.75
+      ],
+      [
+       0.3,
+       0.75
+      ],
+      [
+       0.15,
+       0.72
+      ]
+     ]
+    ],
+    "falls": [
+     0.465,
+     0.4,
+     0.535,
+     0.64
+    ],
+    "moonAt": [
+     0.5,
+     -0.08
+    ],
+    "wave": 0.5,
+    "glint": 0.8,
+    "mist": [
+     0.3,
+     0.55,
+     0.7,
+     0.7
+    ],
+    "mistA": 0.4,
+    "fireflies": [
+     0.05,
+     0.2,
+     0.95,
+     0.9
+    ],
+    "firefliesA": 0.8,
+    "leaves": 0.8
+   }
+  },
+  {
+   "id": "oklahoma-wichita-mountains",
+   "title": "Wichita Mountains",
+   "state": "Oklahoma",
+   "city": "",
+   "place": "Oklahoma",
+   "blurb": "The prairie sunset fades over the Wichitas, lightning flickers in the clouds, the moon rises over the lake and fireflies blink in the grass.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.34
+     ],
+     [
+      0.9,
+      0.32
+     ],
+     [
+      0.8,
+      0.3
+     ],
+     [
+      0.7,
+      0.29
+     ],
+     [
+      0.6,
+      0.3
+     ],
+     [
+      0.5,
+      0.32
+     ],
+     [
+      0.4,
+      0.31
+     ],
+     [
+      0.3,
+      0.33
+     ],
+     [
+      0.15,
+      0.34
+     ],
+     [
+      0,
+      0.35
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.5
+      ],
+      [
+       0.2,
+       0.49
+      ],
+      [
+       0.45,
+       0.5
+      ],
+      [
+       0.7,
+       0.51
+      ],
+      [
+       0.75,
+       0.53
+      ],
+      [
+       0.6,
+       0.57
+      ],
+      [
+       0.4,
+       0.6
+      ],
+      [
+       0.2,
+       0.64
+      ],
+      [
+       0,
+       0.65
+      ]
+     ]
+    ],
+    "sunAt": [
+     0.15,
+     0.33
+    ],
+    "moonAt": [
+     0.78,
+     0.28
+    ],
+    "flare": 0.5,
+    "milkyWay": [
+     0.2,
+     0.34,
+     0.7,
+     0
+    ],
+    "milkyWayA": 0.6,
+    "lightning": 0.8,
+    "wave": 0.3,
+    "glint": 0.7,
+    "fireflies": [
+     0,
+     0.55,
+     1,
+     1
+    ],
+    "firefliesA": 0.8
+   }
+  },
+  {
+   "id": "oregon-crater-lake",
+   "title": "Crater Lake",
+   "state": "Oregon",
+   "city": "",
+   "place": "Oregon",
+   "blurb": "Night falls over Crater Lake, the Milky Way and moon rise above the rim, and stars twinkle in the deep blue water around Wizard Island.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.075
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.5
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0.5
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.31
+     ],
+     [
+      0.8,
+      0.31
+     ],
+     [
+      0.6,
+      0.32
+     ],
+     [
+      0.4,
+      0.3
+     ],
+     [
+      0.3,
+      0.28
+     ],
+     [
+      0.2,
+      0.29
+     ],
+     [
+      0.1,
+      0.3
+     ],
+     [
+      0,
+      0.3
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.37
+      ],
+      [
+       0.3,
+       0.365
+      ],
+      [
+       0.3,
+       0.43
+      ],
+      [
+       0,
+       0.45
+      ]
+     ],
+     [
+      [
+       0.82,
+       0.36
+      ],
+      [
+       1,
+       0.35
+      ],
+      [
+       0.97,
+       0.4
+      ],
+      [
+       0.85,
+       0.46
+      ],
+      [
+       0.8,
+       0.47
+      ]
+     ],
+     [
+      [
+       0,
+       0.48
+      ],
+      [
+       0.82,
+       0.48
+      ],
+      [
+       0.8,
+       0.52
+      ],
+      [
+       0.75,
+       0.58
+      ],
+      [
+       0.7,
+       0.65
+      ],
+      [
+       0.6,
+       0.75
+      ],
+      [
+       0.45,
+       0.78
+      ],
+      [
+       0.35,
+       0.78
+      ],
+      [
+       0.25,
+       0.7
+      ],
+      [
+       0.2,
+       0.6
+      ],
+      [
+       0.1,
+       0.55
+      ],
+      [
+       0,
+       0.55
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.84,
+     0.15
+    ],
+    "flare": 0.6,
+    "milkyWay": [
+     0.3,
+     0.3,
+     0.7,
+     0
+    ],
+    "wave": 0.3,
+    "glint": 0.7,
+    "nightDark": 0.8
+   }
+  },
+  {
+   "id": "pennsylvania-lancaster-county",
+   "title": "Lancaster County farm",
+   "state": "Pennsylvania",
+   "city": "",
+   "place": "Pennsylvania",
+   "blurb": "Cloud shadows drift over the farm, then night falls: the farmhouse windows glow, the barn lights up, and fireflies rise from the fields under the stars.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.36
+     ],
+     [
+      0.9,
+      0.34
+     ],
+     [
+      0.75,
+      0.33
+     ],
+     [
+      0.6,
+      0.3
+     ],
+     [
+      0.5,
+      0.3
+     ],
+     [
+      0.4,
+      0.32
+     ],
+     [
+      0.3,
+      0.33
+     ],
+     [
+      0,
+      0.34
+     ]
+    ],
+    "lamps": [
+     [
+      0.44,
+      0.38,
+      0.005
+     ],
+     [
+      0.47,
+      0.38,
+      0.005
+     ],
+     [
+      0.5,
+      0.38,
+      0.005
+     ],
+     [
+      0.53,
+      0.39,
+      0.005
+     ],
+     [
+      0.7,
+      0.39,
+      0.007
+     ]
+    ],
+    "moonAt": [
+     0.86,
+     0.27
+    ],
+    "flare": 0.5,
+    "milkyWay": [
+     0.2,
+     0.33,
+     0.6,
+     0
+    ],
+    "milkyWayA": 0.6,
+    "shadow": 0.8,
+    "birds": 1,
+    "fireflies": [
+     0,
+     0.45,
+     1,
+     1
+    ],
+    "firefliesA": 1,
+    "nightDark": 0.85
+   }
+  },
+  {
+   "id": "rhode-island-newport",
+   "title": "Newport coast",
+   "state": "Rhode Island",
+   "city": "",
+   "place": "Rhode Island",
+   "blurb": "Waves crash on the Newport rocks, the lighthouse beam sweeps the bay, harbor lights twinkle across the water and the surf glows under the moon.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6,
+      "beacon": 1
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0,
+      "beacon": 1
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0,
+      "beacon": 1
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.31
+     ],
+     [
+      0.85,
+      0.31
+     ],
+     [
+      0.7,
+      0.3
+     ],
+     [
+      0.5,
+      0.31
+     ],
+     [
+      0.48,
+      0.24
+     ],
+     [
+      0.45,
+      0.24
+     ],
+     [
+      0.43,
+      0.3
+     ],
+     [
+      0.3,
+      0.3
+     ],
+     [
+      0,
+      0.31
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.48,
+       0.32
+      ],
+      [
+       1,
+       0.31
+      ],
+      [
+       1,
+       0.65
+      ],
+      [
+       0.85,
+       0.6
+      ],
+      [
+       0.7,
+       0.58
+      ],
+      [
+       0.6,
+       0.55
+      ],
+      [
+       0.4,
+       0.5
+      ],
+      [
+       0.4,
+       0.45
+      ],
+      [
+       0.48,
+       0.4
+      ]
+     ]
+    ],
+    "beaconAt": [
+     0.465,
+     0.27
+    ],
+    "lamps": [
+     [
+      0.08,
+      0.31,
+      0.003
+     ],
+     [
+      0.15,
+      0.312,
+      0.003
+     ],
+     [
+      0.25,
+      0.31,
+      0.003
+     ],
+     [
+      0.7,
+      0.315,
+      0.003
+     ],
+     [
+      0.85,
+      0.31,
+      0.003
+     ]
+    ],
+    "mirror": 0.32,
+    "moonAt": [
+     0.8,
+     0.17
+    ],
+    "flare": 0.5,
+    "wave": 1.2,
+    "glint": 1,
+    "biolum": 1,
+    "birds": 1
+   }
+  },
+  {
+   "id": "south-carolina-lowcountry",
+   "title": "Lowcountry at sunrise",
+   "state": "South Carolina",
+   "city": "",
+   "place": "South Carolina",
+   "blurb": "Mist rolls over the Lowcountry marsh, the moon rises behind the old live oak, fireflies drift over the tidal creek and stars shimmer in the water.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.32
+     ],
+     [
+      0.8,
+      0.33
+     ],
+     [
+      0.65,
+      0.38
+     ],
+     [
+      0.55,
+      0.4
+     ],
+     [
+      0.45,
+      0.4
+     ],
+     [
+      0.42,
+      0.33
+     ],
+     [
+      0.35,
+      0.3
+     ],
+     [
+      0.25,
+      0.3
+     ],
+     [
+      0.2,
+      0.35
+     ],
+     [
+      0.2,
+      0.4
+     ],
+     [
+      0,
+      0.42
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.44
+      ],
+      [
+       0.2,
+       0.44
+      ],
+      [
+       0.1,
+       0.47
+      ],
+      [
+       0,
+       0.48
+      ]
+     ],
+     [
+      [
+       0.45,
+       0.5
+      ],
+      [
+       0.55,
+       0.51
+      ],
+      [
+       0.6,
+       0.53
+      ],
+      [
+       0.5,
+       0.55
+      ],
+      [
+       0.4,
+       0.57
+      ],
+      [
+       0.35,
+       0.6
+      ],
+      [
+       0.4,
+       0.63
+      ],
+      [
+       0.5,
+       0.62
+      ],
+      [
+       0.6,
+       0.63
+      ],
+      [
+       0.65,
+       0.66
+      ],
+      [
+       0.6,
+       0.7
+      ],
+      [
+       0.75,
+       0.75
+      ],
+      [
+       0.8,
+       0.82
+      ],
+      [
+       0.75,
+       0.9
+      ],
+      [
+       0.7,
+       1
+      ],
+      [
+       0.15,
+       1
+      ],
+      [
+       0.2,
+       0.9
+      ],
+      [
+       0.3,
+       0.85
+      ],
+      [
+       0.38,
+       0.78
+      ],
+      [
+       0.35,
+       0.7
+      ],
+      [
+       0.25,
+       0.68
+      ],
+      [
+       0.15,
+       0.65
+      ],
+      [
+       0.2,
+       0.6
+      ],
+      [
+       0.28,
+       0.57
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.86,
+     0.17
+    ],
+    "flare": 0.5,
+    "wave": 0.3,
+    "glint": 0.7,
+    "mist": [
+     0,
+     0.38,
+     1,
+     0.5
+    ],
+    "mistA": 0.7,
+    "fireflies": [
+     0,
+     0.4,
+     1,
+     0.9
+    ],
+    "firefliesA": 0.9
+   }
+  },
+  {
+   "id": "south-dakota-black-hills",
+   "title": "Black Hills Needles",
+   "state": "South Dakota",
+   "city": "",
+   "place": "South Dakota",
+   "blurb": "Night falls over the Needles, the Milky Way rises behind the granite spires, and the moon and stars shine in the still mountain lake.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.075
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.5
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0.5
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.2
+     ],
+     [
+      0.9,
+      0.22
+     ],
+     [
+      0.85,
+      0.3
+     ],
+     [
+      0.8,
+      0.38
+     ],
+     [
+      0.72,
+      0.4
+     ],
+     [
+      0.68,
+      0.3
+     ],
+     [
+      0.6,
+      0.24
+     ],
+     [
+      0.55,
+      0.22
+     ],
+     [
+      0.5,
+      0.25
+     ],
+     [
+      0.45,
+      0.24
+     ],
+     [
+      0.38,
+      0.3
+     ],
+     [
+      0.3,
+      0.38
+     ],
+     [
+      0.25,
+      0.4
+     ],
+     [
+      0.18,
+      0.3
+     ],
+     [
+      0.1,
+      0.22
+     ],
+     [
+      0,
+      0.2
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.6
+      ],
+      [
+       1,
+       0.6
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       0,
+       1
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.86,
+     0.12
+    ],
+    "flare": 0.6,
+    "milkyWay": [
+     0.3,
+     0.4,
+     0.75,
+     0
+    ],
+    "wave": 0.25,
+    "glint": 0.6,
+    "nightDark": 0.8
+   }
+  },
+  {
+   "id": "tennessee-great-smokies",
+   "title": "Great Smoky Mountains",
+   "state": "Tennessee",
+   "city": "",
+   "place": "Tennessee",
+   "blurb": "Mist fills the Smokies, night falls, and the famous synchronous fireflies flash together in waves across the mountainside under the stars.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.24
+     ],
+     [
+      0.8,
+      0.25
+     ],
+     [
+      0.6,
+      0.24
+     ],
+     [
+      0.4,
+      0.22
+     ],
+     [
+      0.2,
+      0.22
+     ],
+     [
+      0,
+      0.22
+     ]
+    ],
+    "sunAt": [
+     0.37,
+     0.12
+    ],
+    "moonAt": [
+     0.88,
+     0.08
+    ],
+    "flare": 0.5,
+    "mist": [
+     0,
+     0.2,
+     1,
+     0.48
+    ],
+    "mistA": 0.9,
+    "fireflies": [
+     0,
+     0.42,
+     1,
+     1
+    ],
+    "firefliesA": 1.2,
+    "firefliesSync": 1
+   }
+  },
+  {
+   "id": "texas-hill-country",
+   "title": "Hill Country bluebonnets",
+   "state": "Texas",
+   "city": "",
+   "place": "Texas",
+   "blurb": "Spring bluebonnets glow at sunset, then fireflies rise over the wildflowers, the Milky Way spreads across the big Texas sky and a shooting star streaks past.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.075
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.5
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0.5
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.2
+     ],
+     [
+      0.9,
+      0.2
+     ],
+     [
+      0.8,
+      0.22
+     ],
+     [
+      0.7,
+      0.24
+     ],
+     [
+      0.5,
+      0.25
+     ],
+     [
+      0.3,
+      0.24
+     ],
+     [
+      0.1,
+      0.22
+     ],
+     [
+      0,
+      0.24
+     ]
+    ],
+    "moonAt": [
+     0.82,
+     0.12
+    ],
+    "flare": 0.6,
+    "milkyWay": [
+     0.3,
+     0.24,
+     0.6,
+     0
+    ],
+    "birds": 1,
+    "fireflies": [
+     0,
+     0.4,
+     1,
+     1
+    ],
+    "firefliesA": 1,
+    "nightDark": 0.85
+   }
+  },
+  {
+   "id": "utah-delicate-arch",
+   "title": "Delicate Arch",
+   "state": "Utah",
+   "city": "",
+   "place": "Utah",
+   "blurb": "Sunset glows on Delicate Arch, then the Milky Way rises right through the arch, the red rock glows in the moonlight and shooting stars streak by.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.4
+     ],
+     [
+      0.95,
+      0.4
+     ],
+     [
+      0.93,
+      0.3
+     ],
+     [
+      0.88,
+      0.25
+     ],
+     [
+      0.8,
+      0.24
+     ],
+     [
+      0.72,
+      0.24
+     ],
+     [
+      0.62,
+      0.26
+     ],
+     [
+      0.57,
+      0.33
+     ],
+     [
+      0.55,
+      0.4
+     ],
+     [
+      0.05,
+      0.4
+     ],
+     [
+      0.03,
+      0.33
+     ],
+     [
+      0,
+      0.3
+     ]
+    ],
+    "moonAt": [
+     0.82,
+     0.12
+    ],
+    "flare": 0.6,
+    "milkyWay": [
+     0.72,
+     0.45,
+     0.52,
+     -0.02
+    ],
+    "milkyWayA": 1.1,
+    "nightDark": 0.6
+   }
+  },
+  {
+   "id": "vermont-village",
+   "title": "Vermont village in fall",
+   "state": "Vermont",
+   "city": "",
+   "place": "Vermont",
+   "blurb": "Autumn leaves drift over the village, mist settles on the hills, and the church and houses light up one by one as the stars come out.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0.2,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.14
+     ],
+     [
+      0.85,
+      0.17
+     ],
+     [
+      0.7,
+      0.2
+     ],
+     [
+      0.55,
+      0.2
+     ],
+     [
+      0.45,
+      0.18
+     ],
+     [
+      0.3,
+      0.16
+     ],
+     [
+      0.22,
+      0.15
+     ]
+    ],
+    "lamps": [
+     [
+      0.525,
+      0.47,
+      0.007
+     ],
+     [
+      0.52,
+      0.6,
+      0.006
+     ],
+     [
+      0.32,
+      0.62,
+      0.006
+     ],
+     [
+      0.38,
+      0.62,
+      0.006
+     ],
+     [
+      0.8,
+      0.58,
+      0.006
+     ],
+     [
+      0.83,
+      0.62,
+      0.006
+     ],
+     [
+      0.78,
+      0.66,
+      0.006
+     ]
+    ],
+    "moonAt": [
+     0.88,
+     0.07
+    ],
+    "flare": 0.4,
+    "mist": [
+     0.3,
+     0.15,
+     1,
+     0.3
+    ],
+    "mistA": 0.5,
+    "leaves": 0.9
+   }
+  },
+  {
+   "id": "virginia-shenandoah",
+   "title": "Shenandoah ridgelines",
+   "state": "Virginia",
+   "city": "",
+   "place": "Virginia",
+   "blurb": "Mist fills the Shenandoah valleys, the ridgelines fade to blue, fireflies blink along the stone wall and the sky fills with twinkling stars.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.27
+     ],
+     [
+      0.8,
+      0.27
+     ],
+     [
+      0.6,
+      0.28
+     ],
+     [
+      0.4,
+      0.27
+     ],
+     [
+      0.2,
+      0.29
+     ],
+     [
+      0,
+      0.28
+     ]
+    ],
+    "moonAt": [
+     0.88,
+     0.07
+    ],
+    "flare": 0.4,
+    "mist": [
+     0,
+     0.28,
+     0.8,
+     0.45
+    ],
+    "mistA": 0.8,
+    "fireflies": [
+     0,
+     0.45,
+     0.7,
+     0.8
+    ],
+    "firefliesA": 0.7,
+    "leaves": 0.5
+   }
+  },
+  {
+   "id": "washington-mount-rainier",
+   "title": "Mount Rainier",
+   "state": "Washington",
+   "city": "",
+   "place": "Washington",
+   "blurb": "Night falls over Mount Rainier, the Milky Way rises beside the peak, faint northern lights shimmer, and the wildflower meadow glows under the stars.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.3
+     ],
+     [
+      0.95,
+      0.35
+     ],
+     [
+      0.9,
+      0.33
+     ],
+     [
+      0.85,
+      0.3
+     ],
+     [
+      0.75,
+      0.27
+     ],
+     [
+      0.65,
+      0.27
+     ],
+     [
+      0.6,
+      0.25
+     ],
+     [
+      0.52,
+      0.23
+     ],
+     [
+      0.45,
+      0.25
+     ],
+     [
+      0.35,
+      0.28
+     ],
+     [
+      0.25,
+      0.32
+     ],
+     [
+      0.18,
+      0.3
+     ],
+     [
+      0.12,
+      0.26
+     ],
+     [
+      0.05,
+      0.25
+     ],
+     [
+      0,
+      0.27
+     ]
+    ],
+    "moonAt": [
+     0.88,
+     0.08
+    ],
+    "flare": 0.5,
+    "milkyWay": [
+     0.25,
+     0.32,
+     0.7,
+     0
+    ],
+    "milkyWayA": 0.8,
+    "aurora": 0.5,
+    "auroraY": 0.24,
+    "nightDark": 0.8
+   }
+  },
+  {
+   "id": "west-virginia-new-river-gorge",
+   "title": "New River Gorge",
+   "state": "West Virginia",
+   "city": "",
+   "place": "West Virginia",
+   "blurb": "Mist curls through the New River Gorge, headlights cross the great arch bridge, moonlight glints on the river and fireflies light up the autumn woods.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.21
+     ],
+     [
+      0,
+      0.21
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.45,
+       0.42
+      ],
+      [
+       0.52,
+       0.4
+      ],
+      [
+       0.58,
+       0.38
+      ],
+      [
+       0.62,
+       0.4
+      ],
+      [
+       0.55,
+       0.45
+      ],
+      [
+       0.6,
+       0.5
+      ],
+      [
+       0.65,
+       0.55
+      ],
+      [
+       0.7,
+       0.6
+      ],
+      [
+       0.78,
+       0.66
+      ],
+      [
+       0.85,
+       0.7
+      ],
+      [
+       0.8,
+       0.73
+      ],
+      [
+       0.72,
+       0.7
+      ],
+      [
+       0.62,
+       0.64
+      ],
+      [
+       0.55,
+       0.57
+      ],
+      [
+       0.47,
+       0.48
+      ]
+     ]
+    ],
+    "cars": {
+     "path": [
+      [
+       0.5,
+       0.236
+      ],
+      [
+       0.8,
+       0.232
+      ]
+     ],
+     "n": 2,
+     "speed": 0.08,
+     "size": 0.004
+    },
+    "moonAt": [
+     0.82,
+     0.12
+    ],
+    "flare": 0.4,
+    "wave": 0.4,
+    "glint": 0.8,
+    "mist": [
+     0.3,
+     0.2,
+     0.95,
+     0.35
+    ],
+    "mistA": 0.8,
+    "fireflies": [
+     0,
+     0.4,
+     1,
+     0.9
+    ],
+    "firefliesA": 0.7,
+    "leaves": 0.6
+   }
+  },
+  {
+   "id": "wisconsin-door-county",
+   "title": "Door County shoreline",
+   "state": "Wisconsin",
+   "city": "",
+   "place": "Wisconsin",
+   "blurb": "The sunrise turns to night over Green Bay, a lantern glows at the end of the dock, the northern lights ripple overhead and the moon lays its path on the water.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0.5,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.5
+     ],
+     [
+      0.45,
+      0.5
+     ],
+     [
+      0.42,
+      0.42
+     ],
+     [
+      0.45,
+      0.3
+     ],
+     [
+      0.5,
+      0.2
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.42,
+       0.5
+      ],
+      [
+       1,
+       0.5
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       0.7,
+       1
+      ],
+      [
+       0.55,
+       0.85
+      ],
+      [
+       0.45,
+       0.75
+      ],
+      [
+       0.5,
+       0.7
+      ],
+      [
+       0.4,
+       0.6
+      ],
+      [
+       0.45,
+       0.55
+      ]
+     ]
+    ],
+    "lamps": [
+     [
+      0.78,
+      0.555,
+      0.01
+     ]
+    ],
+    "mirror": 0.58,
+    "moonAt": [
+     0.72,
+     0.33
+    ],
+    "flare": 0.5,
+    "aurora": 0.9,
+    "auroraY": 0.3,
+    "wave": 0.5,
+    "glint": 0.8
+   }
+  },
+  {
+   "id": "wyoming-grand-teton",
+   "title": "Grand Teton",
+   "state": "Wyoming",
+   "city": "",
+   "place": "Wyoming",
+   "blurb": "Golden leaves drift by the Snake River, the Tetons glow at sunset, then the Milky Way and moon rise over the peaks and stars shimmer in the water.",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.36
+     ],
+     [
+      0.9,
+      0.37
+     ],
+     [
+      0.8,
+      0.33
+     ],
+     [
+      0.75,
+      0.3
+     ],
+     [
+      0.7,
+      0.29
+     ],
+     [
+      0.65,
+      0.27
+     ],
+     [
+      0.6,
+      0.25
+     ],
+     [
+      0.52,
+      0.24
+     ],
+     [
+      0.48,
+      0.29
+     ],
+     [
+      0.43,
+      0.3
+     ],
+     [
+      0.35,
+      0.29
+     ],
+     [
+      0.3,
+      0.31
+     ],
+     [
+      0.2,
+      0.3
+     ],
+     [
+      0.1,
+      0.35
+     ],
+     [
+      0,
+      0.36
+     ]
+    ],
+    "water": [
+     [
+      [
+       0.35,
+       0.58
+      ],
+      [
+       0.6,
+       0.6
+      ],
+      [
+       0.9,
+       0.6
+      ],
+      [
+       0.92,
+       0.65
+      ],
+      [
+       0.85,
+       0.72
+      ],
+      [
+       0.7,
+       0.75
+      ],
+      [
+       0.5,
+       0.78
+      ],
+      [
+       0.4,
+       0.83
+      ],
+      [
+       0.3,
+       0.86
+      ],
+      [
+       0.15,
+       0.87
+      ],
+      [
+       0,
+       0.85
+      ],
+      [
+       0,
+       0.75
+      ],
+      [
+       0.2,
+       0.73
+      ],
+      [
+       0.3,
+       0.7
+      ],
+      [
+       0.35,
+       0.65
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.88,
+     0.1
+    ],
+    "flare": 0.6,
+    "milkyWay": [
+     0.3,
+     0.31,
+     0.75,
+     0
+    ],
+    "wave": 0.3,
+    "glint": 0.7,
+    "leaves": 0.6,
+    "nightDark": 0.8
+   }
+  },
+  {
+   "id": "event-birthday",
+   "category": "event",
+   "occasion": "Birthdays",
+   "title": "Happy Birthday",
+   "state": "",
+   "city": "",
+   "place": "Pete!",
+   "greetText": "Happy Birthday",
+   "blurb": "Confetti rains down over the wildflowers, then night falls and fireworks light up the big sky.",
+   "image": "texas-hill-country",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.075
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.5
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0.5
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.2
+     ],
+     [
+      0.9,
+      0.2
+     ],
+     [
+      0.8,
+      0.22
+     ],
+     [
+      0.7,
+      0.24
+     ],
+     [
+      0.5,
+      0.25
+     ],
+     [
+      0.3,
+      0.24
+     ],
+     [
+      0.1,
+      0.22
+     ],
+     [
+      0,
+      0.24
+     ]
+    ],
+    "moonAt": [
+     0.82,
+     0.12
+    ],
+    "flare": 0.6,
+    "milkyWay": [
+     0.3,
+     0.24,
+     0.6,
+     0
+    ],
+    "birds": 1,
+    "fireflies": [
+     0,
+     0.4,
+     1,
+     1
+    ],
+    "firefliesA": 0.6,
+    "nightDark": 0.85,
+    "confetti": 1,
+    "fireworks": 1
+   }
+  },
+  {
+   "id": "event-holidays",
+   "category": "event",
+   "occasion": "Holidays",
+   "title": "Happy Holidays",
+   "state": "",
+   "city": "",
+   "place": "The Foxes",
+   "greetText": "Happy Holidays from",
+   "blurb": "Snow falls on the village, the church and the windows glow, and the stars come out over the hills.",
+   "image": "vermont-village",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0.2,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.14
+     ],
+     [
+      0.85,
+      0.17
+     ],
+     [
+      0.7,
+      0.2
+     ],
+     [
+      0.55,
+      0.2
+     ],
+     [
+      0.45,
+      0.18
+     ],
+     [
+      0.3,
+      0.16
+     ],
+     [
+      0.22,
+      0.15
+     ]
+    ],
+    "lamps": [
+     [
+      0.525,
+      0.47,
+      0.007
+     ],
+     [
+      0.52,
+      0.6,
+      0.006
+     ],
+     [
+      0.32,
+      0.62,
+      0.006
+     ],
+     [
+      0.38,
+      0.62,
+      0.006
+     ],
+     [
+      0.8,
+      0.58,
+      0.006
+     ],
+     [
+      0.83,
+      0.62,
+      0.006
+     ],
+     [
+      0.78,
+      0.66,
+      0.006
+     ]
+    ],
+    "moonAt": [
+     0.88,
+     0.07
+    ],
+    "flare": 0.4,
+    "mist": [
+     0.3,
+     0.15,
+     1,
+     0.3
+    ],
+    "mistA": 0.5,
+    "snow": 1,
+    "leaves": 0
+   }
+  },
+  {
+   "id": "event-wedding",
+   "category": "event",
+   "occasion": "Weddings",
+   "title": "Just Married",
+   "state": "",
+   "city": "",
+   "place": "Sam & Alex",
+   "greetText": "Just Married",
+   "blurb": "Hearts float up past the mountains, the Milky Way rises and the stars sparkle in the lake.",
+   "image": "colorado-maroon-bells",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.13
+     ],
+     [
+      0.95,
+      0.2
+     ],
+     [
+      0.9,
+      0.28
+     ],
+     [
+      0.85,
+      0.29
+     ],
+     [
+      0.75,
+      0.27
+     ],
+     [
+      0.7,
+      0.25
+     ],
+     [
+      0.62,
+      0.26
+     ],
+     [
+      0.55,
+      0.24
+     ],
+     [
+      0.5,
+      0.23
+     ],
+     [
+      0.45,
+      0.24
+     ],
+     [
+      0.4,
+      0.25
+     ],
+     [
+      0.3,
+      0.28
+     ],
+     [
+      0.25,
+      0.3
+     ],
+     [
+      0.18,
+      0.27
+     ],
+     [
+      0.1,
+      0.2
+     ],
+     [
+      0,
+      0.15
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.52
+      ],
+      [
+       1,
+       0.52
+      ],
+      [
+       1,
+       0.85
+      ],
+      [
+       0.6,
+       0.9
+      ],
+      [
+       0.3,
+       0.92
+      ],
+      [
+       0,
+       0.88
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.88,
+     0.07
+    ],
+    "flare": 0.8,
+    "milkyWay": [
+     0.3,
+     0.27,
+     0.7,
+     -0.05
+    ],
+    "wave": 0.3,
+    "glint": 0.6,
+    "nightDark": 0.75,
+    "hearts": 1,
+    "leaves": 0
+   }
+  },
+  {
+   "id": "event-new-year",
+   "category": "event",
+   "occasion": "New Year",
+   "title": "Happy New Year",
+   "state": "",
+   "city": "",
+   "place": "2027",
+   "greetText": "Happy New Year",
+   "blurb": "The sun sets on the old year, then fireworks burst over the ocean and confetti flies.",
+   "image": "new-jersey-shore",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.37
+     ],
+     [
+      0.9,
+      0.37
+     ],
+     [
+      0.8,
+      0.38
+     ],
+     [
+      0,
+      0.36
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.36
+      ],
+      [
+       0.8,
+       0.37
+      ],
+      [
+       0.6,
+       0.42
+      ],
+      [
+       0.4,
+       0.46
+      ],
+      [
+       0.25,
+       0.5
+      ],
+      [
+       0.1,
+       0.53
+      ],
+      [
+       0,
+       0.55
+      ]
+     ]
+    ],
+    "sunAt": [
+     0.36,
+     0.34
+    ],
+    "moonAt": [
+     0.8,
+     0.17
+    ],
+    "flare": 0.5,
+    "wave": 1.1,
+    "glint": 1,
+    "biolum": 1,
+    "birds": 1,
+    "fireflies": [
+     0.0,
+     0.5,
+     0.55,
+     1
+    ],
+    "firefliesA": 0.4,
+    "fireworks": 1,
+    "confetti": 0.5
+   }
+  },
+  {
+   "id": "event-graduation",
+   "category": "event",
+   "occasion": "Graduation",
+   "title": "Congrats Grad",
+   "state": "",
+   "city": "",
+   "place": "Class of 2027",
+   "greetText": "Congratulations",
+   "blurb": "Confetti flies over the peaks, then the Milky Way rises: the sky is the limit.",
+   "image": "idaho-sawtooths",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.075
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.5
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0.5
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.28
+     ],
+     [
+      0.9,
+      0.27
+     ],
+     [
+      0.75,
+      0.25
+     ],
+     [
+      0.65,
+      0.24
+     ],
+     [
+      0.55,
+      0.22
+     ],
+     [
+      0.45,
+      0.27
+     ],
+     [
+      0.35,
+      0.26
+     ],
+     [
+      0.25,
+      0.28
+     ],
+     [
+      0.1,
+      0.29
+     ],
+     [
+      0,
+      0.3
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.5
+      ],
+      [
+       1,
+       0.48
+      ],
+      [
+       1,
+       0.75
+      ],
+      [
+       0.7,
+       0.78
+      ],
+      [
+       0.4,
+       0.72
+      ],
+      [
+       0.25,
+       0.7
+      ],
+      [
+       0,
+       0.68
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.85,
+     0.14
+    ],
+    "flare": 0.6,
+    "milkyWay": [
+     0.35,
+     0.29,
+     0.7,
+     -0.02
+    ],
+    "wave": 0.3,
+    "glint": 0.6,
+    "fireflies": [
+     0,
+     0.72,
+     1,
+     1
+    ],
+    "firefliesA": 0.6,
+    "nightDark": 0.75,
+    "confetti": 1
+   }
+  },
+  {
+   "id": "event-thank-you",
+   "category": "event",
+   "occasion": "Thank You",
+   "title": "Thank You",
+   "state": "",
+   "city": "",
+   "place": "Thanks",
+   "greetText": "With love and",
+   "blurb": "Golden light fades over the farm, mist settles and fireflies dance under the stars.",
+   "image": "kentucky-horse-farm",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      0.62,
+      0
+     ],
+     [
+      0.6,
+      0.15
+     ],
+     [
+      0.55,
+      0.25
+     ],
+     [
+      0.48,
+      0.32
+     ],
+     [
+      0.4,
+      0.37
+     ],
+     [
+      0.3,
+      0.37
+     ],
+     [
+      0.2,
+      0.37
+     ],
+     [
+      0.1,
+      0.38
+     ],
+     [
+      0,
+      0.39
+     ]
+    ],
+    "sunAt": [
+     0.34,
+     0.36
+    ],
+    "moonAt": [
+     0.2,
+     0.3
+    ],
+    "flare": 0.5,
+    "mist": [
+     0,
+     0.36,
+     0.55,
+     0.47
+    ],
+    "mistA": 0.8,
+    "fireflies": [
+     0,
+     0.45,
+     0.65,
+     0.85
+    ]
+   }
+  },
+  {
+   "id": "event-new-baby",
+   "category": "event",
+   "occasion": "New Baby",
+   "title": "Welcome Baby",
+   "state": "",
+   "city": "",
+   "place": "Baby Rose",
+   "greetText": "Welcome to the world",
+   "blurb": "A gentle night falls over the lake, the northern lights glow softly and the stars twinkle like a lullaby.",
+   "image": "minnesota-northwoods-lake",
+   "live": {
+    "style": "scene",
+    "keys": [
+     {
+      "t": 0
+     },
+     {
+      "t": 1.2,
+      "gold": 0.55,
+      "sun": 0.75
+     },
+     {
+      "t": 2.6,
+      "night": 0.92,
+      "gold": 0.12,
+      "moon": 0.6
+     },
+     {
+      "t": 4,
+      "night": 1,
+      "moon": 1,
+      "rise": 0.0
+     },
+     {
+      "t": 13,
+      "night": 1,
+      "moon": 1,
+      "rise": 0
+     },
+     {
+      "t": 14.7,
+      "night": 0.35,
+      "gold": 0.3,
+      "sun": 0.3,
+      "rise": 0
+     },
+     {
+      "t": 16
+     }
+    ],
+    "sky": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      1,
+      0.25
+     ],
+     [
+      0.9,
+      0.25
+     ],
+     [
+      0.8,
+      0.27
+     ],
+     [
+      0.7,
+      0.24
+     ],
+     [
+      0.6,
+      0.19
+     ],
+     [
+      0.5,
+      0.2
+     ],
+     [
+      0.45,
+      0.32
+     ],
+     [
+      0.35,
+      0.34
+     ],
+     [
+      0.2,
+      0.32
+     ],
+     [
+      0.1,
+      0.3
+     ],
+     [
+      0,
+      0.31
+     ]
+    ],
+    "water": [
+     [
+      [
+       0,
+       0.4
+      ],
+      [
+       1,
+       0.4
+      ],
+      [
+       1,
+       0.7
+      ],
+      [
+       0.78,
+       0.6
+      ],
+      [
+       0.5,
+       0.68
+      ],
+      [
+       0.25,
+       0.75
+      ],
+      [
+       0.15,
+       0.65
+      ],
+      [
+       0,
+       0.6
+      ]
+     ]
+    ],
+    "moonAt": [
+     0.86,
+     0.095
+    ],
+    "flare": 0.5,
+    "aurora": 1,
+    "auroraY": 0.27,
+    "wave": 0.25,
+    "glint": 0.6,
+    "mist": [
+     0,
+     0.36,
+     1,
+     0.46
+    ],
+    "mistA": 0.7,
+    "fireflies": [
+     0,
+     0.5,
+     0.3,
+     0.75
+    ],
+    "firefliesA": 0.5,
+    "hearts": 0.4
+   }
+  }
+ ]
+}

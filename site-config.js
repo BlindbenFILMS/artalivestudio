@@ -44,8 +44,12 @@ window.ART_ALIVE = {
     pro20:  '',   // $10 a month, 20 published pieces
     pro50:  '',   // $25 a month, 50 published pieces
     pro100: '',   // $50 a month, 100 published pieces
-    pro250: ''    // $100 a month, 250 published pieces
+    pro250: '',   // $100 a month, 250 published pieces
+    postcard: ''  // one Magic Postcard, printed and mailed (see README, "Magic Postcards")
   },
+
+  //    The price shown on the Magic Postcards page, for example '$4.99'. Leave as '' to show no price.
+  postcardPrice: '',
 
   // 7. 1-ON-1 BOOKING (optional): a Calendly or similar link for custom work.
   //    Leave as '' to send people to the contact page.

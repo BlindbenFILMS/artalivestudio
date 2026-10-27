@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Make a Snow Globe · Art Alive</title>
+<meta name="description" content="Put your photo or video in a snow globe. People shake their phone to make it snow, and your video comes alive.">
+<meta property="og:title" content="Make your own snow globe">
+<meta property="og:description" content="Your photo or video in a snow globe. Shake your phone to make it snow.">
+<meta property="og:image" content="https://artalivestudio.com/play/holiday-snowglobe-600.jpg">
+<meta name="theme-color" content="#15191f">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="../site.css">
+<style>
+.mk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,48px);align-items:start;margin:clamp(16px,4vw,40px) 0 60px}
+.mk h1{font-size:clamp(32px,5vw,58px);margin:6px 0 10px}
+.sg-pvcol{position:sticky;top:16px;display:flex;flex-direction:column;gap:10px}
+.sg-pv{position:relative;height:min(620px,calc(100vh - 140px));min-height:420px;border-radius:22px;overflow:hidden;background:#0b1530;border:1px solid var(--line)}
+.sg-pv .sg-ph{position:absolute;left:0;right:0;top:0;z-index:2;padding:16px 12px 0;text-align:center;pointer-events:none}
+.sg-pv .sg-ph b{display:block;white-space:nowrap;font:900 clamp(18px,4.4vw,32px)/1 var(--display);font-stretch:118%;text-transform:uppercase;text-shadow:0 2px 14px rgba(0,0,0,.5);overflow:hidden;text-overflow:ellipsis}
+.sg-pv .sg-ph span{display:block;margin-top:6px;color:#c3cde3;font-size:14px;min-height:1.4em}
+.sg-pv .sg-ph span.big{color:#e2b45a;font:900 clamp(18px,4vw,26px)/1.1 var(--display);letter-spacing:.06em;text-transform:uppercase;animation:pulse 1.3s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){.sg-pv .sg-ph span.big{animation:none}}
+.sg-pvbar{display:flex;gap:10px;flex-wrap:wrap}
+.sg-pvbar button{flex:1 1 140px}
+.sg-steps{list-style:none;margin:20px 0 0;padding:0;display:flex;flex-direction:column;gap:16px}
+.sg-step{background:var(--wall);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.sg-step h2{margin:0;font:800 16px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase}
+.sg-step p{margin:0;color:var(--muted)}
+.sg-step[hidden]{display:none}
+.sg-pick{display:flex;flex-wrap:wrap;gap:10px}
+.btn2{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 20px;border-radius:999px;border:2px solid var(--line);background:transparent;color:var(--cream);font:800 14px/1 var(--display);letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
+.btn2.pri{background:var(--orange);border-color:var(--orange);color:#14100c}
+.btn2:focus-visible,.sg-chip input:focus-visible+span,input[type=range]:focus-visible,.sg-frames button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.file{position:absolute;width:1px;height:1px;opacity:0}
+.sg-cropw{display:flex;flex-direction:column;gap:10px;align-items:center}
+.sg-crop{position:relative;width:min(100%,340px);aspect-ratio:1;max-width:100%;border-radius:14px;overflow:hidden;background:#000;touch-action:none;cursor:grab}
+.sg-crop canvas{position:absolute;inset:0;width:100%;height:100%}
+.sg-row{display:flex;align-items:center;gap:12px;width:100%}
+.sg-row label{font-weight:700;min-width:4.5em}
+.sg-row input[type=range]{flex:1;min-width:0;accent-color:var(--orange);height:28px}
+.sg-frames{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 8px;scroll-snap-type:x mandatory}
+.sg-frames button{position:relative;flex:0 0 auto;width:72px;height:72px;padding:0;border:3px solid transparent;border-radius:10px;overflow:hidden;background:#000;cursor:pointer;scroll-snap-align:start}
+.sg-frames button img{width:100%;height:100%;object-fit:cover;display:block}
+.sg-frames button[aria-pressed=true]{border-color:var(--orange)}
+.sg-frames button .tag{position:absolute;left:2px;right:2px;bottom:2px;padding:2px 0;border-radius:6px;background:rgba(0,0,0,.75);color:#ffd27a;font:800 9.5px/1.1 var(--display);letter-spacing:.04em;text-transform:uppercase}
+.sg-field{display:flex;flex-direction:column;gap:6px}
+.sg-field label{font-weight:700}
+.sg-field input[type=text]{min-height:48px;padding:0 14px;border-radius:12px;border:2px solid var(--line);background:#11151a;color:var(--cream);font:17px var(--body)}
+.sg-field input[type=text]:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.sg-chips{display:flex;flex-wrap:wrap;gap:8px;border:0;margin:0;padding:0}
+.sg-chips legend{font-weight:700;margin-bottom:6px;padding:0}
+.sg-chip{position:relative;cursor:pointer}
+.sg-chip input{position:absolute;opacity:0}
+.sg-chip span{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;border:2px solid var(--line);font:800 13px/1 var(--display);letter-spacing:.04em}
+.sg-chip span i{width:16px;height:16px;border-radius:50%;display:inline-block}
+.sg-chip input:checked+span{border-color:var(--cream);background:#2a3038}
+.sg-logo{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.sg-logo img{height:46px;width:auto;max-width:160px;background:#2a3038;border-radius:8px;padding:6px}
+.sg-msg{min-height:1.4em;margin:0;font-weight:700}
+.sg-msg.bad{color:#ff9a8a}.sg-msg.ok{color:#8fe3a2}
+.sg-note{font-size:14px}
+@media (max-width:860px){.mk{grid-template-columns:minmax(0,1fr)}.sg-pvcol{position:relative;top:0;order:-1}.sg-pv{height:min(64vh,560px);min-height:380px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top"><a class="brand" href="../" aria-label="Art Alive home"><img src="../art-alive-mark.png" alt=""><img class="wm" src="../art-alive-wordmark.png" alt="Art Alive"></a></header>
+  <main id="main">
+    <section class="mk" aria-labelledby="h">
+      <div>
+        <span class="eyebrow">Make your own</span>
+        <h1 id="h">Snow globe</h1>
+        <p class="lede">Put your photo or video in a snow globe. People <b>shake their phone</b> to make it snow, and your video comes alive.</p>
+        <ol class="sg-steps">
+          <li class="sg-step" id="s1"><h2>1. Your photo or video</h2>
+            <p>Take one now or choose one you have. Videos up to a minute.</p>
+            <div class="sg-pick">
+              <label class="btn2 pri" for="fCam">Take a photo or video<input class="file" id="fCam" type="file" accept="image/*,video/*" capture="environment"></label>
+              <label class="btn2" for="fLib">Choose one<input class="file" id="fLib" type="file" accept="image/*,video/*"></label>
+            </div>
+            <p class="sg-msg" id="fMsg" role="status"></p></li>
+          <li class="sg-step" id="s2" hidden><h2>2. Fit it in the globe</h2>
+            <p>Drag to move it. Pinch or use the slider to zoom.</p>
+            <div class="sg-cropw"><div class="sg-crop" id="crop" aria-label="Crop: drag to move the picture inside the circle"><canvas id="cropC"></canvas></div>
+              <div class="sg-row"><label for="zoom">Zoom</label><input id="zoom" type="range" min="1" max="4" step="0.01" value="1"></div></div></li>
+          <li class="sg-step" id="s3" hidden><h2>3. Pick the still</h2>
+            <p>This frame shows until someone shakes the globe. Then your video plays from here to the end, and fades back to this frame.</p>
+            <div class="sg-frames" id="frames" role="group" aria-label="Frames from your video"></div>
+            <div class="sg-row"><label for="tpos">Exact</label><input id="tpos" type="range" min="0" max="1" step="0.01" value="0"><span id="tlab" aria-live="off">0:00</span></div>
+            <p class="sg-msg" id="pickMsg" role="status"></p></li>
+          <li class="sg-step" id="s4" hidden><h2><span class="n">4</span>. Your words</h2>
+            <div class="sg-field"><label for="msgIn">At the top</label><input type="text" id="msgIn" maxlength="24" value="Happy Holidays" autocomplete="off"></div>
+            <div class="sg-field"><label for="nameIn">From (on the base)</label><input type="text" id="nameIn" maxlength="32" placeholder="The Fox Family" autocomplete="off"></div>
+            <div class="sg-logo"><label class="btn2" for="fLogo">Or add a logo<input class="file" id="fLogo" type="file" accept="image/*"></label><img id="logoPv" alt="Your logo" hidden><button type="button" class="btn2" id="logoX" hidden>Remove logo</button></div>
+            <p class="sg-note">A logo with a see-through background (PNG) looks best. It's shown in gold.</p>
+            <fieldset class="sg-chips"><legend>Base colour</legend>
+              <label class="sg-chip"><input type="radio" name="base" value="red" checked><span><i style="background:#9a2a3a"></i>Red</span></label>
+              <label class="sg-chip"><input type="radio" name="base" value="green"><span><i style="background:#1f6b44"></i>Green</span></label>
+              <label class="sg-chip"><input type="radio" name="base" value="blue"><span><i style="background:#2a5596"></i>Blue</span></label>
+              <label class="sg-chip"><input type="radio" name="base" value="black"><span><i style="background:#3c3c43"></i>Black</span></label></fieldset>
+            <div class="sg-field"><label for="descIn">Describe the picture (for people who can't see it)</label><input type="text" id="descIn" maxlength="140" placeholder="Three friends in winter hats waving in the snow" autocomplete="off"></div></li>
+          <li class="sg-step" id="s5" hidden><h2><span class="n">5</span>. Share it</h2>
+            <p>You get a link and a QR code. Free with your Art Alive account.</p>
+            <button type="button" class="btn2 pri" id="make">Make my snow globe</button>
+            <p class="sg-msg" id="mkMsg" role="status"></p></li>
+        </ol>
+      </div>
+      <div class="sg-pvcol" aria-label="Preview">
+        <div class="sg-pv" id="pv"><div class="sg-ph"><b id="pvMsg">Happy Holidays</b><span id="pvHint">Swipe across the globe to make it snow</span></div></div>
+        <div class="sg-pvbar"><button type="button" class="btn2 pri" id="pvShake">Shake</button><button type="button" class="btn2" id="pvSnd" aria-pressed="false">Sound off</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+<p class="sr" id="live" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></p>
+<script src="../site-config.js"></script><script src="../account.js"></script><script src="globe.js"></script>
+<script>
+(async function () {
+  'use strict';
+  const $ = id => document.getElementById(id), A = window.AAAccount;
+  const say = t => { $('live').textContent = ''; setTimeout(() => { $('live').textContent = t; }, 60); };
+  const note = (id, t, kind) => { const e = $(id); e.textContent = t || ''; e.className = 'sg-msg' + (kind ? ' ' + kind : ''); if (t) say(t); };
+  const MAX_MB = 50, MAX_S = 60, OUT = 1000;
+
+  /* the state: what they chose, how it's cropped, which frame */
+  const S = { mode: '', file: null, url: '', w: 0, h: 0, cx: 0, cy: 0, size: 0, zoom: 1, start: 0, pick: -1, logo: null, logoData: '', base: 'red' };
+  const img = new Image(), vid = document.createElement('video');
+  Object.assign(vid, { muted: true, playsInline: true, preload: 'auto' }); vid.setAttribute('playsinline', '');
+  const still = document.createElement('canvas'); still.width = still.height = OUT;   // what's inside the glass
+
+  /* the live preview */
+  let soundOn = false;
+  // until they add their own, the preview shows our example photo and where their name goes
+  const sample = new Image(); sample.src = '../play/holiday-snowglobe.jpg';
+  const nameOr = () => $('nameIn').value.trim() || 'Your name here';
+  const G = AAGlobe.create($('pv'), { picture: sample, name: 'Your name here', top: 84, bottom: 6, base: 'red',
+    onHint(t, big) { $('pvHint').textContent = t; $('pvHint').classList.toggle('big', big); }, say() {} });
+  G.sound(false);
+  $('pvShake').onclick = () => G.shake();
+  $('pvSnd').onclick = () => { soundOn = !soundOn; if (soundOn) G.start(); G.sound(soundOn); $('pvSnd').textContent = soundOn ? 'Sound on' : 'Sound off'; $('pvSnd').setAttribute('aria-pressed', soundOn); };
+
+  /* 1. the photo or video */
+  const src = () => S.mode === 'video' ? vid : img;
+  async function take(file) {
+    note('fMsg', ''); if (!file) return;
+    const isVid = /^video\//.test(file.type) || /\.(mp4|mov|m4v|webm)$/i.test(file.name || '');
+    if (isVid && file.size > MAX_MB * 1048576) return note('fMsg', 'That video is ' + Math.round(file.size / 1048576) + ' MB. Please choose a shorter one (under about 20 seconds).', 'bad');
+    if (S.url) URL.revokeObjectURL(S.url);
+    S.file = file; S.url = URL.createObjectURL(file); S.mode = isVid ? 'video' : 'photo'; S.start = 0; S.pick = -1;
+    try {
+      if (isVid) {
+        vid.src = S.url; vid.play().then(() => vid.pause(), () => {});   // phones load a video's frames only after it has played a moment
+        await new Promise((ok, no) => { vid.onloadeddata = ok; vid.onerror = () => no(new Error('video')); setTimeout(ok, 8000); });
+        if (!vid.videoWidth) throw new Error('video');
+        if (vid.duration > MAX_S + .5) { S.mode = ''; return note('fMsg', 'That video is ' + Math.round(vid.duration) + ' seconds long. Please choose one under a minute.', 'bad'); }
+        S.w = vid.videoWidth; S.h = vid.videoHeight;
+      } else {
+        img.src = S.url; await img.decode(); S.w = img.naturalWidth; S.h = img.naturalHeight;
+      }
+    } catch (e) { S.mode = ''; return note('fMsg', isVid ? 'That video couldn’t be opened here. Try one recorded on this phone, or a photo.' : 'That picture couldn’t be opened. Try another.', 'bad'); }
+    S.size = Math.min(S.w, S.h); S.zoom = 1; $('zoom').value = 1; S.cx = S.w / 2; S.cy = S.h / 2;
+    $('s2').hidden = false; $('s3').hidden = !isVid; $('s4').hidden = false; $('s5').hidden = false;
+    document.querySelectorAll('.n').forEach((n, i) => { n.textContent = (isVid ? 4 : 3) + i; });
+    note('fMsg', isVid ? 'Got your video (' + Math.round(vid.duration) + ' s).' : 'Got your photo.', 'ok');
+    G.set({ video: isVid ? S.url : '', start: 0 });
+    drawCrop(); render();
+    if (isVid) await frames();
+    $('s2').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  $('fCam').onchange = e => take(e.target.files[0]); $('fLib').onchange = e => take(e.target.files[0]);
+
+  /* 2. cropping: a square, shown as a circle */
+  const cc = $('cropC'), cg = cc.getContext('2d');
+  function clampCrop() { S.size = Math.min(S.w, S.h) / S.zoom; const h = S.size / 2; S.cx = Math.max(h, Math.min(S.w - h, S.cx)); S.cy = Math.max(h, Math.min(S.h - h, S.cy)); }
+  function drawCrop() {
+    if (!S.mode) return; clampCrop();
+    const box = $('crop').clientWidth || 300, d = Math.min(2, devicePixelRatio || 1); if (cc.width !== Math.round(box * d)) { cc.width = cc.height = Math.round(box * d); }
+    const k = cc.width / S.size; cg.setTransform(1, 0, 0, 1, 0, 0); cg.fillStyle = '#000'; cg.fillRect(0, 0, cc.width, cc.height);
+    try { cg.drawImage(src(), (S.w / 2 - S.cx) * k + cc.width / 2 - S.w / 2 * k, (S.h / 2 - S.cy) * k + cc.height / 2 - S.h / 2 * k, S.w * k, S.h * k); } catch (e) {}
+    cg.fillStyle = 'rgba(0,0,0,.55)'; cg.beginPath(); cg.rect(0, 0, cc.width, cc.height); cg.arc(cc.width / 2, cc.height / 2, cc.width / 2 - 1, 0, 6.283, true); cg.fill();
+    cg.strokeStyle = 'rgba(255,255,255,.85)'; cg.lineWidth = 2 * d; cg.beginPath(); cg.arc(cc.width / 2, cc.height / 2, cc.width / 2 - d, 0, 6.283); cg.stroke();
+  }
+  function render() {   // the still in the glass, from the crop (and the chosen frame)
+    if (!S.mode) return; clampCrop(); const g = still.getContext('2d');
+    try { g.drawImage(src(), S.cx - S.size / 2, S.cy - S.size / 2, S.size, S.size, 0, 0, OUT, OUT); } catch (e) {}
+    G.set({ picture: still, crop: S.mode === 'video' ? cropFrac() : null });
+  }
+  const cropFrac = () => ({ x: (S.cx - S.size / 2) / S.w, y: (S.cy - S.size / 2) / S.h, w: S.size / S.w, h: S.size / S.h });
+  const ptrs = new Map(); let pinch0 = 0, zoom0 = 1;
+  $('crop').addEventListener('pointerdown', e => { $('crop').setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]); if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a[0] - b[0], a[1] - b[1]); zoom0 = S.zoom; } });
+  $('crop').addEventListener('pointermove', e => {
+    if (!ptrs.has(e.pointerId) || !S.mode) return; const p = ptrs.get(e.pointerId), k = S.size / $('crop').clientWidth;
+    if (ptrs.size === 2) { ptrs.set(e.pointerId, [e.clientX, e.clientY]); const [a, b] = [...ptrs.values()]; S.zoom = Math.max(1, Math.min(4, zoom0 * Math.hypot(a[0] - b[0], a[1] - b[1]) / (pinch0 || 1))); $('zoom').value = S.zoom; }
+    else { S.cx -= (e.clientX - p[0]) * k; S.cy -= (e.clientY - p[1]) * k; ptrs.set(e.pointerId, [e.clientX, e.clientY]); }
+    drawCrop(); render();
+  });
+  const up = e => { ptrs.delete(e.pointerId); }; $('crop').addEventListener('pointerup', up); $('crop').addEventListener('pointercancel', up);
+  $('crop').addEventListener('wheel', e => { e.preventDefault(); S.zoom = Math.max(1, Math.min(4, S.zoom * (e.deltaY < 0 ? 1.08 : 1 / 1.08))); $('zoom').value = S.zoom; drawCrop(); render(); }, { passive: false });
+  $('zoom').oninput = () => { S.zoom = +$('zoom').value; drawCrop(); render(); };
+  $('crop').tabIndex = 0;
+  $('crop').addEventListener('keydown', e => { const st = S.size * .04, m = { ArrowLeft: [-st, 0], ArrowRight: [st, 0], ArrowUp: [0, -st], ArrowDown: [0, st] }[e.key]; if (m) { e.preventDefault(); S.cx += m[0]; S.cy += m[1]; drawCrop(); render(); } });
+  addEventListener('resize', drawCrop);
+
+  /* 3. choosing the still: we look through the video and suggest a sharp, well-lit frame */
+  const seek = t => new Promise(ok => { let done = false; const fin = () => { if (!done) { done = true; vid.removeEventListener('seeked', fin); ok(); } }; vid.addEventListener('seeked', fin); vid.currentTime = Math.max(0, Math.min(vid.duration - .05, t)); setTimeout(fin, 1500); });
+  const fmt = t => Math.floor(t / 60) + ':' + (t % 60).toFixed(1).padStart(4, '0');
+  function quality() {   // sharpness (fine detail), well exposed, not washed out
+    const n = 96, c = quality.c || (quality.c = document.createElement('canvas')); c.width = c.height = n; const g = c.getContext('2d', { willReadFrequently: true });
+    g.drawImage(vid, S.cx - S.size / 2, S.cy - S.size / 2, S.size, S.size, 0, 0, n, n); const p = g.getImageData(0, 0, n, n).data, L = new Float32Array(n * n);
+    let m = 0; for (let i = 0; i < n * n; i++) { L[i] = .299 * p[i * 4] + .587 * p[i * 4 + 1] + .114 * p[i * 4 + 2]; m += L[i]; } m /= n * n;
+    let lap = 0, v = 0; for (let y = 1; y < n - 1; y++) for (let x = 1; x < n - 1; x++) { const i = y * n + x, l = 4 * L[i] - L[i - 1] - L[i + 1] - L[i - n] - L[i + n]; lap += l * l; v += (L[i] - m) * (L[i] - m); }
+    lap /= (n - 2) * (n - 2); v = Math.sqrt(v / ((n - 2) * (n - 2)));
+    const expo = Math.exp(-Math.pow((m - 125) / 70, 2));
+    return Math.sqrt(lap) * (.4 + .6 * expo) * (.5 + Math.min(1, v / 50) * .5);
+  }
+  let busy = false;
+  async function frames() {
+    busy = true; note('pickMsg', 'Looking for a good frame…'); const box = $('frames'); box.innerHTML = '';
+    const K = Math.max(6, Math.min(14, Math.round(vid.duration * 2))), T = [], th = document.createElement('canvas'); th.width = th.height = 120;
+    for (let i = 0; i < K; i++) { const t = vid.duration * (i + .5) / K; await seek(t); const q = quality();
+      th.getContext('2d').drawImage(vid, S.cx - S.size / 2, S.cy - S.size / 2, S.size, S.size, 0, 0, 120, 120); T.push({ t, q, src: th.toDataURL('image/jpeg', .7) }); }
+    // a small preference for the start, so more of the video plays after the still
+    let best = 0; T.forEach((f, i) => { f.score = f.q * (1 - .35 * f.t / vid.duration); if (f.score > T[best].score) best = i; });
+    T.forEach((f, i) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-label', 'Frame at ' + fmt(f.t) + (i === best ? ', our pick' : ''));
+      b.innerHTML = '<img alt="" src="' + f.src + '">' + (i === best ? '<span class="tag">Our pick</span>' : ''); b.onclick = () => choose(f.t, b); box.appendChild(b); });
+    $('tpos').max = Math.max(.1, vid.duration - .1).toFixed(2); busy = false;
+    await choose(T[best].t, box.children[best]); note('pickMsg', 'We picked a sharp, bright frame. Tap another, or slide to choose your own.', 'ok');
+  }
+  async function choose(t, btn) {
+    S.start = t; $('tpos').value = t; $('tlab').textContent = fmt(t);
+    document.querySelectorAll('#frames button').forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+    await seek(t); drawCrop(); render(); G.set({ start: t });
+  }
+  let slideT = 0; $('tpos').oninput = () => { const t = +$('tpos').value; $('tlab').textContent = fmt(t); clearTimeout(slideT); slideT = setTimeout(() => choose(t, null), 60); };
+
+  /* 4. words, logo, colour */
+  const pvText = () => { $('pvMsg').textContent = $('msgIn').value.trim() || 'Happy Holidays'; };
+  $('msgIn').oninput = pvText; $('nameIn').oninput = () => { if (!S.logo) G.set({ name: nameOr() }); };
+  document.querySelectorAll('input[name=base]').forEach(r => r.onchange = () => { S.base = r.value; G.set({ base: r.value }); });
+  function logoShape(im) {   // the logo's shape only: its background becomes see-through
+    const s = Math.min(1, 800 / Math.max(im.naturalWidth, im.naturalHeight)), w = Math.max(1, Math.round(im.naturalWidth * s)), h = Math.max(1, Math.round(im.naturalHeight * s));
+    const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, 0, 0, w, h);
+    const d = g.getImageData(0, 0, w, h), p = d.data; let clear = 0; for (let i = 3; i < p.length; i += 4) if (p[i] < 200) clear++;
+    if (clear < w * h * .02) {   // no see-through background: take the colour round the edge as the background
+      const edge = []; for (let x = 0; x < w; x++) edge.push((x) * 4, ((h - 1) * w + x) * 4); for (let y = 0; y < h; y++) edge.push((y * w) * 4, (y * w + w - 1) * 4);
+      const med = ch => { const a = edge.map(i => p[i + ch]).sort((a, b) => a - b); return a[a.length >> 1]; }, br = med(0), bgc = med(1), bb = med(2);
+      for (let i = 0; i < p.length; i += 4) { const dd = Math.hypot(p[i] - br, p[i + 1] - bgc, p[i + 2] - bb); p[i + 3] = Math.max(0, Math.min(255, (dd - 24) * 4.5)); }
+    }
+    for (let i = 0; i < p.length; i += 4) { p[i] = p[i + 1] = p[i + 2] = 255; }
+    g.putImageData(d, 0, 0);
+    let x0 = w, y0 = h, x1 = -1, y1 = -1; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (p[(y * w + x) * 4 + 3] > 20) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 < 0) return null; const t = document.createElement('canvas'); t.width = x1 - x0 + 1; t.height = y1 - y0 + 1; t.getContext('2d').drawImage(c, -x0, -y0); return t;
+  }
+  $('fLogo').onchange = async e => { const f = e.target.files[0]; if (!f) return; const u = URL.createObjectURL(f), im = new Image(); im.src = u;
+    try { await im.decode(); } catch (er) { return note('mkMsg', 'That logo couldn’t be opened. Try a PNG or JPG.', 'bad'); }
+    const shape = logoShape(im); URL.revokeObjectURL(u); if (!shape) return note('mkMsg', 'We couldn’t find the logo in that picture. Try one with a plain background.', 'bad');
+    S.logo = shape; S.logoData = shape.toDataURL('image/png'); $('logoPv').src = S.logoData; $('logoPv').hidden = false; $('logoX').hidden = false; G.set({ logo: shape, name: '' }); say('Logo added. It shows in gold on the base.'); };
+  $('logoX').onclick = () => { S.logo = null; S.logoData = ''; $('logoPv').hidden = true; $('logoX').hidden = true; $('fLogo').value = ''; G.set({ logo: null, name: nameOr() }); };
+
+  /* 5. make it: save to their account, publish, show the link and QR code */
+  const IDB = () => new Promise((ok, no) => { const r = indexedDB.open('art-alive-snowglobe', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); });
+  async function stash(v) { const d = await IDB(); return new Promise((ok, no) => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, 'draft'); t.oncomplete = ok; t.onerror = () => no(t.error); }); }
+  async function unstash() { const d = await IDB(); return new Promise(ok => { const t = d.transaction('kv', 'readwrite'), st = t.objectStore('kv'), g = st.get('draft'); g.onsuccess = () => { const v = g.result; if (v) st.delete('draft'); t.oncomplete = () => ok(v || null); }; g.onerror = () => ok(null); }); }
+  const snapshot = () => ({ at: Date.now(), file: S.file, cx: S.cx, cy: S.cy, zoom: S.zoom, start: S.start, msg: $('msgIn').value, name: $('nameIn').value, desc: $('descIn').value, base: S.base, logoData: S.logoData });
+  $('make').onclick = async () => {
+    if (!S.mode) { note('mkMsg', 'First choose a photo or video.', 'bad'); $('fLib').focus(); return; }
+    if (busy) return note('mkMsg', 'One moment: still looking through your video.', 'bad');
+    if (!A || !A.configured) return note('mkMsg', 'Making snow globes isn’t switched on yet. Please try again soon.', 'bad');
+    const btn = $('make'); btn.disabled = true;
+    try {
+      let u = null; try { u = await A.user(); } catch (e) {}
+      if (!u) { note('mkMsg', 'First, make your free account (or log back in). Your snow globe waits right here…');
+        try { await stash(snapshot()); } catch (e) {}
+        setTimeout(() => { location.href = '../login.html?new=1&next=' + encodeURIComponent(location.pathname + '?resume=1'); }, 800); return; }
+      note('mkMsg', S.mode === 'video' ? 'Saving your snow globe… (your video can take a minute)' : 'Saving your snow globe…');
+      render(); const cl = await A.load();
+      const pid = crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, ch => { const n = Math.random() * 16 | 0; return (ch === 'x' ? n : (n & 3 | 8)).toString(16); });
+      let video = null;
+      if (S.mode === 'video') { const f = S.file, type = f.type || 'video/mp4', ext = /webm/.test(type) ? 'webm' : /quicktime|mov/.test(type + f.name) ? 'mov' : 'mp4', path = u.id + '/' + pid + '/video.' + ext;
+        const { error } = await cl.storage.from('media').upload(path, f, { upsert: true, contentType: type, cacheControl: '3600' }); if (error) throw error; video = 'aa-media:' + path; }
+      const msg = ($('msgIn').value.trim() || 'Happy Holidays').slice(0, 24), name = $('nameIn').value.trim().slice(0, 32);
+      const data = { v: 1, msg, name: S.logo ? (name || '') : name, logo: S.logoData || null, still: still.toDataURL('image/jpeg', .88), video, start: S.mode === 'video' ? +S.start.toFixed(2) : 0,
+        crop: S.mode === 'video' ? cropFrac() : null, base: S.base, describe: $('descIn').value.trim().slice(0, 140) || (S.mode === 'video' ? 'a video' : 'a photo') };
+      const thumb = document.createElement('canvas'); thumb.width = thumb.height = 480; thumb.getContext('2d').drawImage(still, 0, 0, 480, 480);
+      const id = await A.saveProject({ id: pid, kind: 'snowglobe', title: (msg + (name ? ' from ' + name : '') + ' (snow globe)').slice(0, 120), data, thumbSrc: thumb.toDataURL('image/jpeg', .85) });
+      note('mkMsg', 'Making its link and QR code…');
+      const code = await A.publishProject(id);
+      note('mkMsg', 'Your snow globe is ready!', 'ok');
+      await A.shareDialog(code, msg + ' snow globe');
+    } catch (e) {
+      const t = (e && (e.message || e.details)) || '';
+      if (/kind_check|projects_kind/i.test(t)) note('mkMsg', 'Snow globes are almost ready to share. Please try again soon.', 'bad');
+      else if (e && e.code === 'limit') note('mkMsg', e.message, 'bad');
+      else note('mkMsg', 'Something went wrong: ' + (t || 'check your connection and try again.'), 'bad');
+      console.error(e);
+    } finally { btn.disabled = false; }
+  };
+
+  /* back from logging in: put everything back */
+  if (new URLSearchParams(location.search).has('resume')) {
+    const o = await unstash().catch(() => null);
+    if (o && o.file && Date.now() - o.at < 864e5) {
+      $('msgIn').value = o.msg || ''; $('nameIn').value = o.name || ''; $('descIn').value = o.desc || ''; pvText();
+      const r = document.querySelector('input[name=base][value="' + (o.base || 'red') + '"]'); if (r) { r.checked = true; S.base = r.value; G.set({ base: r.value }); }
+      if (o.logoData) { const im = new Image(); im.src = o.logoData; try { await im.decode(); S.logo = im; S.logoData = o.logoData; $('logoPv').src = o.logoData; $('logoPv').hidden = false; $('logoX').hidden = false; G.set({ logo: im, name: '' }); } catch (e) {} }
+      else G.set({ name: nameOr() });
+      await take(o.file); S.zoom = o.zoom || 1; $('zoom').value = S.zoom; S.cx = o.cx; S.cy = o.cy; drawCrop(); render();
+      if (S.mode === 'video' && o.start != null) await choose(o.start, null);
+      note('mkMsg', 'Welcome! Your snow globe is back. Press Make my snow globe to finish.', 'ok'); $('make').focus();
+    }
+  }
+})();
+</script>
+</body>
+</html>

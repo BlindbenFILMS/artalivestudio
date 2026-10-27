@@ -28,6 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <link rel="stylesheet" href="site.css">
+<style>.pj .acts a.link{display:inline-flex;align-items:center;min-height:42px;padding:0 10px;color:var(--cream);font:700 14px var(--body);text-decoration:underline;text-underline-offset:3px}</style>
 </head>
 <body>
 <div class="wrap">
@@ -97,9 +98,9 @@ function draw(){
   $('pjFolders').querySelectorAll('button').forEach(b=>b.onclick=()=>{folder=b.dataset.f||null;draw();say(folder?'Showing the folder '+folder:'Showing all projects');});
   const list=folder?all.filter(p=>p.folder===folder):all;
   $('pjEmpty').hidden=all.length>0;
-  $('pjGrid').innerHTML=list.map(p=>{const open=(p.kind==='game'?'games':'studio')+'/index.html?project='+p.id,kind=p.kind==='game'?'Game':'Animation';
+  $('pjGrid').innerHTML=list.map(p=>{const open=p.kind==='postcard'?'magicpostcard/'+(p.pub&&p.pub.code?'play.html?c='+p.pub.code:''):p.kind==='snowglobe'?'snowglobe/'+(p.pub&&p.pub.code?'play.html?c='+p.pub.code:''):(p.kind==='game'?'games':'studio')+'/index.html?project='+p.id,kind=p.kind==='game'?'Game':p.kind==='postcard'?'Magic Postcard':p.kind==='snowglobe'?'Snow Globe':'Animation';
     return '<li class="pj" data-id="'+p.id+'"><a class="th" href="'+open+'" tabindex="-1" aria-hidden="true">'+(p.thumbUrl?'<img src="'+esc(p.thumbUrl)+'" alt="" loading="lazy">':'')+'</a><div class="tx"><span class="kind">'+kind+'</span><h2>'+esc(p.title)+'</h2><p class="meta">Edited '+when(p.updated_at)+(p.folder?' · in '+esc(p.folder):'')+'</p>'+(p.pub&&p.pub.live?'<p class="pj-live"><span aria-hidden="true">●</span> Live · '+p.pub.views+(p.pub.views===1?' visit':' visits')+'</p>':'')+
-      '<div class="acts"><a class="btn" href="'+open+'" aria-label="Open '+esc(p.title)+'">Open</a>'+(p.pub&&p.pub.live?'<button type="button" class="btn blue" data-a="share">Share</button>':'<button type="button" class="btn blue" data-a="pub">Publish</button>')+'<button type="button" class="link" data-a="rename">Rename</button><button type="button" class="link" data-a="move">Folder</button><button type="button" class="link" data-a="copy">Copy</button>'+(p.pub&&p.pub.live?'<button type="button" class="link" data-a="unpub">Unpublish</button>':'')+'<button type="button" class="link" data-a="del">Delete</button></div></div></li>';}).join('');
+      '<div class="acts"><a class="btn" href="'+open+'" aria-label="Open '+esc(p.title)+'">Open</a>'+(p.pub&&p.pub.live?'<button type="button" class="btn blue" data-a="share">Share</button>':'<button type="button" class="btn blue" data-a="pub">Publish</button>')+(p.pub&&p.pub.live?'<a class="link" href="stats.html?c='+p.pub.code+'" aria-label="Stats for '+esc(p.title)+'">Stats</a>':'')+'<button type="button" class="link" data-a="rename">Rename</button><button type="button" class="link" data-a="move">Folder</button><button type="button" class="link" data-a="copy">Copy</button>'+(p.pub&&p.pub.live?'<button type="button" class="link" data-a="unpub">Unpublish</button>':'')+'<button type="button" class="link" data-a="del">Delete</button></div></div></li>';}).join('');
   $('pjGrid').querySelectorAll('.pj').forEach(li=>{const p=all.find(x=>x.id===li.dataset.id);li.querySelectorAll('button[data-a]').forEach(b=>{b.setAttribute('aria-label',b.textContent+' '+p.title);b.onclick=()=>act(b.dataset.a,p,b);});});
 }
 async function act(a,p,btn){
@@ -123,7 +124,7 @@ let colls=[];
 function drawColls(){
   $('pjCollGrid').innerHTML=colls.length?colls.map(k=>{const n=k.items.length,th=k.items.slice(0,4).map(it=>{const p=all.find(x=>x.id===it.project_id);return p&&p.thumbUrl?'<img src="'+esc(p.thumbUrl)+'" alt="" loading="lazy">':'<span></span>';}).join('');
     return '<li class="pj" data-c="'+k.id+'"><div class="mosaic n'+Math.min(4,Math.max(1,k.items.length))+'" aria-hidden="true">'+th+'</div><div class="tx"><span class="kind">Collection</span><h2>'+esc(k.title)+'</h2><p class="meta">'+n+(n===1?' piece':' pieces')+' · edited '+when(k.updated_at)+'</p>'+(k.live?'<p class="pj-live"><span aria-hidden="true">●</span> Live · '+k.views+(k.views===1?' visit':' visits')+'</p>':'')+
-      '<div class="acts">'+(k.live?'<button type="button" class="btn blue" data-k="share">Share</button>':'<button type="button" class="btn blue" data-k="pub">Publish</button>')+'<button type="button" class="link" data-k="edit">Edit</button>'+(k.live?'<button type="button" class="link" data-k="unpub">Unpublish</button>':'')+'<button type="button" class="link" data-k="del">Delete</button></div></div></li>';}).join(''):'<li class="pj-cn" style="list-style:none">No collections yet. Press <b>New collection</b> to put several pieces behind one QR code.</li>';
+      '<div class="acts">'+(k.live?'<button type="button" class="btn blue" data-k="share">Share</button>':'<button type="button" class="btn blue" data-k="pub">Publish</button>')+(k.live&&k.code?'<a class="link" href="stats.html?c='+k.code+'" aria-label="Stats for '+esc(k.title||'collection')+'">Stats</a>':'')+'<button type="button" class="link" data-k="edit">Edit</button>'+(k.live?'<button type="button" class="link" data-k="unpub">Unpublish</button>':'')+'<button type="button" class="link" data-k="del">Delete</button></div></div></li>';}).join(''):'<li class="pj-cn" style="list-style:none">No collections yet. Press <b>New collection</b> to put several pieces behind one QR code.</li>';
   $('pjCollGrid').querySelectorAll('[data-c]').forEach(li=>{const k=colls.find(x=>x.id===li.dataset.c);li.querySelectorAll('button[data-k]').forEach(b=>{b.setAttribute('aria-label',b.textContent+' '+k.title);b.onclick=()=>collAct(b.dataset.k,k,b);});});
 }
 async function collAct(a,k,btn){
@@ -139,7 +140,7 @@ async function collAct(a,k,btn){
 function editColl(k){
   const d=$('pjCDlg'),chosen=new Set(k?k.items.map(i=>i.project_id):[]);$('pjCDlgH').textContent=k?'Edit collection':'New collection';$('pjCName').value=k?k.title:'';$('pjCStatus').textContent='';
   const count=()=>{$('pjCCount').textContent='('+chosen.size+' of 50 chosen)';};
-  $('pjCList').innerHTML=all.length?all.map(p=>'<li><label><input type="checkbox" value="'+p.id+'"'+(chosen.has(p.id)?' checked':'')+'>'+(p.thumbUrl?'<img src="'+esc(p.thumbUrl)+'" alt="">':'<img alt="">')+'<span>'+esc(p.title)+'<small>'+(p.kind==='game'?'Game':'Animation')+(p.pub&&p.pub.live?' · live':'')+'</small></span></label></li>').join(''):'<li>You don’t have any projects yet. Make one first.</li>';
+  $('pjCList').innerHTML=all.length?all.map(p=>'<li><label><input type="checkbox" value="'+p.id+'"'+(chosen.has(p.id)?' checked':'')+'>'+(p.thumbUrl?'<img src="'+esc(p.thumbUrl)+'" alt="">':'<img alt="">')+'<span>'+esc(p.title)+'<small>'+(p.kind==='game'?'Game':p.kind==='postcard'?'Magic Postcard':p.kind==='snowglobe'?'Snow Globe':'Animation')+(p.pub&&p.pub.live?' · live':'')+'</small></span></label></li>').join(''):'<li>You don’t have any projects yet. Make one first.</li>';
   $('pjCList').querySelectorAll('input').forEach(i=>i.onchange=()=>{if(i.checked){if(chosen.size>=50){i.checked=false;$('pjCStatus').textContent='A collection holds up to 50 pieces.';return;}chosen.add(i.value);}else chosen.delete(i.value);count();});
   count();$('pjCNo').onclick=()=>d.close();
   $('pjCForm').onsubmit=async e=>{e.preventDefault();const name=$('pjCName').value.trim();if(!name){$('pjCStatus').textContent='Give your collection a name.';$('pjCName').focus();return;}

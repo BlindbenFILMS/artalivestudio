@@ -252,6 +252,53 @@ function tracker(opts) {
       taken.add(key); if (inside) inner++; out.push({ x, y, uv }); if (out.length >= 70) break; }
     return out;
   }
+  /* picture matching: when the tracker is given the picture (opts.target: an image or canvas, or a function that returns one),
+     every rectangle it finds is checked against it. A framed picture is several rectangles inside each other (frame, mat, art),
+     and a pale edge can hide the art's own border, so the edges are slid in or out until what's inside matches the picture. */
+  const TN = 24; let TS = [], lastFit = null;   // TS: the pictures to match, each turned four ways, with the turn it was last seen at
+  const normz = a => { let m = 0; for (const x of a) m += x; m /= a.length; let v = 0; for (const x of a) v += (x - m) * (x - m); v = Math.sqrt(v / a.length) || 1; for (let i = 0; i < a.length; i++) a[i] = (a[i] - m) / v; return a; };
+  function prep(src) {
+    const sw = src.naturalWidth || src.videoWidth || src.width, sh = src.naturalHeight || src.videoHeight || src.height; if (!sw || !sh) return null;
+    try { const c = document.createElement('canvas'); c.width = c.height = TN; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(src, 0, 0, TN, TN);
+      const d = x.getImageData(0, 0, TN, TN).data, P = new Float32Array(TN * TN); for (let i = 0; i < P.length; i++) P[i] = d[i * 4] * .299 + d[i * 4 + 1] * .587 + d[i * 4 + 2] * .114;
+      const R = [P, new Float32Array(P.length), new Float32Array(P.length), new Float32Array(P.length)];   // the picture turned 0, 90, 180 and 270 degrees
+      for (let j = 0; j < TN; j++) for (let i = 0; i < TN; i++) { const v = P[j * TN + i]; R[1][i * TN + (TN - 1 - j)] = v; R[2][(TN - 1 - j) * TN + (TN - 1 - i)] = v; R[3][(TN - 1 - i) * TN + j] = v; }
+      return { src, R: R.map(normz), rot: -1 }; } catch (e) { return null; }   // a picture from another site without permission can't be read: no matching
+  }
+  function targets() {   // opts.target: a picture, or a list of them (say, a card's front, its picture alone, and its back), or a function giving either
+    let s = null; try { s = typeof opts.target === 'function' ? opts.target() : opts.target; } catch (e) {}
+    const L = (Array.isArray(s) ? s : [s]).filter(Boolean);
+    TS = L.map(src => TS.find(t => t.src === src) || prep(src)).filter(Boolean); return TS;
+  }
+  function score(lv, Q, t) {   // how alike the inside of Q (in this frame) and picture t are, -1..1
+    const E = homography(unit, Q), sc = lv.w / w, P = new Float32Array(TN * TN);
+    for (let j = 0; j < TN; j++) for (let i = 0; i < TN; i++) { const q = apply(E, (i + .5) / TN, (j + .5) / TN); P[j * TN + i] = samp(lv.g, lv.w, lv.h, q[0] * sc, q[1] * sc); }
+    normz(P); const rots = t.rot >= 0 ? [t.rot] : [0, 1, 2, 3]; let best = -2, br = 0;
+    for (const r of rots) { const R = t.R[r]; let c = 0; for (let k = 0; k < P.length; k++) c += P[k] * R[k]; c /= P.length; if (c > best) { best = c; br = r; } }
+    return { c: best, r: br };
+  }
+  const bestScore = (lv, Q) => TS.reduce((m, t) => Math.max(m, score(lv, Q, t).c), -2);
+  function fit(Q, pyr) {
+    if (!targets().length) return Q;
+    const lv = pyr[1], E = homography(unit, Q), at = p => [[p[0], p[1]], [1 - p[2], p[1]], [1 - p[2], 1 - p[3]], [p[0], 1 - p[3]]].map(([u, v]) => apply(E, u, v));
+    const ok = p => p.every(v => v > -.14 && v < .36) && 1 - p[0] - p[2] > .45 && 1 - p[1] - p[3] > .45;
+    const near = lastFit && Q.every((q, i) => Math.hypot(q[0] - lastFit.Q[i][0], q[1] - lastFit.Q[i][1]) < w * .01);
+    let pick = null;
+    for (const t of TS) {
+      const base = score(lv, Q, t); let p = [0, 0, 0, 0], best = base;
+      // start from where it fitted last time if the rectangle hasn't moved much, else try even borders all round
+      if (near && lastFit.t === t) { const s0 = score(lv, at(lastFit.p), t); if (s0.c > best.c) { best = s0; p = lastFit.p.slice(); } }
+      else for (let e = -.1; e <= .3; e += .025) { const q = [e, e, e, e]; if (!ok(q)) continue; const s0 = score(lv, at(q), t); if (s0.c > best.c) { best = s0; p = q; } }
+      for (const step of [.03, .012, .005]) { let moved = true, n = 0;
+        while (moved && n++ < 12) { moved = false;
+          for (let k = 0; k < 4; k++) for (const d of [-1, 1]) { const q = p.slice(); q[k] += d * step; if (!ok(q)) continue; const s0 = score(lv, at(q), t); if (s0.c > best.c + 1e-4) { best = s0; p = q; moved = true; } } } }
+      if (!pick || best.c > pick.best.c) pick = { t, base, best, p };
+    }
+    const { t, base, best, p } = pick;
+    if (best.c < .3) { lastFit = null; return null; }   // clearly not the picture (a door, a window, another frame): ignore it
+    if (best.c < .45 || best.c < base.c + .02) { lastFit = null; Q.c = base.c; return Q; }   // not clearly better: keep the rectangle as found
+    t.rot = best.r; lastFit = { Q: Q.map(q => q.slice()), p, t }; const F = at(p); F.c = best.c; return F;
+  }
   // smoothing that stays still when you hold still and keeps up when you move (one-euro filter)
   function euro(prev, val, dt, dprev) {
     const mc = opts.minCutoff || 1.2, beta = opts.beta != null ? opts.beta : .08, dc = 1;
@@ -261,7 +308,8 @@ function tracker(opts) {
   }
   function update(src, sw, sh, now) {
     now = now || performance.now(); frame++; const t0 = performance.now();
-    const g = gray(src, sw, sh); if (!g) return null;
+    const pw = w, ph = h, g = gray(src, sw, sh); if (!g) return null;
+    if (pw && (w !== pw || h !== ph)) { prevPyr = null; pts = []; quad = null; sm = null; prevC = null; }   // the camera changed its picture size: start following afresh
     const pyr = pyramid(g); let tracked = null;
     // 1. follow the points from the last frame
     if (quad && prevPyr && pts.length >= 8) {
@@ -288,13 +336,15 @@ function tracker(opts) {
       lastDetectF = frame;
       const r = findRect(src, sw, sh);
       if (r) {
-        const D = r.c.map(([x, y]) => [x * w, y * h]);
+        const D = opts.target ? fit(r.c.map(([x, y]) => [x * w, y * h]), pyr) : r.c.map(([x, y]) => [x * w, y * h]);
+        if (D) {
         if (!tracked) { tracked = D; mode = 'find'; }
         else { const off = D.reduce((s, p, i) => s + Math.hypot(p[0] - tracked[i][0], p[1] - tracked[i][1]), 0) / 4;
           if (off < Math.max(4, w * .02)) { tracked = tracked.map((p, i) => [p[0] + (D[i][0] - p[0]) * .25, p[1] + (D[i][1] - p[1]) * .25]); disagree = 0; }
+          else if (D.c != null && TS.length && bestScore(pyr[1], tracked) > D.c + .02) disagree = 0;   // what we're following matches the picture better: stay on it
           else if (++disagree >= 2) { tracked = D; disagree = 0; mode = 'find'; } }
         prevPyr = pyr; pts = seed(g, tracked);
-      }
+      } }
     }
     prevPyr = pyr;
     if (!tracked) { lostFor++; if (lostFor > 4) { quad = null; sm = null; pts = []; mode = 'none'; } return quad ? { c: quad.map(([x, y]) => [x / w, y / h]), mode: 'hold' } : null; }

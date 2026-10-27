@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Snow Globe · Art Alive</title>
+<meta name="description" content="Shake your phone to make it snow.">
+<meta name="theme-color" content="#0b1530">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{--night:#0b1530;--snow:#f6f8ff;--gold:#e2b45a;--soft:#c3cde3;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--night);color:var(--snow);font:17px/1.45 "Atkinson Hyperlegible",Verdana,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+#stage{position:fixed;inset:0}
+.top{position:fixed;left:0;right:0;top:0;padding:calc(14px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));text-align:center;pointer-events:none}
+.top h1{margin:0;white-space:nowrap;font:900 clamp(20px,7.6vw,46px)/1 Archivo,"Arial Black",Arial,sans-serif;font-stretch:118%;letter-spacing:.02em;text-transform:uppercase;text-shadow:0 2px 18px rgba(0,0,0,.45)}
+.top p{margin:8px auto 0;max-width:34ch;color:var(--soft);font-size:16px;min-height:1.45em}
+.top p.big{margin-top:12px;color:var(--gold);font:900 clamp(22px,7vw,34px)/1.1 Archivo,"Arial Black",Arial,sans-serif;font-stretch:115%;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 2px 14px rgba(0,0,0,.5);animation:pulse 1.3s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.14);opacity:.8}}
+@media (prefers-reduced-motion:reduce){.top p.big{animation:fade 1.6s ease-in-out infinite}@keyframes fade{50%{opacity:.6}}}
+.bar{position:fixed;left:0;right:0;bottom:calc(78px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:10px;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.bar button,.go button{min-height:52px;padding:0 24px;border-radius:999px;border:2px solid rgba(255,255,255,.35);background:rgba(8,14,32,.55);color:#fff;font:800 15px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.07em;text-transform:uppercase;cursor:pointer}
+.bar button{padding:0 18px;flex:0 1 auto}
+@media (max-width:420px){.bar{gap:8px}.bar button{flex:1 1 0;padding:0 8px;font-size:13.5px;letter-spacing:.05em}}
+.bar .pri{background:var(--gold);border-color:var(--gold);color:#1a1206}
+button:focus-visible,a:focus-visible{outline:3px solid #7cc4ff;outline-offset:3px}
+.go{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;background:rgba(6,10,24,.55);text-align:center}
+.go button{min-height:68px;min-width:230px;font-size:21px;background:var(--gold);border-color:var(--gold);color:#1a1206;box-shadow:0 12px 34px -10px #000}
+.go button[disabled]{opacity:.6}
+.go p{margin:0;max-width:30ch;color:#fff;text-shadow:0 1px 4px #000}
+.go a{color:#fff}
+.own{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:2px;width:max-content;max-width:calc(100% - 32px);padding:8px 18px;border-radius:16px;border:1.5px solid rgba(226,180,90,.7);background:rgba(8,14,32,.55);color:#f6f8ff;text-decoration:none;text-align:center}
+.own b{font:800 14px/1.2 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#e2b45a}
+.own span{font-size:12.5px;color:#c3cde3}
+.own:focus-visible{outline:3px solid #7cc4ff;outline-offset:3px}
+.sharetop{position:fixed;z-index:6;top:calc(10px + env(safe-area-inset-top,0px));right:max(10px,env(safe-area-inset-right,0px));display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;border:2px solid rgba(255,255,255,.4);background:rgba(8,14,32,.6);color:#fff;font:800 13px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.sharetop svg{width:18px;height:18px}
+@media (max-width:700px){.sharetop{top:calc(108px + env(safe-area-inset-top,0px));right:auto;left:50%;transform:translateX(-50%)}}
+@media (max-width:700px) and (max-height:740px){.sharetop{display:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-height:520px){.top p{display:none}}
+
+/* the greeting, its pulsing line and the button under it: each in its own space, a small gap between, never touching the globe */
+.top p,.top p.big{margin-top:8px;min-height:calc(clamp(22px,7vw,34px) * 1.15);display:flex;align-items:center;justify-content:center}
+@media (max-width:700px){.sharetop,.vistop{top:var(--btnTop,108px) !important}}
+
+/* "Make your own" and "More globes" side by side at the bottom */
+.lowrow{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:8px;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.lowrow .own{position:static;transform:none;flex:0 1 auto;width:auto;max-width:none;min-width:0}
+@media (max-width:420px){.lowrow .own{flex:1 1 0;padding:8px 10px}.lowrow .own b{font-size:12.5px;letter-spacing:.04em}.lowrow .own span{font-size:11.5px}}
+.top p.big{white-space:nowrap;font-size:clamp(17px,5.3vw,34px)}
+</style>
+</head>
+<body>
+<div id="stage" role="img" aria-label="A snow globe"></div>
+<header class="top"><h1 id="msg"></h1><p id="hint" class="big">Shake your phone!</p></header>
+<div class="bar" id="bar" hidden><button type="button" class="pri" id="shake">Shake</button><button type="button" id="share">Share</button><button type="button" id="snd" aria-pressed="true">Sound on</button></div>
+<button type="button" class="sharetop" id="share2" aria-label="Share this snow globe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M5 13v7h14v-7"/></svg>Share</button>
+<div class="lowrow"><a class="own" href="./"><b>Make your own</b><span>Your photo or video, free</span></a><a class="own" href="../play/snowglobes.html"><b>More globes</b><span>See all eight</span></a></div>
+<div class="go" id="go"><button type="button" id="start" disabled>Loading…</button><p id="goTip">Sound on. Then shake or tilt your phone, or swipe across the globe.</p></div>
+<p class="sr" id="live" aria-live="polite"></p>
+<script src="../site-config.js"></script><script src="../account.js"></script><script src="../stats.js"></script><script src="globe.js"></script><script src="sharelink.js"></script>
+<script>
+(async function () {
+  'use strict';
+  const $ = id => document.getElementById(id), say = t => { $('live').textContent = ''; setTimeout(() => { $('live').textContent = t; }, 60); };
+  const code = (new URLSearchParams(location.search).get('c') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const fail = (h, t) => { $('msg').textContent = h; $('hint').textContent = ''; $('go').innerHTML = '<p>' + t + '</p><p><a href="./">Make your own snow globe</a></p>'; document.title = h + ' · Art Alive'; };
+  const loadImg = src => new Promise((ok, no) => { if (!src) return ok(null); const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+  if (!window.AAAccount || !AAAccount.configured) return fail('Not ready yet', 'Art Alive is being set up. Please try again soon.');
+  if (!code) return fail('Nothing to show here', 'This link is missing its code. Try scanning the QR code again.');
+  let row;
+  try {
+    row = await AAAccount.published(code);
+    if (!row || row.kind !== 'snowglobe') return fail('Not available', 'This snow globe isn’t available right now.');
+    const d = row.data, cl = await AAAccount.load(), jobs = [];
+    // pictures come down whole; the video streams
+    for (const k of ['still', 'logo', 'video']) { const v = d[k]; if (typeof v !== 'string' || !v.startsWith('aa-media:')) continue; const path = v.slice(9);
+      const whole = () => cl.storage.from('media').download(path).then(({ data, error }) => { if (error) throw error; d[k] = URL.createObjectURL(data); });
+      jobs.push(k === 'video' ? cl.storage.from('media').createSignedUrl(path, 21600).then(({ data, error }) => { if (error || !data) return whole(); d[k] = data.signedUrl; }).catch(whole) : whole()); }
+    await Promise.all(jobs); AAAccount.countView(code); if (window.AAStats) AAStats.log(code, 'open');
+  } catch (e) { return fail('Couldn’t load it', 'Check your connection and try again.'); }
+  const d = row.data, msg = (d.msg || 'Happy Holidays').slice(0, 40), who = (d.name || '').slice(0, 60);
+  $('msg').textContent = msg; document.title = msg + ' · Snow Globe';
+  $('stage').setAttribute('aria-label', 'A snow globe. Inside the glass: ' + (d.describe || 'a photo') + '.' + (who ? ' On the base: ' + who + '.' : ''));
+  let still, logo; try { still = await loadImg(d.still); logo = await loadImg(d.logo).catch(() => null); } catch (e) { return fail('Couldn’t load it', 'The picture didn’t load. Check your connection and try again.'); }
+  // how much room the top needs: the greeting, then (on phones) the button under it, each with a small gap
+  function topRoom() {
+    const hd = document.querySelector('.top'), hb = hd ? hd.getBoundingClientRect().bottom : 100;
+    document.documentElement.style.setProperty('--btnTop', Math.round(hb + 10) + 'px');
+    if (innerWidth > 700) return hb + 12;
+    let low = hb;
+    document.querySelectorAll('.sharetop').forEach(b => { if (b.hidden || getComputedStyle(b).display !== 'none') low = Math.max(low, hb + 10 + (b.offsetHeight || 44)); });
+    return low + 10;
+  }
+  const g = AAGlobe.create($('stage'), { picture: still, video: d.video || '', start: +d.start || 0, crop: d.crop || null, logo, name: logo ? '' : who, base: d.base || 'red',
+    top: topRoom(), bottom: 144,
+    onHint(t, big) { $('hint').textContent = t; $('hint').classList.toggle('big', big); if (big) say(t); },
+    say(t) { say(t + ' ' + msg + (who ? ', from ' + who : '') + '.'); } });
+  addEventListener('resize', () => g.set({ top: topRoom() })); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => g.set({ top: topRoom() }));
+  $('start').disabled = false; $('start').textContent = 'Tap to start'; $('start').focus();
+  $('start').onclick = async () => { await g.start(); $('go').remove(); $('bar').hidden = false; $('shake').focus({ preventScroll: true });
+    say(msg + (who ? ', from ' + who : '') + '. Shake your phone, tilt it, or press Shake to make it snow.'); };
+  $('shake').onclick = () => g.shake();
+  $('share').onclick = () => AAShareLink.open({ url: AAAccount.PUB_URL ? AAAccount.PUB_URL(code) : location.href, title: msg + ' · Snow Globe', text: msg + (who ? ' from ' + who : '') + '. Shake your phone to make it snow!',
+    onShare() { if (window.AAStats) AAStats.log(code, 'share'); } });
+  $('share2').onclick = () => $('share').click();
+  addEventListener('keydown', e => { if ((e.key === 's' || e.key === 'S') && !e.metaKey && !e.ctrlKey && !$('go')) g.shake(); });
+  let on = true; $('snd').onclick = () => { on = !on; g.sound(on); $('snd').textContent = on ? 'Sound on' : 'Sound off'; $('snd').setAttribute('aria-pressed', on); };
+})();
+</script>
+</body>
+</html>

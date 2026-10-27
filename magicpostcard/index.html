@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Magic Postcards · Art Alive</title>
+<meta name="description" content="Send a postcard that comes alive. Pick a picture, add your own video and a personal message. They scan it and watch the picture move.">
+<meta name="theme-color" content="#1f3352">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Art Alive">
+<meta property="og:title" content="Magic Postcards · Art Alive">
+<meta property="og:description" content="Send a postcard that comes alive. Your picture, your video, your message, printed and mailed.">
+<meta property="og:url" content="https://artalivestudio.com/magicpostcard/">
+<meta property="og:image" content="https://artalivestudio.com/magicpostcard/samples/asbury-park-share.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&family=Yellowtail&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../site.css">
+<style>
+:root{--navy:#1f3352;--coral:#ec9a72;--sky:#b9cfe6}
+.mp-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(24px,4vw,56px);align-items:start;padding:clamp(18px,4vw,40px) 0 10px}
+.mp-hero h1{font:900 clamp(38px,6.4vw,78px)/.95 var(--display);font-stretch:118%;text-transform:uppercase;margin:12px 0 18px}
+.mp-hero h1 em{font-style:normal;color:var(--coral)}
+.mp-hero .lede{max-width:40ch}
+.mp-hero .go{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.mp-card3d{perspective:1400px}
+.mp-flip{position:relative;width:100%;aspect-ratio:3/2;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.mp-flip.back{transform:rotateY(180deg)}
+.mp-flip .face,.mp-flip canvas.b{position:absolute;inset:0;width:100%;height:100%;border-radius:6px;overflow:hidden;box-shadow:0 30px 60px -25px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.06);backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.mp-flip canvas.b{transform:rotateY(180deg)}
+.mp-flip .face canvas{position:absolute;inset:0;width:100%;height:100%}
+.mp-flip .face video,.mp-flip .face canvas.top{position:absolute;left:0;top:0;width:66.6667%;height:100%;object-fit:cover}
+.mp-under{display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.mp-tag{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--navy);color:var(--sky);font:800 12px/1 var(--display);font-stretch:112%;letter-spacing:.14em;text-transform:uppercase}
+.mp-tag i{width:8px;height:8px;border-radius:50%;background:var(--coral);display:inline-block}
+.mp-cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:clamp(30px,5vw,60px) 0 0}
+.mp-cats a{display:flex;gap:14px;align-items:center;padding:12px;border-radius:18px;background:var(--wall);border:1px solid var(--line);color:var(--cream);text-decoration:none}
+.mp-cats a:hover,.mp-cats a:focus-visible{border-color:var(--coral)}
+.mp-cats img{width:84px;height:84px;border-radius:12px;object-fit:cover;flex-shrink:0}
+.mp-cats span{display:flex;flex-direction:column;gap:4px;font-size:15px;color:var(--muted)}
+.mp-cats b{font:900 20px/1.1 var(--display);font-stretch:112%;color:var(--cream);text-transform:uppercase}
+@media (max-width:900px){.mp-cats{grid-template-columns:minmax(0,1fr)}}
+.mp-how{margin:clamp(40px,7vw,90px) 0 10px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;list-style:none;padding:0}
+.mp-how li{background:var(--wall);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.mp-how b{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:var(--c);color:#14100c;font:900 20px/1 var(--display)}
+.mp-how li:nth-child(1){--c:var(--coral)}.mp-how li:nth-child(2){--c:#7da7d1}.mp-how li:nth-child(3){--c:#f2c14e}.mp-how li:nth-child(4){--c:#7be08f}
+.mp-how h3{margin:4px 0 0;font:800 19px/1.2 var(--display);font-stretch:112%}
+.mp-how p{margin:0;color:var(--muted);font-size:16px}
+.mk{margin:clamp(40px,7vw,90px) 0 20px;scroll-margin-top:20px}
+.mk-head{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.mk-head h2{margin:0;font:900 clamp(30px,4.6vw,54px)/1 var(--display);font-stretch:118%;text-transform:uppercase}
+.mk-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(20px,3vw,40px);align-items:start}
+.mk-form{display:flex;flex-direction:column;gap:16px;min-width:0}
+.mk-form fieldset{margin:0;border:1px solid var(--line);border-radius:18px;background:var(--wall);padding:18px 18px 20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.mk-form legend{float:left;width:100%;display:flex;align-items:center;gap:10px;font:900 20px/1.1 var(--display);font-stretch:112%;text-transform:uppercase;padding:0;margin:0 0 2px}
+.mk-form legend span{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;flex-shrink:0;border-radius:50%;background:var(--coral);color:#14100c;font-size:16px}
+.mk-form .hint{margin:0;color:var(--muted);font-size:15px}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}.row2>*,.row3>*{min-width:0}.row2 input,.row3 input{width:100%;box-sizing:border-box}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.tile{position:relative;display:flex;flex-direction:column;gap:6px;cursor:pointer}
+.tile input{position:absolute;opacity:0;pointer-events:none}
+.tile .im{aspect-ratio:1;border-radius:12px;overflow:hidden;border:3px solid transparent;background:var(--room) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--muted);font:800 13px/1.2 var(--display);text-transform:uppercase;letter-spacing:.06em;text-align:center;padding:8px}
+.tile .im img{width:100%;height:100%;object-fit:cover;display:block}
+.tile small{font-size:14px;color:var(--cream)}
+.tile input:checked + .im{border-color:var(--coral)}
+.tile input:focus-visible + .im{outline:3px solid var(--blue);outline-offset:2px}
+.check{display:flex;align-items:center;gap:10px;font-size:16px;color:var(--cream);cursor:pointer}
+.check input{width:22px;height:22px;accent-color:var(--coral)}
+.file{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.file input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
+.file label.btn{min-height:50px;font-size:14px}
+.file .fn{color:var(--muted);font-size:15px;overflow-wrap:anywhere}
+.sw{display:flex;gap:12px;flex-wrap:wrap}
+.sw label{position:relative;cursor:pointer}
+.sw input{position:absolute;opacity:0}
+.sw span{display:block;width:48px;height:48px;border-radius:50%;background:var(--c);border:3px solid var(--wall);box-shadow:0 0 0 2px var(--line)}
+.sw input:checked + span{box-shadow:0 0 0 3px var(--cream)}
+.sw input:focus-visible + span{outline:3px solid var(--blue);outline-offset:3px}
+.count{align-self:flex-end;font-size:14px;color:var(--muted)}
+.mk-prev{position:sticky;top:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.mk-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.mk-tabs button{min-height:46px;padding:0 18px;border-radius:999px;border:2px solid var(--line);background:transparent;color:var(--cream);font:800 13px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.mk-tabs button[aria-pressed="true"]{background:var(--cream);color:#14100c;border-color:var(--cream)}
+.mk-stage{position:relative;width:100%;aspect-ratio:3/2;border-radius:6px;overflow:hidden;box-shadow:0 30px 60px -25px rgba(0,0,0,.9)}
+.mk-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.mk-stage video{position:absolute;left:0;top:0;width:66.6667%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s;pointer-events:none}
+.mk-stage canvas.anim{left:0;top:0;width:66.6667%;height:100%;opacity:0;transition:opacity .5s;display:none}
+.mk-stage.anim canvas.anim{display:block}.mk-stage.anim video{display:none}.mk-stage.playing canvas.anim{opacity:1}.mk-stage.back canvas.anim{display:none}
+.tiles.send{grid-template-columns:repeat(2,minmax(0,1fr))}.tiles.send .im{aspect-ratio:auto;min-height:84px;background:var(--room);color:var(--cream);font-size:14px}
+.tile .im.sw1{background:linear-gradient(160deg,#9fd0ff,#ff9f43 50%,#1b2050)}.tile .im.sw2{background:radial-gradient(circle at 35% 35%,#ffd23f 0 6%,transparent 7%),radial-gradient(circle at 65% 45%,#ff6ad5 0 5%,transparent 6%),linear-gradient(#0b1530,#22305a)}.tile .im.sw3{background:radial-gradient(circle at 30% 40%,#fff 0 3%,transparent 4%),radial-gradient(circle at 70% 60%,#fff 0 2%,transparent 3%),linear-gradient(135deg,#f7d58b,#ec9a72)}
+.mk-stage .top{position:absolute;left:0;top:0;width:66.6667%;height:100%;opacity:0;transition:opacity .5s;pointer-events:none}
+.mk-stage.playing video,.mk-stage.playing .top{opacity:1}
+.mk-stage.back .top{display:none}
+.mk-stage.back video{display:none}
+.mk-note{margin:0;font-size:14px;color:var(--muted)}
+/* the video message under the card, like the artist's clip under a Blind Canvas painting */
+.mk-from{display:flex;flex-direction:column;gap:8px}
+.from-strip{background:#000;color:#fff;border-radius:3px;padding:14px 12px;text-align:center;font:900 clamp(18px,3.4vw,30px)/1 var(--display);font-stretch:118%;letter-spacing:.06em;text-transform:uppercase;overflow-wrap:anywhere}
+.from-vid{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:3px;overflow:hidden}
+.from-vid video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;cursor:pointer}
+.from-vid .pp{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font:900 22px/1 var(--display);cursor:pointer}
+.from-vid.on .pp{opacity:0}.from-vid.on .pp:focus-visible{opacity:1}
+.mp-from{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.mp-from .snd{position:absolute;right:10px;bottom:10px;min-height:40px;padding:0 14px;border-radius:999px;border:0;background:rgba(0,0,0,.65);color:#fff;font:800 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.mk-act{display:flex;flex-direction:column;gap:12px;background:var(--wall);border:1px solid var(--line);border-radius:18px;padding:18px}
+.mk-act .price{margin:0;font:900 26px/1 var(--display);font-stretch:112%}
+.mk-act .price small{font:600 15px var(--body);color:var(--muted);margin-left:6px}
+.mk-act .btns{display:flex;gap:10px;flex-wrap:wrap}
+.mk-act .btn{flex:1 1 200px}
+.mk-done{border:2px solid #7be08f;border-radius:18px;padding:20px;background:#13261b;display:flex;flex-direction:column;gap:10px}
+.mk-done h3{margin:0;font:900 26px/1.1 var(--display);text-transform:uppercase}
+.mk-done p{margin:0}
+.mk-done a{color:#ffd23f}
+.status:empty{display:none}
+.mk-end{display:flex;flex-direction:column;gap:12px;min-width:0}
+.mk-mini{display:flex;align-items:center;gap:14px;padding:12px;border-radius:18px;background:var(--wall);border:1px solid var(--line);color:var(--cream);text-decoration:none;font:800 16px/1.2 var(--display);text-transform:uppercase}
+.mk-mini canvas{width:120px;height:auto;aspect-ratio:3/2;border-radius:4px;flex-shrink:0}
+.mk-mini small{display:block;margin-top:4px;font:400 14px var(--body);text-transform:none;color:var(--muted)}
+.mk-mini:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+#picMore{align-self:flex-start}
+@media (max-width:900px){.mp-hero,.mk-grid{grid-template-columns:minmax(0,1fr)}.mk-prev{position:static;order:-1}.mk-end{margin-top:6px}.mp-how{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.mp-how{grid-template-columns:minmax(0,1fr)}.row2{grid-template-columns:minmax(0,1fr)}.row3{grid-template-columns:repeat(2,minmax(0,1fr))}.row3>:first-child{grid-column:1/-1}}
+@media (prefers-reduced-motion:reduce){.mp-flip{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="../" aria-label="Art Alive home"><img src="../art-alive-mark.png" alt=""><img class="wm" src="../art-alive-wordmark.png" alt="Art Alive"></a>
+    <div class="top-act"><a class="btn small acct-btn" data-acct href="../login.html?new=1" aria-label="Create a free account" style="color:#14100c;text-decoration:none">Create account</a><button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button></div>
+    <nav id="nav" aria-label="Main">
+      <ul class="util"><li><a href="../gallery.html">Gallery</a></li><li><a href="../how-to.html">How to</a></li><li><a href="../plans.html">Plans</a></li><li><a href="../about.html">About</a></li></ul>
+      <ul class="aud"><li><a href="../for-creators.html">For Creators</a></li><li><a href="../for-galleries.html">For Galleries</a></li><li><a href="../for-businesses.html">For Businesses</a></li><li><a href="../for-everyone.html">For Everyone</a></li><li><a href="./" aria-current="page">Magic Postcards</a></li><li><a class="studio" href="../studio/index.html">Creator Studio</a></li></ul>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="mp-hero" aria-labelledby="mpH">
+      <div>
+        <span class="eyebrow">New · Magic Postcards</span>
+        <h1 id="mpH">Send a postcard that <em>comes alive</em>.</h1>
+        <p class="lede">Pick a picture, add your own video and a personal message. We print it and mail it. They scan the QR code, point their phone at the postcard, and <b>the picture starts to move</b>.</p>
+        <div class="go"><a class="btn" href="#make">Make yours</a><a class="btn ghost" href="#how">How it works</a></div>
+      </div>
+      <div>
+        <div class="mp-card3d"><div class="mp-flip" id="heroFlip"><div class="face"><canvas id="heroF" role="img" aria-label="A sample Magic Postcard: Greetings from Asbury Park, with the boardwalk and a QR code on a navy strip. Its picture moves from day to night: the windows light up, spotlights shine on the sign and fireworks burst in the sky."></canvas><video id="heroV" muted loop playsinline aria-hidden="true"></video><canvas class="top" id="heroTop" aria-hidden="true"></canvas></div><canvas class="b" id="heroB" role="img" aria-label="The back of the sample postcard: a message area, the Art Alive picture to scan, and the address"></canvas></div></div>
+        <div class="mp-from"><div class="from-strip">From Ben Fox</div><div class="from-vid"><video id="heroMsg" muted loop playsinline preload="metadata" poster="samples/asbury-message.jpg" aria-label="The sample video message: two friends saying hello from the beach"></video><button class="snd" type="button" id="heroSnd" aria-pressed="false">Sound on</button></div></div>
+        <div class="mp-under"><button class="btn ghost small" type="button" id="heroTurn" aria-pressed="false">Turn it over</button><span class="mp-tag"><i aria-hidden="true"></i>Printed and mailed</span></div>
+      </div>
+    </section>
+
+    <nav class="mp-cats" aria-label="Kinds of Magic Postcards">
+      <a href="locations.html"><img src="stock/thumbs/maine-coast-lighthouse.jpg" alt=""><span><b>Locations</b>Greetings from all 50 states, from day to a starry night</span></a>
+      <a href="events.html"><img src="stock/thumbs/vermont-village.jpg" alt=""><span><b>Events</b>Birthdays, holidays, weddings and every occasion</span></a>
+      <a href="business.html"><img src="stock/thumbs/asbury-park.jpg" alt=""><span><b>For Businesses</b>Your brand, your video, your offer, mailed to your list</span></a>
+    </nav>
+    <ol class="mp-how" id="how" aria-label="How it works">
+      <li><b aria-hidden="true">1</b><h3>Pick a picture</h3><p>Choose a place from any of the 50 states (each one turns from day to a starry night), or use your own photo.</p></li>
+      <li><b aria-hidden="true">2</b><h3>Write and record</h3><p>Write your message, then record a hello from where you are. It plays right under the postcard, with your name on a strip above it. Add a second video for the back if you like.</p></li>
+      <li><b aria-hidden="true">3</b><h3>Say who it's for</h3><p>Their name goes on the front. Add their address and who it's from.</p></li>
+      <li><b aria-hidden="true">4</b><h3>We mail it, or you print it</h3><p>We print it on thick card and send it. Or download it, print it yourself and write it by hand. No app needed to watch it.</p></li>
+    </ol>
+
+    <section class="mk" id="make" aria-labelledby="mkH">
+      <div class="mk-head"><span class="eyebrow">Create your own</span><h2 id="mkH">Make your Magic Postcard</h2><div class="rule" aria-hidden="true"></div><p class="hint" style="margin:0">Sent one already? <a href="replies.html">See your replies</a>.</p></div>
+      <div class="mk-grid">
+        <form class="mk-form" id="mk" novalidate>
+          <fieldset>
+            <legend><span aria-hidden="true">1</span>Pick your picture</legend>
+            <div class="mk-tabs" role="group" aria-label="Kind of card"><button type="button" data-cat="location" aria-pressed="true">Locations</button><button type="button" data-cat="event" aria-pressed="false">Events</button></div>
+            <div class="row2"><label class="field">Find a place<input type="search" id="picQ" placeholder="A state or a city" autocomplete="off"></label><label class="field" id="picStateL">State<select id="picState"></select></label></div>
+            <p class="hint" id="picCount" aria-live="polite"></p>
+            <div class="tiles" id="stockTiles" role="radiogroup" aria-label="Choose a picture"></div>
+            <button type="button" class="btn ghost small" id="picMore" hidden aria-controls="stockTiles"></button>
+            <p class="hint" id="picHint" hidden></p>
+            <div class="file"><input type="file" id="photoIn" accept="image/*"><label class="btn ghost" for="photoIn">Upload my own photo</label><span class="fn" id="photoFn" aria-live="polite"></span></div>
+            <p class="hint">It's printed as a square. We use the middle of your photo.</p>
+            <div id="autoBox" hidden>
+              <p class="hint"><b style="color:var(--cream)">Your photo comes alive too.</b> We make it move with Art Alive effects. Choose a style:</p>
+              <div class="tiles" role="radiogroup" aria-label="How your photo comes alive">
+                <label class="tile"><input type="radio" name="astyle" value="daynight" checked><span class="im sw1"></span><small>Day to night</small></label>
+                <label class="tile"><input type="radio" name="astyle" value="fireworks"><span class="im sw2"></span><small>Fireworks night</small></label>
+                <label class="tile"><input type="radio" name="astyle" value="sparkle"><span class="im sw3"></span><small>Sparkle and glow</small></label>
+              </div>
+            </div>
+            <div class="row2">
+              <label class="field">Greeting line (leave empty for none)<input id="greetText" maxlength="28" value="Greetings from" autocomplete="off"></label>
+              <label class="field">Big title on the picture<input id="place" maxlength="28" value="Asbury Park" autocomplete="off"></label>
+            </div>
+            <p class="hint" id="swH">Color of the lettering</p>
+            <div class="sw" role="radiogroup" aria-labelledby="swH">
+              <label><input type="radio" name="accent" value="#ec9a72" checked aria-label="Coral"><span style="--c:#ec9a72"></span></label>
+              <label><input type="radio" name="accent" value="#7da7d1" aria-label="Sky blue"><span style="--c:#7da7d1"></span></label>
+              <label><input type="radio" name="accent" value="#f2c14e" aria-label="Sunny yellow"><span style="--c:#f2c14e"></span></label>
+              <label><input type="radio" name="accent" value="#f6f1e8" aria-label="Cream"><span style="--c:#f6f1e8"></span></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend><span aria-hidden="true">2</span>Write your message</legend>
+            <label class="field">Your message (printed on the back in handwriting style)<textarea id="msg" maxlength="300" rows="4" placeholder="Wish you were here! Scan the front and watch the boardwalk come alive."></textarea></label>
+            <span class="count" id="msgCount" aria-live="polite">300 characters left</span>
+            <p class="hint">Printing it yourself? You can leave this blank and write it by hand. We print empty lines.</p>
+          </fieldset>
+
+          <fieldset>
+            <legend><span aria-hidden="true">3</span>Your front video</legend>
+            <p class="hint">Record a hello from where you are, or upload one: up to 30 seconds, upright or sideways. When they scan the front, it plays right under the postcard, with sound, under a strip that says <b style="color:var(--cream)">FROM</b> and your name.</p>
+            <div class="file"><input type="file" id="videoRec" accept="video/*" capture="user"><label class="btn" for="videoRec">Record a video</label><input type="file" id="videoIn" accept="video/*"><label class="btn ghost" for="videoIn">Upload a video</label></div>
+            <div class="file"><span class="fn" id="videoFn" aria-live="polite">No video yet</span><button type="button" class="btn ghost small" id="videoX" hidden>Remove</button></div>
+          </fieldset>
+
+          <fieldset>
+            <legend><span aria-hidden="true">4</span>Your back video <small style="font:600 15px var(--body);text-transform:none;color:var(--muted)">(optional)</small></legend>
+            <p class="hint">A second video for when they turn the card over and scan the back. Skip it and your front video plays there too.</p>
+            <div class="file"><input type="file" id="video2Rec" accept="video/*" capture="user"><label class="btn" for="video2Rec">Record a video</label><input type="file" id="video2In" accept="video/*"><label class="btn ghost" for="video2In">Upload a video</label></div>
+            <div class="file"><span class="fn" id="video2Fn" aria-live="polite">No back video</span><button type="button" class="btn ghost small" id="video2X" hidden>Remove</button></div>
+            <p class="hint" style="margin-top:6px"><b style="color:var(--cream)">The small picture on the back.</b> They can scan it too. It starts as the Art Alive logo, or use your own (a logo, a pet, a smiling face).</p>
+            <div class="tiles" role="radiogroup" aria-label="Choose the small picture on the back">
+              <label class="tile"><input type="radio" name="icon" value="aa" checked><span class="im" style="background:#15191f"><img src="../art-alive-mark.png" alt=""></span><small>Art Alive logo</small></label>
+              <label class="tile"><input type="radio" name="icon" value="own" id="iconOwnR"><span class="im" id="iconOwnIm">Your own</span><small>My own picture</small></label>
+            </div>
+            <div class="file"><input type="file" id="iconIn" accept="image/*"><label class="btn ghost" for="iconIn">Choose my own picture</label><span class="fn" id="iconFn"></span></div>
+          </fieldset>
+
+          <fieldset>
+            <legend><span aria-hidden="true">5</span>Who it's going to</legend>
+            <div class="tiles send" role="radiogroup" aria-label="How it gets there">
+              <label class="tile"><input type="radio" name="send" value="mail" checked><span class="im">Mail it for me</span><small>We print it on thick card and mail it</small></label>
+              <label class="tile"><input type="radio" name="send" value="self"><span class="im">I'll print it myself</span><small>Download it, print it and write on it by hand</small></label>
+            </div>
+            <label class="field">Their name<input id="aName" maxlength="60" autocomplete="off" placeholder="Pete Romano"></label>
+            <label class="check"><input type="checkbox" id="toFront" checked>Put their name on the front (To: …)</label>
+            <div id="addrBox" style="display:flex;flex-direction:column;gap:14px">
+              <label class="field">Street address<input id="aLine1" maxlength="80" autocomplete="off"></label>
+              <label class="field">Apartment, suite (optional)<input id="aLine2" maxlength="80" autocomplete="off"></label>
+              <div class="row3">
+                <label class="field">City<input id="aCity" maxlength="50" autocomplete="off"></label>
+                <label class="field">State<input id="aState" maxlength="20" autocomplete="off"></label>
+                <label class="field">ZIP<input id="aZip" maxlength="12" autocomplete="off" inputmode="numeric"></label>
+              </div>
+            </div>
+            <p class="hint" id="addrHint">For now we mail within the United States. The address is printed on the card and kept private: it is never part of what people see when they scan.</p>
+          </fieldset>
+
+          <fieldset>
+            <legend><span aria-hidden="true">6</span>From you</legend>
+            <label class="field">Your name<input id="from" maxlength="40" autocomplete="off" placeholder="Ben Fox"></label>
+            <p class="hint" id="fromHint">It goes on the strip above your video (FROM …) and at the end of your message.</p>
+            <label class="check"><input type="checkbox" id="notify" checked>Email me when they open it</label>
+            <label class="check"><input type="checkbox" id="allowReply" checked>Let them send me a video or voice reply</label>
+          </fieldset>
+        </form>
+
+        <div class="mk-prev" id="mkPrev">
+          <div class="mk-tabs" role="group" aria-label="Preview"><button type="button" id="tFront" aria-pressed="true">Front</button><button type="button" id="tBack" aria-pressed="false">Back</button><button type="button" id="tPlay" aria-pressed="false">Play the magic</button></div>
+          <div class="mk-stage" id="stage"><canvas id="pv" role="img" aria-label="Preview of the front of your postcard"></canvas><video id="pvVid" muted loop playsinline aria-hidden="true"></video><canvas class="top" id="pvTop" aria-hidden="true"></canvas></div>
+          <div class="mk-from" id="pvFrom" hidden><div class="from-strip" id="pvStrip">From you</div><div class="from-vid" id="pvMsgBox"><video id="pvMsg" playsinline loop aria-label="Your video message"></video><button type="button" class="pp" id="pvPP" aria-label="Play your video message">&#9654;</button></div></div>
+          <p class="mk-note" id="pvNote">The card is exactly what gets printed: 6 × 4 inches. Press Play the magic to see it come alive.</p>
+          <div class="mk-end" id="mkEnd">
+          <a class="mk-mini" id="mkMini" href="#mkPrev" hidden><canvas id="pvMini" aria-hidden="true"></canvas><span>Your card so far<small>Tap to see it big</small></span></a>
+          <div class="mk-act">
+            <p class="price" id="price" hidden><span id="priceV"></span><small>each, printed and mailed in the U.S.</small></p>
+            <div class="btns"><button class="btn" type="button" id="orderBtn">Order my postcard</button><button class="btn ghost" type="button" id="dlBtn" hidden>Download print files</button></div>
+            <p class="status" id="st" role="status" aria-live="polite"></p>
+          </div>
+          <div class="mk-done" id="done" hidden tabindex="-1"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="row"><img src="../art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="../for-creators.html">For Creators</a></li><li><a href="../for-galleries.html">For Galleries</a></li><li><a href="../for-businesses.html">For Businesses</a></li><li><a href="../for-everyone.html">For Everyone</a></li><li><a href="./">Magic Postcards</a></li><li><a href="../studio/index.html">Creator Studio</a></li><li><a href="../games/index.html">Game Maker</a></li><li><a href="../gallery.html">Gallery</a></li><li><a href="../plans.html">Plans and pricing</a></li><li><a href="../about.html">About</a></li><li><a href="../contact.html">Contact</a></li><li><a href="../privacy.html">Privacy</a></li></ul></div>
+    <span>Art Alive is made by the <a href="https://blindcanvasproject.com/" target="_blank" rel="noopener">Blind Canvas Project</a> and Able Art Alliance.</span>
+  </footer>
+</div>
+<script src="../site-config.js"></script><script src="../site.js"></script><script src="../account.js"></script><script src="../qr.js"></script><script src="postcard.js"></script><script src="animate.js"></script><script src="sound.js"></script>
+<script>
+(function(){const b=document.querySelector('.menu-btn'),n=document.getElementById('nav');if(!b)return;
+b.addEventListener('click',()=>{const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'Close':'Menu';});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&n.classList.contains('open')){n.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='Menu';b.focus();}});})();
+</script>
+<script>
+/* ── MAGIC POSTCARDS: the place pictures to choose from come from stock/catalog.json (see the README to add more). ── */
+let STOCK = [
+  { id: 'asbury-park', title: 'Asbury Park boardwalk', state: 'New Jersey', place: 'Asbury Park', video: 'stock/asbury-park.mp4' }   // used only if the catalog can't load
+];
+(async function () {
+  'use strict';
+  const C = window.ART_ALIVE || {}, MP = window.MagicPostcard, $ = id => document.getElementById(id);
+  const MAX_VIDEO_MB = 40, MAX_SECONDS = 30;
+  const loadImg = src => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = src; });
+  // phones play MP4; a few desktop browsers only play WebM, so each stock animation comes in both
+  const vsrc = p => p && /\.mp4$/.test(p) && !document.createElement('video').canPlayType('video/mp4; codecs="avc1.4D401E"') ? p.replace(/\.mp4$/, '.webm') : p;
+  const say = (t, kind) => { const s = $('st'); s.textContent = t; s.className = 'status' + (kind ? ' ' + kind : ''); };
+
+  try { const cat = await (await fetch('stock/catalog.json', { cache: 'no-cache' })).json(); if (cat && cat.templates && cat.templates.length) STOCK = cat.templates; } catch (e) {}
+  STOCK.forEach(t => { t.cat = t.category || 'location'; t.src = t.src || 'stock/' + (t.image || t.id) + '.jpg'; t.thumb = t.thumb || 'stock/thumbs/' + (t.image || t.id) + '.jpg'; });
+  const want = new URLSearchParams(location.search).get('t'), first = STOCK.find(x => x.id === want) || STOCK[0];   // ?t=<template> opens the maker with that card
+  /* the state of the card being made */
+  const S = { stock: first.id, photo: null, photoData: null, video: null, videoUrl: null, icon: null, iconOwn: null, iconData: null, side: 'front' };
+  const aaIcon = await loadImg('../art-alive-mark.png').catch(() => null);
+  S.icon = aaIcon;
+
+  // square photos: the middle of the picture, 1200 px across, as a JPEG
+  function squareData(im, size, type) { const cv = document.createElement('canvas'); cv.width = cv.height = size; const g = cv.getContext('2d');
+    const w = im.naturalWidth || im.width, h = im.naturalHeight || im.height, s = Math.min(w, h); g.drawImage(im, (w - s) / 2, (h - s) / 2, s, s, 0, 0, size, size);
+    return cv.toDataURL(type || 'image/jpeg', .9); }
+  function fitData(im, max) { const w = im.naturalWidth || im.width, h = im.naturalHeight || im.height, k = Math.min(1, max / Math.max(w, h)), cv = document.createElement('canvas');
+    cv.width = Math.round(w * k); cv.height = Math.round(h * k); cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height); return cv.toDataURL('image/png'); }
+
+  /* the hero: a sample card that turns over */
+  const sample = { photo: await loadImg(STOCK[0].src).catch(() => null), icon: aaIcon, to: 'Pete Romano', place: 'Asbury Park', message: 'Wish you were here! Scan the front and watch the boardwalk come alive.', from: 'Ben Fox', address: { name: 'Pete Romano', line1: '1 Ocean Avenue', city: 'Asbury Park', state: 'NJ', zip: '07712' } };
+  MP.draw($('heroF'), 'front', sample, { scale: 2 }); MP.draw($('heroB'), 'back', sample, { scale: 2 }); MP.drawTop($('heroTop'), sample, { scale: 2 });
+  // the sample card moves on its own (unless someone prefers less motion)
+  const hv = $('heroV'); hv.src = vsrc(STOCK[0].video); if (!matchMedia('(prefers-reduced-motion: reduce)').matches) hv.play().catch(() => {});
+  // under the sample card: the video message, the way it plays under a real card (silent until they ask for sound)
+  const hm = $('heroMsg'), mp4ok = document.createElement('video').canPlayType('video/mp4; codecs="avc1.4D401E"');
+  hm.src = mp4ok ? 'samples/asbury-message.mp4' : 'samples/asbury-message.webm';
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) hm.play().catch(() => {});
+  // sound on: the video message, with Asbury Park's soundscape (surf, gulls, fireworks) underneath, in step with the picture
+  const heroScape = window.MagicSound && STOCK[0].sound ? MagicSound.create(STOCK[0].sound, { getTime: () => hv.currentTime }) : null;
+  $('heroSnd').onclick = () => { hm.muted = !hm.muted; if (!hm.muted) hm.play().catch(() => {});
+    if (heroScape) { if (hm.muted) heroScape.stop(); else { heroScape.start(); heroScape.duck(true); } if (hv.paused) hv.play().catch(() => {}); }
+    $('heroSnd').setAttribute('aria-pressed', !hm.muted); $('heroSnd').textContent = hm.muted ? 'Sound on' : 'Sound off'; };
+  $('heroTurn').onclick = () => { const on = $('heroFlip').classList.toggle('back'); $('heroTurn').setAttribute('aria-pressed', on); $('heroTurn').textContent = on ? 'Turn it back' : 'Turn it over'; };
+
+  /* step 1: the picture */
+  // the places, found by typing or by state (there will be one or more for every state)
+  const tiles = $('stockTiles'), esc = t => String(t || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const states = [...new Set(STOCK.map(t => t.state).filter(Boolean))].sort();
+  $('picState').innerHTML = '<option value="">All states (' + STOCK.filter(t => t.cat === 'location').length + ' places)</option>' + states.map(st => '<option>' + esc(st) + '</option>').join('');
+  tiles.innerHTML = STOCK.map(t => '<label class="tile" data-cat="' + t.cat + '" data-k="' + esc((t.title + ' ' + t.state + ' ' + (t.city || '') + ' ' + t.place + ' ' + (t.occasion || '')).toLowerCase()) + '" data-st="' + esc(t.state) + '"><input type="radio" name="pic" value="' + esc(t.id) + '"' + (t.id === S.stock ? ' checked' : '') + '><span class="im"><img src="' + esc(t.thumb) + '" alt="" loading="lazy" onerror="this.src=\'' + esc(t.src) + '\'"></span><small>' + esc(t.title) + (t.state ? '<br><span style="color:var(--muted)">' + esc(t.state) + '</span>' : '') + '</small></label>').join('').replace(/<br><span style="color:var\(--muted\)"><\/span>/g, '') +
+    '<label class="tile" data-own><input type="radio" name="pic" value="own" id="picOwnR"><span class="im" id="picOwnIm">Your own photo</span><small>My own photo</small></label>';
+  // Locations or Events
+  let cat = first.cat;
+  function setCat(c) { cat = c; document.querySelectorAll('[data-cat]').forEach(b => { if (b.tagName === 'BUTTON') b.setAttribute('aria-pressed', b.dataset.cat === c); });
+    $('picStateL').hidden = c !== 'location'; $('picQ').placeholder = c === 'event' ? 'Birthday, holidays, wedding…' : 'A state or a city'; $('picQ').parentNode.firstChild.textContent = c === 'event' ? 'Find an occasion' : 'Find a place'; filterPics(); }
+  document.querySelectorAll('button[data-cat]').forEach(b => b.onclick = () => { $('picQ').value = ''; setCat(b.dataset.cat); });
+  $('picMore').onclick = () => { showAll = true; filterPics(); const t = tiles.querySelectorAll('.tile:not([hidden]) input')[FEW]; if (t) t.focus(); };
+  // a long list shows the first few and a "Show all" button; searching or picking a state shows every match
+  let showAll = false; const FEW = 8;
+  function filterPics() { const q = $('picQ').value.trim().toLowerCase(), st = cat === 'location' ? $('picState').value : ''; let n = 0, shown = 0;
+    tiles.querySelectorAll('.tile:not([data-own])').forEach(el => { const on = el.dataset.cat === cat && (!st || el.dataset.st === st) && (!q || q.split(/\s+/).every(w => el.dataset.k.includes(w))); if (on) n++;
+      const vis = on && (showAll || q || st || shown < FEW || el.querySelector('input').checked); el.hidden = !vis; if (vis) shown++; });
+    const more = $('picMore'); more.hidden = showAll || q || st || n <= FEW; more.textContent = 'Show all ' + n + (cat === 'event' ? ' cards' : ' places');
+    const word = cat === 'event' ? ['card', 'cards'] : ['place', 'places'];
+    $('picCount').textContent = n ? n + ' ' + word[n === 1 ? 0 : 1] + (cat === 'event' ? ' (more designs coming soon)' : '') : 'Nothing matches. Try another word, or use your own photo.'; }
+  $('picQ').addEventListener('input', filterPics); $('picState').onchange = filterPics; setCat(cat);
+  async function useStock(id) { const s = STOCK.find(x => x.id === id); if (!s) return; S.stock = id; S.photo = await loadImg(s.src).catch(() => null); S.photoData = null;
+    if (!$('place').dataset.typed || s.cat === 'event') { $('place').value = s.place; delete $('place').dataset.typed; }
+    if (!$('greetText').dataset.typed || s.cat === 'event') { $('greetText').value = s.greetText || 'Greetings from'; delete $('greetText').dataset.typed; }
+    setVideo(); redraw(); }
+  // what moves on the picture: their own video, or the place's own animation
+  const stockT = () => STOCK.find(x => x.id === S.stock) || null;
+  const stockVideo = () => { const s = stockT(); return s && s.video ? s.video : null; };
+  const stockLive = () => { const s = stockT(); return s && s.live ? s.live : null; };   // a place that comes alive with live effects (no video)
+  const liveOpts = () => stockLive() ? Object.assign({}, stockLive()) : { style: astyle() };
+  let anim = null, animPhoto = null;
+  const astyle = () => (document.querySelector('input[name=astyle]:checked') || {}).value || 'daynight';
+  const mode = () => stockVideo() ? 'stock' : 'anim';   // the picture moves: the place's own animation, or "make it move for me" on their photo
+  function setVideo() {
+    const m = mode(), v = $('pvVid'), playing = $('stage').classList.contains('playing');
+    $('autoBox').hidden = m !== 'anim' || !!stockLive(); $('stage').classList.toggle('anim', m === 'anim');
+    if (m === 'anim') {
+      if (window.MagicAnimate && S.photo && animPhoto !== S.photo) { if (anim) { anim.stop(); if (anim.destroy) anim.destroy(); anim.canvas.remove(); }
+        anim = MagicAnimate.create(S.photo, liveOpts()); animPhoto = S.photo; anim.canvas.className = 'anim'; anim.canvas.setAttribute('aria-hidden', 'true'); $('stage').insertBefore(anim.canvas, $('pvTop')); }
+      else if (anim && !stockLive()) anim.setStyle(astyle());
+      v.pause(); v.dataset.src = 'anim'; if (playing && anim) anim.start();
+    } else {
+      if (anim) anim.stop();
+      const src = vsrc(stockVideo());
+      if (v.dataset.src !== src) { v.dataset.src = src; v.src = src; }
+      if (playing) v.play().catch(() => {});
+    }
+    const t = stockT(); $('picHint').textContent = t && t.blurb ? 'It comes alive by itself: ' + t.blurb.charAt(0).toLowerCase() + t.blurb.slice(1) : '';
+    $('picHint').hidden = !(t && t.blurb); msgVideo(); }
+  // the video messages: a strip that says FROM and their name, and the video under it.
+  // The front video plays under the card when they scan the front; the back video (or the front one again) when they scan the back.
+  const fromText = () => 'From ' + ($('from').value.trim() || 'your name');
+  const shownVideo = () => S.side === 'back' ? (S.video2Url || S.videoUrl) : S.videoUrl;
+  function msgVideo() { const url = shownVideo(), mv = $('pvMsg'); $('pvFrom').hidden = !url; $('videoX').hidden = !S.videoUrl; $('video2X').hidden = !S.video2Url; $('pvStrip').textContent = fromText();
+    if (url && mv.dataset.src !== url) { mv.dataset.src = url; mv.src = url; }
+    if (!url && mv.dataset.src) { mv.pause(); mv.removeAttribute('src'); mv.dataset.src = ''; mv.load(); } }
+  // the place's soundscape in the preview, in step with the picture (quieter under the video message)
+  let pScape = null, pScapeUrl = null;
+  function scapeFor() { const t = stockT(), u = t && t.sound ? t.sound : null; if (u === pScapeUrl) return pScape; if (pScape) pScape.stop(); pScapeUrl = u;
+    pScape = u && window.MagicSound ? MagicSound.create(u, { getTime: () => mode() === 'anim' ? (anim ? anim.time : 0) : $('pvVid').currentTime }) : null; return pScape; }
+  ['play', 'pause', 'volumechange'].forEach(ev => $('pvMsg').addEventListener(ev, () => { if (pScape) pScape.duck(!$('pvMsg').paused && !$('pvMsg').muted); }));
+  function msgPlay(on) { const mv = $('pvMsg'); if (!shownVideo()) return; if (on) { mv.muted = false; mv.play().catch(() => { mv.muted = true; mv.play().catch(() => {}); }); } else mv.pause(); }
+  $('pvMsg').addEventListener('loadedmetadata', () => { const v = $('pvMsg'); if (v.videoWidth) $('pvMsgBox').style.aspectRatio = v.videoWidth + '/' + v.videoHeight; });
+  ['play', 'pause'].forEach(ev => $('pvMsg').addEventListener(ev, () => { const on = !$('pvMsg').paused; $('pvMsgBox').classList.toggle('on', on); $('pvPP').innerHTML = on ? '&#10074;&#10074;' : '&#9654;'; $('pvPP').setAttribute('aria-label', (on ? 'Pause' : 'Play') + ' your video message'); }));
+  $('pvPP').onclick = $('pvMsg').onclick = () => msgPlay($('pvMsg').paused);
+  // record or upload, front ('') or back ('2')
+  const SLOT = { '': { none: 'No video yet' }, '2': { none: 'No back video' } };
+  function useVideo(n, f, quiet) { const fn = $('video' + n + 'Fn');
+    if (f.size > MAX_VIDEO_MB * 1048576) { fn.textContent = 'That video is ' + Math.round(f.size / 1048576) + ' MB. Please keep it under ' + MAX_VIDEO_MB + ' MB (about 30 seconds).'; return; }
+    const url = URL.createObjectURL(f), v = document.createElement('video'); v.preload = 'metadata'; v.muted = true; v.src = url;
+    v.onloadedmetadata = () => { if (v.duration > MAX_SECONDS + 1 && isFinite(v.duration)) { fn.textContent = 'That video is ' + Math.round(v.duration) + ' seconds. Please trim it to ' + MAX_SECONDS + ' seconds or less.'; URL.revokeObjectURL(url); return; }
+      if (S['video' + n + 'Url']) URL.revokeObjectURL(S['video' + n + 'Url']); S['video' + n] = f; S['video' + n + 'Url'] = url;
+      fn.textContent = (f.name || 'Your video') + (isFinite(v.duration) ? ' · ' + Math.max(1, Math.round(v.duration)) + ' seconds' : '');
+      if (quiet) { msgVideo(); return; }
+      if (n) { setPlay(false); setSide('back'); msgPlay(true); } else { msgVideo(); setPlay(true); } };
+    v.onerror = () => { fn.textContent = 'That video didn’t open here. Try an MP4 (most phones make these).'; }; }
+  ['', '2'].forEach(n => {
+    ['Rec', 'In'].forEach(k => { const inp = $('video' + n + k); inp.onchange = () => { const f = inp.files[0]; if (f) useVideo(n, f); inp.value = ''; }; });
+    $('video' + n + 'X').onclick = () => { if (S['video' + n + 'Url']) URL.revokeObjectURL(S['video' + n + 'Url']); S['video' + n] = S['video' + n + 'Url'] = null; $('video' + n + 'Fn').textContent = SLOT[n].none; msgVideo(); $('video' + n + 'Rec').focus(); };
+  });
+  // arrowing through a set of choices only selects; it doesn't open a file picker or start the movie
+  let arrowed = false; addEventListener('keydown', e => { arrowed = /^Arrow/.test(e.key); }, true); addEventListener('pointerdown', () => { arrowed = false; }, true);
+  tiles.addEventListener('change', e => { if (e.target.name !== 'pic') return; if (e.target.value === 'own') { if (S.ownPhoto) { S.stock = null; S.photo = S.ownPhoto; S.photoData = S.ownPhotoData; setVideo(); redraw(); } else if (!arrowed) $('photoIn').click(); } else useStock(e.target.value).then(() => { if (!arrowed) setPlay(true); }); });
+  $('photoIn').onchange = async () => { const f = $('photoIn').files[0]; if (!f) return;
+    try { const im = await loadImg(URL.createObjectURL(f)), d = squareData(im, 1200); S.ownPhotoData = d; S.ownPhoto = await loadImg(d); S.photo = S.ownPhoto; S.photoData = d; S.stock = null;
+      $('picOwnR').checked = true; $('picOwnIm').innerHTML = '<img src="' + d + '" alt="">'; $('photoFn').textContent = f.name; if (!$('place').dataset.typed) $('place').value = ''; setVideo(); redraw(); if (mode() === 'anim') setPlay(true); }
+    catch (e) { $('photoFn').textContent = 'That picture didn’t open. Try a JPEG or PNG.'; } };
+  $('place').addEventListener('input', () => { $('place').dataset.typed = '1'; redraw(); }); $('greetText').addEventListener('input', () => { $('greetText').dataset.typed = '1'; redraw(); });
+
+  document.querySelectorAll('input[name=astyle]').forEach(r => r.onchange = () => { setVideo(); if (!arrowed) setPlay(true); });
+
+  /* step 2: the words */
+  $('msg').addEventListener('input', () => { $('msgCount').textContent = (300 - $('msg').value.length) + ' characters left'; redraw(); });
+  $('from').addEventListener('input', () => { $('pvStrip').textContent = fromText(); redraw(); });
+
+  /* step 4: the small picture on the back */
+  document.querySelectorAll('input[name=icon]').forEach(r => r.onchange = () => { if (r.value === 'own' && !S.iconOwn) { if (!arrowed) $('iconIn').click(); return; } S.icon = r.value === 'own' ? S.iconOwn : aaIcon; redraw(); });
+  $('iconIn').onchange = async () => { const f = $('iconIn').files[0]; if (!f) return;
+    try { const im = await loadImg(URL.createObjectURL(f)), d = fitData(im, 500); S.iconData = d; S.iconOwn = await loadImg(d); S.icon = S.iconOwn; $('iconOwnR').checked = true;
+      $('iconOwnIm').innerHTML = '<img src="' + d + '" alt="">'; $('iconFn').textContent = f.name; redraw(); } catch (e) { $('iconFn').textContent = 'That picture didn’t open. Try a JPEG or PNG.'; } };
+
+  /* step 5: mailed by us, or printed at home (then anything can be left blank, to write by hand) */
+  document.querySelectorAll('input[name=accent]').forEach(r => r.onchange = redraw);
+  ['aName', 'aLine1', 'aLine2', 'aCity', 'aState', 'aZip'].forEach(id => $(id).addEventListener('input', redraw)); $('toFront').onchange = redraw;
+  const send = () => (document.querySelector('input[name=send]:checked') || {}).value || 'mail';
+  function setSend() { const self = send() === 'self';
+    $('addrHint').textContent = self ? 'Fill in what you like. Anything left blank prints as empty lines, so you can write it by hand. Their name goes on the front too, unless you uncheck the box.' : 'For now we mail within the United States. The address is printed on the card and kept private: it is never part of what people see when they scan.';
+    $('fromHint').textContent = 'It goes on the strip above your video (FROM …) and at the end of your message.' + (self ? ' Leave it blank to sign it by hand.' : '');
+    $('orderBtn').textContent = self ? 'Save and download print files' : 'Order my postcard'; $('price').hidden = self || !C.postcardPrice;
+    $('pvNote').textContent = self ? 'This is exactly what you’ll print: 6 × 4 inches. Blank lines stay blank for your handwriting.' : 'The card is exactly what gets printed: 6 × 4 inches. Press Play the magic to see it come alive.';
+    redraw(); }
+  document.querySelectorAll('input[name=send]').forEach(r => r.onchange = setSend);
+
+  /* the card as it stands */
+  const accent = () => (document.querySelector('input[name=accent]:checked') || {}).value || MP.ACCENTS[0];
+  const address = () => ({ name: $('aName').value.trim(), line1: $('aLine1').value.trim(), line2: $('aLine2').value.trim(), city: $('aCity').value.trim(), state: $('aState').value.trim(), zip: $('aZip').value.trim() });
+  function card(qr) { return { photo: S.photo, icon: S.icon, place: $('place').value.trim(), greet: !!$('greetText').value.trim(), greetText: $('greetText').value.trim(), to: $('toFront').checked ? $('aName').value.trim() : '', message: $('msg').value.trim(), from: $('from').value.trim(), accent: accent(), address: address(), qr: qr || S.qr || undefined, hints: send() === 'mail' }; }
+
+  /* the preview */
+  let rt = 0;
+  function redraw() { cancelAnimationFrame(rt); rt = requestAnimationFrame(() => { const sc = Math.min(3, (devicePixelRatio || 1) * 1.6); MP.draw($('pv'), S.side, card(), { scale: sc }); MP.drawTop($('pvTop'), card(), { scale: sc }); if (!$('mkMini').hidden) MP.draw($('pvMini'), 'front', card(), { scale: 1 });
+    $('pv').setAttribute('aria-label', S.side === 'front' ? 'Preview of the front of your postcard' + (card().to ? ', to ' + card().to : '') : 'Preview of the back of your postcard with your message and the address'); }); }
+  function setSide(side) { S.side = side; $('tFront').setAttribute('aria-pressed', side === 'front'); $('tBack').setAttribute('aria-pressed', side === 'back'); $('stage').classList.toggle('back', side === 'back'); msgVideo(); redraw(); }
+  // on a phone the preview sits at the top, so the order button follows step 6, with a small copy of the card to tap back to
+  const mq = matchMedia('(max-width:900px)'), endBox = $('mkEnd');
+  function placeEnd() { if (mq.matches) { $('mk').after(endBox); $('mkMini').hidden = false; } else { $('mkPrev').appendChild(endBox); $('mkMini').hidden = true; } redraw(); }
+  if (mq.addEventListener) mq.addEventListener('change', placeEnd); else mq.addListener(placeEnd); placeEnd();
+  function setPlay(on) { if (on) setSide('front');
+    $('stage').classList.toggle('playing', on); $('tPlay').setAttribute('aria-pressed', on); $('tPlay').textContent = on ? 'Stop the magic' : 'Play the magic';
+    const v = $('pvVid');
+    if (mode() === 'anim') { v.pause(); if (anim) { if (on) anim.start(); else anim.stop(); } }
+    else { if (anim) anim.stop(); if (on) v.play().catch(() => {}); else v.pause(); }
+    msgPlay(on); const sc = scapeFor(); if (pScape && pScape !== sc) pScape.stop(); if (sc) { if (on) sc.start(); else sc.stop(); } }
+  $('tFront').onclick = () => setSide('front'); $('tBack').onclick = () => { setPlay(false); setSide('back'); }; $('tPlay').onclick = () => setPlay(!$('stage').classList.contains('playing'));
+  await useStock(first.id); if (want && first.id === want) { const r = document.querySelector('input[name=pic][value="' + first.id + '"]'); if (r) r.checked = true; setTimeout(() => $('make').scrollIntoView(), 300); }
+
+  /* print files */
+  async function download(side, name) { const cv = await MP.print(side, Object.assign(card(), { hints: false })); const b = await new Promise(ok => cv.toBlob(ok, 'image/png'));
+    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000); }
+  const slug = () => ((card().to || 'magic') + '-postcard').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  $('dlBtn').onclick = async () => { say('Making your print files…'); await download('front', slug() + '-front.png'); await download('back', slug() + '-back.png');
+    say('Downloaded the front and back: 6 × 4 in with 1/8 in bleed, at 300 dpi.' + (S.qr ? '' : ' The QR code becomes your own when you order.'), 'ok'); };
+
+  /* ordering: save to the account, publish for the QR code, keep the address private, then pay */
+  const A = window.AAAccount;
+  const PUB = code => A.PUB_URL ? A.PUB_URL(code) : new URL('../p/?c=' + code, location.href).href;
+  function missing() {
+    if (send() === 'self') return null;   // printing it themselves: everything can stay blank
+    const a = address(); if (!a.name) return ['aName', 'Who should it be mailed to? Add their name in step 5.'];
+    if (!a.line1) return ['aLine1', 'Add their street address in step 5.']; if (!a.city) return ['aCity', 'Add their city in step 5.'];
+    if (!a.state) return ['aState', 'Add their state in step 5.']; if (!/^\d{5}(-\d{4})?$/.test(a.zip)) return ['aZip', 'Add their 5-digit ZIP code in step 5.'];
+    return null; }
+  // waiting safely on this device while someone makes an account
+  const idb = () => new Promise((ok, no) => { const r = indexedDB.open('art-alive-postcard', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); });
+  async function stash(v) { const d = await idb(); return new Promise((ok, no) => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, 'draft'); t.oncomplete = ok; t.onerror = () => no(t.error); }); }
+  async function unstash() { const d = await idb(); return new Promise(ok => { const t = d.transaction('kv', 'readwrite'), st = t.objectStore('kv'), g = st.get('draft'); g.onsuccess = () => { const v = g.result; if (v) st.delete('draft'); t.oncomplete = () => ok(v || null); }; g.onerror = () => ok(null); }); }
+  const FIELDS = ['place', 'greetText', 'msg', 'from', 'aName', 'aLine1', 'aLine2', 'aCity', 'aState', 'aZip'];
+  function snapshot() { const o = { at: Date.now(), stock: S.stock, photoData: S.stock ? null : S.photoData, iconData: S.icon === aaIcon ? null : S.iconData, video: S.video, video2: S.video2, send: send(), toFront: $('toFront').checked, notify: $('notify').checked, allowReply: $('allowReply').checked, astyle: astyle(), accent: accent(), f: {} };
+    FIELDS.forEach(id => o.f[id] = $(id).value); return o; }
+  async function restore(o) {
+    FIELDS.forEach(id => { if (o.f[id] != null) $(id).value = o.f[id]; }); if (o.f.place) $('place').dataset.typed = '1'; if (o.f.greetText != null) $('greetText').dataset.typed = '1';
+    const r = document.querySelector('input[name=accent][value="' + o.accent + '"]'); if (r) r.checked = true;
+    const ra = document.querySelector('input[name=astyle][value="' + o.astyle + '"]'); if (ra) ra.checked = true;
+    if (o.photoData) { S.ownPhotoData = S.photoData = o.photoData; S.ownPhoto = S.photo = await loadImg(o.photoData); S.stock = null; $('picOwnR').checked = true; $('picOwnIm').innerHTML = '<img src="' + o.photoData + '" alt="">'; }
+    else if (o.stock) { const t = document.querySelector('input[name=pic][value="' + o.stock + '"]'); if (t) t.checked = true; await useStock(o.stock); }
+    if (o.iconData) { S.iconData = o.iconData; S.iconOwn = S.icon = await loadImg(o.iconData); $('iconOwnR').checked = true; $('iconOwnIm').innerHTML = '<img src="' + o.iconData + '" alt="">'; }
+    if (o.video) useVideo('', o.video, true); if (o.video2) useVideo('2', o.video2, true);
+    const rs = document.querySelector('input[name=send][value="' + (o.send || 'mail') + '"]'); if (rs) rs.checked = true; $('toFront').checked = o.toFront !== false; $('notify').checked = o.notify !== false; $('allowReply').checked = o.allowReply !== false; setSend();
+    $('msgCount').textContent = (300 - $('msg').value.length) + ' characters left'; setVideo(); redraw(); }
+
+  $('orderBtn').onclick = async () => {
+    const m = missing(); if (m) { say(m[1], 'bad'); const el = $(m[0]); el.focus(); el.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+    if (!A || !A.configured) { say('Ordering isn’t switched on yet. You can still download your print files.', 'bad'); return; }
+    const btn = $('orderBtn'); btn.disabled = true;
+    try {
+      let u = null; try { u = await A.user(); } catch (e) {}
+      if (!u) { say('First, make your free account (or log back in). Your postcard waits right here…');
+        try { await stash(snapshot()); } catch (e) {}
+        setTimeout(() => { location.href = '../login.html?new=1&next=' + encodeURIComponent(location.pathname + '?resume=1#make'); }, 800); return; }
+      say('Saving your postcard… (your video can take a minute)');
+      const c = card(), cl0 = await A.load();
+      // the video files go straight to storage as they are (no copying into text first, which uses lots of memory on phones)
+      const pid = crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, ch => { const n = Math.random() * 16 | 0; return (ch === 'x' ? n : (n & 3 | 8)).toString(16); });
+      const putVideo = async (f, name) => { if (!f) return null; const type = f.type || 'video/mp4', ext = /webm/.test(type) ? 'webm' : /quicktime/.test(type) ? 'mov' : 'mp4', path = u.id + '/' + pid + '/' + name + '.' + ext;
+        const { error } = await cl0.storage.from('media').upload(path, f, { upsert: true, contentType: type, cacheControl: '3600' }); if (error) throw error; return 'aa-media:' + path; };
+      const video = await putVideo(S.video, 'video'), video2 = await putVideo(S.video2, 'video2');
+      const data = { v: 1, place: c.place, greet: c.greet, greetText: c.greetText, to: c.to, message: c.message, from: c.from, accent: c.accent,
+        photo: S.photoData || squareData(S.photo, 1200), picVideo: stockVideo(), anim: mode() === 'anim' ? Object.assign(liveOpts(), stockT() ? { template: S.stock } : {}) : null,   // how the picture moves
+        video, video2,   // their video messages: under the front, under the back
+        sound: (stockT() || {}).sound || null, notify: $('notify').checked, replies: $('allowReply').checked, send: send(), icon: S.icon === aaIcon ? 'aa' : S.iconData };
+      const thumb = document.createElement('canvas'); await MP.draw(thumb, 'front', c, { scale: 1 });
+      const id = await A.saveProject({ id: pid, kind: 'postcard', title: ('Postcard to ' + (c.to || 'a friend')).slice(0, 120), data, thumbSrc: thumb.toDataURL('image/jpeg', .85) });
+      say('Making its QR code…');
+      const code = await A.publishProject(id); S.qr = PUB(code);
+      try { localStorage.setItem('aa-pc-mine-' + code, '1'); } catch (e) {}   // opening your own card here never counts as "they opened it"
+      if (send() === 'self') { redraw(); say('Making your print files…'); await download('front', slug() + '-front.png'); await download('back', slug() + '-back.png'); done(code, 'self'); return; }
+      say('Adding the address…');
+      const cl = await A.load(), a = address();
+      const { data: row, error } = await cl.from('postcard_orders').insert({ project_id: id, code, to_name: a.name, line1: a.line1, line2: a.line2, city: a.city, state: a.state, zip: a.zip, country: 'US', copies: 1 }).select('id').single();
+      if (error) throw error;
+      redraw();
+      const link = (C.stripeLinks || {}).postcard;
+      if (link) { say('Taking you to payment…', 'ok'); const url = new URL(link); url.searchParams.set('client_reference_id', row.id); if (u.email) url.searchParams.set('prefilled_email', u.email); setTimeout(() => { location.href = url.toString(); }, 600); return; }
+      done(code, false);
+    } catch (e) {
+      const t = (e && (e.message || e.details)) || '';
+      if (/kind_check|postcard_orders|does not exist|relation/i.test(t)) say('Magic Postcards are almost ready to order. Please try again soon, or download your print files for now.', 'bad');
+      else if (e && e.code === 'limit') say(e.message, 'bad');
+      else say('Something went wrong: ' + (t || 'check your connection and try again.'), 'bad');
+      console.error(e);
+    } finally { btn.disabled = false; }
+  };
+  function done(code, paid) {
+    const box = $('done'), url = S.qr; box.hidden = false;
+    const self = paid === 'self';
+    box.innerHTML = '<h3>' + (self ? 'Your print files are ready' : paid ? 'Paid. Thank you!' : 'Your postcard is saved') + '</h3><p>' + (self ? 'The front and back downloaded: 6 × 4 in with 1/8 in bleed, at 300 dpi. Print them back to back on thick card (or take them to any print shop), trim to 6 × 4 in, write on it and send it. Its QR code is live.' : paid ? 'We’ll print it and mail it in the next few days.' : 'We’ve got your order and we’ll email you when it’s printed and mailed.') + '</p>' +
+      '<p>Its magic link: <a href="' + url + '" target="_blank" rel="noopener">' + url.replace(/^https?:\/\//, '') + '</a>. Try it yourself: open the link, then point your phone at the picture on your screen.</p>' +
+      ($('notify').checked || $('allowReply').checked ? '<p>' + ($('notify').checked ? 'When they open it, we\u2019ll email you. ' : '') + ($('allowReply').checked ? 'If they send a video or voice reply, it shows up in <a href="replies.html">Your replies</a>.' : '') + '</p>' : '') + '<p>' + (self ? 'Need them again?' : 'Want to print it at home too?') + ' <button type="button" class="btn small ghost" id="dl2">Download print files</button></p><p><a href="../projects.html">See it in My projects</a></p>';
+    $('dl2').onclick = () => $('dlBtn').click(); say(''); box.focus(); }
+
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('paid')) { const b = $('done'); b.hidden = false; b.innerHTML = '<h3>Paid. Thank you!</h3><p>Your Magic Postcard is on its way to the printer. We’ll email you when it’s mailed.</p><p><a href="../projects.html">See it in My projects</a></p>'; }
+  if (qs.has('resume')) { const o = await unstash().catch(() => null); if (o && Date.now() - o.at < 864e5) { await restore(o); say('Welcome! Your postcard is back. Press Order my postcard to finish.', 'ok'); $('make').scrollIntoView(); } }
+  if (C.postcardPrice) { $('priceV').textContent = C.postcardPrice; $('price').hidden = send() === 'self'; }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Holiday Snow Globe: Walk Through Fear · Art Alive</title>
+<meta name="description" content="Shake your phone to make it snow. A holiday greeting from Art Alive.">
+<meta property="og:title" content="Holiday Snow Globe">
+<meta property="og:description" content="Shake your phone to make it snow.">
+<meta property="og:image" content="https://artalivestudio.com/play/walk-through-fear-globe-600.jpg">
+<meta name="theme-color" content="#0b1530">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{--night:#0b1530;--night2:#1c2d52;--snow:#f6f8ff;--gold:#e2b45a;--soft:#c3cde3;--red:#8a2232;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--night);color:var(--snow);font:17px/1.45 "Atkinson Hyperlegible",Verdana,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+#sky,#globe{position:fixed;inset:0;width:100%;height:100%;display:block}
+#globe{touch-action:none}
+.top{position:fixed;left:0;right:0;top:0;padding:calc(14px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));text-align:center;pointer-events:none}
+.top h1{margin:0;white-space:nowrap;font:900 clamp(20px,7.6vw,46px)/1 Archivo,"Arial Black",Arial,sans-serif;font-stretch:118%;letter-spacing:.02em;text-transform:uppercase;text-wrap:balance;text-shadow:0 2px 18px rgba(0,0,0,.45)}
+.top p{margin:8px auto 0;max-width:34ch;color:var(--soft);font-size:16px;min-height:1.45em;transition:opacity .4s}
+.bar{position:fixed;left:0;right:0;bottom:calc(78px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:10px;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.bar button,.go button{min-height:52px;padding:0 24px;border-radius:999px;border:2px solid rgba(255,255,255,.35);background:rgba(8,14,32,.55);color:#fff;font:800 15px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.07em;text-transform:uppercase;cursor:pointer}
+.bar button{padding:0 18px;flex:0 1 auto}
+@media (max-width:420px){.bar{gap:8px}.bar button{flex:1 1 0;padding:0 8px;font-size:13.5px;letter-spacing:.05em}}
+.bar .pri{background:var(--gold);border-color:var(--gold);color:#1a1206}
+button:focus-visible{outline:3px solid #7cc4ff;outline-offset:3px}
+.go{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;background:rgba(6,10,24,.55);text-align:center}
+.go button{min-height:68px;min-width:230px;font-size:21px;background:var(--gold);border-color:var(--gold);color:#1a1206;box-shadow:0 12px 34px -10px #000}
+.go p{margin:0;max-width:30ch;color:#fff;text-shadow:0 1px 4px #000}
+.own{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:2px;width:max-content;max-width:calc(100% - 32px);padding:8px 18px;border-radius:16px;border:1.5px solid rgba(226,180,90,.7);background:rgba(8,14,32,.55);color:#f6f8ff;text-decoration:none;text-align:center}
+.own b{font:800 14px/1.2 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#e2b45a}
+.own span{font-size:12.5px;color:#c3cde3}
+.own:focus-visible{outline:3px solid #7cc4ff;outline-offset:3px}
+.sharetop{position:fixed;z-index:6;top:calc(10px + env(safe-area-inset-top,0px));right:max(10px,env(safe-area-inset-right,0px));display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;border:2px solid rgba(255,255,255,.4);background:rgba(8,14,32,.6);color:#fff;font:800 13px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.sharetop svg{width:18px;height:18px}
+@media (max-width:700px){.sharetop{top:calc(108px + env(safe-area-inset-top,0px));right:auto;left:50%;transform:translateX(-50%)}}
+@media (max-width:700px) and (max-height:740px){.sharetop:not(.vistop){display:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.top p.big{margin-top:12px;color:var(--gold);font:900 clamp(22px,7vw,34px)/1.1 Archivo,"Arial Black",Arial,sans-serif;font-stretch:115%;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 2px 14px rgba(0,0,0,.5);animation:pulse 1.3s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.14);opacity:.8}}
+@media (prefers-reduced-motion:reduce){.top p.big{animation:fade 1.6s ease-in-out infinite}@keyframes fade{50%{opacity:.6}}}
+@media (max-height:520px){.top p{display:none}}
+
+/* the greeting, its pulsing line and the button under it: each in its own space, a small gap between, never touching the globe */
+.top p,.top p.big{margin-top:8px;min-height:calc(clamp(22px,7vw,34px) * 1.15);display:flex;align-items:center;justify-content:center}
+@media (max-width:700px){.sharetop,.vistop{top:var(--btnTop,108px) !important}}
+.vistop{top:calc(10px + env(safe-area-inset-top,0px));white-space:nowrap}
+.vistop[hidden]{display:none}
+.vistop.show{animation:eyesIn .6s ease-out}
+@keyframes eyesIn{from{opacity:0;transform:translate(var(--tx,0),-8px)}to{opacity:1;transform:translate(var(--tx,0),0)}}
+.vistop[aria-pressed=true]{background:#e2b45a;border-color:#e2b45a;color:#1a1206}
+@media (max-width:700px){.vistop{--tx:-50%;top:calc(104px + env(safe-area-inset-top,0px));right:auto;left:50%;transform:translateX(-50%)}}
+@media (max-width:700px) and (max-height:700px){.vistop{top:calc(84px + env(safe-area-inset-top,0px))}}
+.vis{position:fixed;left:0;right:0;bottom:0;z-index:7;padding:16px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(8,12,28,0),rgba(8,12,28,.92) 22px);display:flex;justify-content:center}
+.vis[hidden]{display:none}
+.vis .in{width:min(560px,100%);display:flex;flex-direction:column;gap:12px;background:#141b2e;border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:16px;box-shadow:0 -10px 40px -16px #000}
+.vis h2{margin:0;font:900 18px/1.1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase}
+.vis .conds{display:flex;flex-wrap:wrap;gap:8px}
+.vis .conds button{min-height:44px;padding:0 14px;border-radius:999px;border:2px solid rgba(255,255,255,.3);background:transparent;color:#fff;font:800 13px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.04em;cursor:pointer}
+.vis .conds button.shk{background:rgba(226,180,90,.14);border-color:#e2b45a;color:#f1cf86}
+.vis .conds button[aria-pressed=true]{background:#e2b45a;border-color:#e2b45a;color:#1a1206}
+.vis label{display:flex;align-items:center;gap:12px;font-weight:700}
+.vis input[type=range]{flex:1;min-width:0;accent-color:#e2b45a;height:28px}
+.vis p{margin:0;color:#c3cde3;font-size:15px;min-height:2.9em}
+.vis .row{display:flex;gap:10px}
+.vis .row button{flex:1;min-height:48px;border-radius:999px;border:2px solid rgba(255,255,255,.35);background:transparent;color:#fff;font:800 14px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.vis .row .pri{background:#e2b45a;border-color:#e2b45a;color:#1a1206}
+.vis button:focus-visible,.vis input:focus-visible{outline:3px solid #7cc4ff;outline-offset:2px}
+
+/* "Make your own" and "More globes" side by side at the bottom */
+.lowrow{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:8px;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.lowrow .own{position:static;transform:none;flex:0 1 auto;width:auto;max-width:none;min-width:0}
+@media (max-width:420px){.lowrow .own{flex:1 1 0;padding:8px 10px}.lowrow .own b{font-size:12.5px;letter-spacing:.04em}.lowrow .own span{font-size:11.5px}}
+.top p.big{white-space:nowrap;font-size:clamp(17px,5.3vw,34px)}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<canvas id="globe" role="img" aria-label="A snow globe. Inside the glass is the painting Walk Through Fear: a lone figure with a white cane walks toward a blazing orange light, through swirling blue, red and gold paint."></canvas>
+<header class="top"><h1 id="msg">Happy Holidays</h1><p id="hint" class="big">Shake your phone!</p></header>
+<div class="bar"><button type="button" class="pri" id="shake">Shake</button><button type="button" id="share">Share</button><button type="button" id="snd" aria-pressed="true">Sound on</button></div>
+<button type="button" class="sharetop vistop" id="eyes" hidden aria-pressed="false" aria-label="Turn on the blindness simulator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span id="eyesT">Turn on blindness simulator</span></button>
+<div class="vis" id="vis" hidden role="dialog" aria-labelledby="visH"><div class="in">
+  <h2 id="visH">Blindness simulator</h2>
+  <div class="conds" id="conds" role="group" aria-label="Eye conditions"></div>
+  <label for="sev">How strong <input id="sev" type="range" min="10" max="100" value="50"><span id="sevP">50%</span></label>
+  <p id="visDesc" aria-live="polite">Pick an eye condition to see the snow globe the way someone living with it might.</p>
+  <div class="row"><button type="button" id="visOff">Turn off</button><button type="button" class="pri" id="visDone">Done</button></div>
+</div></div>
+<div class="lowrow"><a class="own" href="../snowglobe/"><b>Make your own</b><span>Your photo or video, free</span></a><a class="own" href="snowglobes.html"><b>More globes</b><span>See all eight</span></a></div>
+<div class="go" id="go"><button type="button" id="start">Tap to start</button><p>Sound on. Then shake or tilt your phone, or swipe across the globe.</p></div>
+<p class="sr" id="live" aria-live="polite"></p>
+<script src="../snowglobe/sharelink.js"></script><script src="../snowglobe/lofi.js"></script>
+<script>
+(function () {
+  'use strict';
+  /* ── settings: ?msg=Merry%20Christmas&from=The%20Fox%20Family&img=my.jpg ── */
+  const Q = new URLSearchParams(location.search);
+  const MSG = (Q.get('msg') || 'Happy Holidays').slice(0, 40), FROM = (Q.get('from') || '').slice(0, 40);
+  // the sender's logo, engraved in gold on the base (?logo=none to use the from= text instead)
+  const LOGO_SRC = Q.get('logo') === 'none' || Q.get('from') ? '' : 'ora-logo-white.png', LOGO_NAME = 'Ora, The Ophthalmology Research Company';
+  const WHO = FROM || (LOGO_SRC ? LOGO_NAME : ''), SAY_MSG = MSG.replace(/[:\s]+$/, '') + (WHO ? (/from$/i.test(MSG.replace(/[:\s]+$/, '')) ? ' ' : ', from ') + WHO : '');
+  const logo = new Image(); let gold = null;
+  if (LOGO_SRC) { logo.onload = () => { gold = document.createElement('canvas'); gold.width = logo.naturalWidth; gold.height = logo.naturalHeight; const g = gold.getContext('2d');
+      g.drawImage(logo, 0, 0); g.globalCompositeOperation = 'source-in'; const gr = g.createLinearGradient(0, 0, gold.width * .3, gold.height);
+      gr.addColorStop(0, '#fbe3a6'); gr.addColorStop(.45, '#e2b45a'); gr.addColorStop(.7, '#f6d68c'); gr.addColorStop(1, '#b5852f'); g.fillStyle = gr; g.fillRect(0, 0, gold.width, gold.height); };
+    logo.src = LOGO_SRC; }
+  const shine = document.createElement('canvas');
+  const $ = id => document.getElementById(id);
+  $('msg').textContent = MSG; document.title = MSG + ' · Walk Through Fear · Snow Globe · Art Alive';
+  const say = t => { $('live').textContent = ''; setTimeout(() => { $('live').textContent = t; }, 60); };
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const img = new Image(); img.src = Q.get('img') && /^[\w.\/-]+\.(jpe?g|png|webp)$/i.test(Q.get('img')) ? Q.get('img') : 'walk-through-fear-globe.jpg';
+  // after the first shake, the photo comes alive: the friends wave (their video starts on the very frame of the photo)
+  const VID = Q.get('img') ? '' : 'walk-through-fear-globe.mp4', wave = document.createElement('video'); let waveOn = false, waveT = 0, LOFI = null;
+  if (VID) { Object.assign(wave, { muted: true, loop: false, playsInline: true, preload: 'auto', src: VID }); wave.setAttribute('playsinline', ''); }
+  function startWave() {   // plays all the way through; a shake while it plays doesn't restart it
+    if (!VID || (waveOn && !wave.paused && !wave.ended)) return; waveOn = true; waveT = performance.now() / 1000;
+    try { wave.currentTime = 0; } catch (e) {} wave.muted = !soundOn; wave.volume = .8;
+    wave.play().catch(() => { wave.muted = true; wave.play().catch(() => { waveOn = false; }); });
+    // a lo-fi tune plays while the painting is alive
+    try { if (AC && window.AALofi) { LOFI = LOFI || AALofi.create(AC, OUT); LOFI.mute(!soundOn); LOFI.start(); } } catch (e) {}
+    say('The painting comes alive. The figure walks on through the light.');
+  }
+
+  /* ── canvases ── */
+  const sky = $('sky'), sx = sky.getContext('2d'), cv = $('globe'), x = cv.getContext('2d');
+  let W = 0, H = 0, DPR = 1, cx = 0, cy = 0, R = 100;
+  // how much room the top needs: the greeting, then (on phones) the button under it, each with a small gap
+  function topRoom() {
+    const hd = document.querySelector('.top'), hb = hd ? hd.getBoundingClientRect().bottom : 100;
+    document.documentElement.style.setProperty('--btnTop', Math.round(hb + 10) + 'px');
+    if (innerWidth > 700) return hb + 12;
+    let low = hb;
+    document.querySelectorAll('.sharetop').forEach(b => { if (b.hidden || getComputedStyle(b).display !== 'none') low = Math.max(low, hb + 10 + (b.offsetHeight || 44)); });
+    return low + 10;
+  }
+  function size() {
+    DPR = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
+    for (const c of [sky, cv]) { c.width = Math.round(W * DPR); c.height = Math.round(H * DPR); }
+    const top = topRoom(), bottom = 144, room = H - top - bottom;
+    R = Math.max(60, Math.min(W * (W < 600 ? .42 : .42), room / 2.7)); cx = W / 2; cy = top + (room - R * 2.7) / 2 + R;
+  }
+  addEventListener('resize', size); size();
+
+  /* a soft round flake, drawn once and reused */
+  const flake = document.createElement('canvas'); flake.width = flake.height = 32;
+  { const g = flake.getContext('2d'), r = g.createRadialGradient(16, 16, 0, 16, 16, 16); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(.45, 'rgba(255,255,255,.9)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 32, 32); }
+
+  /* ── the snow inside the globe (positions in globe units: the glass is radius 1) ── */
+  const N = calm ? 450 : 1000, NB = 56, WALL = .955, BW = 2 / NB, REPOSE = BW * .38;
+  const pile = new Float32Array(NB), F = [];
+  for (let i = 0; i < N; i++) { const s = .006 + Math.pow(Math.random(), 2.2) * .02;
+    F.push({ u: 0, v: 0, vu: 0, vv: 0, s, z: Math.random(), ph: Math.random() * 6.283, down: false, b: 0, add: s * .5, wu: 0, wv: 0, fm: .75 + Math.random() * .5 }); }
+  let shineAt = 0, E = 0, stormT = 0, wasStormy = true, shookOnce = false, waveA = 0, gx = 0, gy = 1, tgx = 0, tgy = 1;
+  const floorAt = u => Math.sqrt(Math.max(0, WALL * WALL - u * u));
+  const binOf = u => Math.max(0, Math.min(NB - 1, Math.floor((u + 1) / 2 * NB))), uOf = b => (b + .5) * BW - 1;
+  const surf = b => floorAt(uOf(b)) - pile[b];   // how far down the snow's surface is in that column
+  // a flake comes to rest: it rolls toward the middle until the slope is gentle, like real snow
+  function land(f) {
+    let b = binOf(f.u);
+    for (let k = 0; k < NB; k++) { const y = surf(b), l = b > 0 ? surf(b - 1) : -9, r = b < NB - 1 ? surf(b + 1) : -9, nb = l > r ? b - 1 : b + 1;
+      if (Math.max(l, r) - y > REPOSE) b = nb; else break; }
+    pile[b] = Math.min(.5, pile[b] + f.add); f.b = b; f.down = true;
+    f.u = uOf(b) + (Math.random() - .5) * BW; f.v = surf(b) + f.add * (.2 + Math.random() * .8) - f.s * .2; f.vu = f.vv = 0;
+  }
+  // start with all the snow resting at the bottom, the way a globe sits on a shelf
+  // start with the snow in the air, gently falling
+  for (const f of F) { const a = Math.random() * 6.283, r = Math.sqrt(Math.random()) * .88; f.u = Math.cos(a) * r; f.v = Math.sin(a) * r; f.vv = .05; }
+  function stir(amount, pu, pv) {
+    E = Math.min(3, E + amount); pu = pu || 0; pv = pv || 0;
+    // lift some of the pile: a little for a gentle shake, all of it for a big one
+    const lift = Math.min(1, amount * 1.6 + (E > 1.4 ? .35 : 0));
+    for (const f of F) {
+      if (f.down) { if (Math.random() < lift) { f.down = false; pile[f.b] = Math.max(0, pile[f.b] - f.add); f.vu = (Math.random() - .5) * 1.8 * Math.min(2, E) + pu; f.vv = -(.15 + Math.random() * 1.4) * Math.min(2, E) + pv; } }
+      else { f.vu += pu * (.5 + Math.random() * .5); f.vv += pv * (.5 + Math.random() * .5); }
+    }
+    if (E > .9) startWave();
+    if (E > .9 && !shookOnce) { shookOnce = true;   // the simulator appears only after they've seen the globe with their own eyes
+      setTimeout(() => { const b = $('eyes'); b.hidden = false; b.classList.add('show'); say('New: turn on the blindness simulator, at the top, to see the globe the way someone with sight loss might.'); }, 2500); }
+    if (E > .9 && (!wasStormy || $('hint').classList.contains('big') || $('hint').dataset.s !== '1')) { wasStormy = true; stormT = 0; $('hint').classList.remove('big'); $('hint').dataset.s = '1'; $('hint').textContent = 'Let it settle…'; try { navigator.vibrate && navigator.vibrate(25); } catch (e) {} }
+    else if (E > .9) stormT = 0;
+  }
+
+  function step(dt, t) {
+    E *= Math.exp(-dt * (calm ? 1.3 : .75)); if (wasStormy) stormT += dt;
+    gx += (tgx - gx) * Math.min(1, dt * 4); gy += (tgy - gy) * Math.min(1, dt * 4);
+    const k = 1 - Math.exp(-dt * 2.4), A = .26 * E;
+    for (const f of F) {
+      if (f.down) continue;
+      const term = (.1 + f.s * 3) * f.fm, sway = Math.sin(t * 1.3 + f.ph) * .045;
+      // each flake flutters on its own, so neighbours drift apart instead of travelling together
+      const jig = Math.sqrt(dt) * (.45 + 2.2 * E);
+      f.wu += -2.2 * f.wu * dt + (Math.random() - .5) * jig; f.wv += -2.2 * f.wv * dt + (Math.random() - .5) * jig;
+      // the water's swirls (they stir without squeezing flakes together), and underneath, a slow sink
+      let fu = gx * term + gy * sway + f.wu, fv = gy * term - gx * sway + f.wv;
+      if (E > .02) { const u = f.u, v = f.v, a1 = 2.2 * u + 1.3 * t, b1 = 2.6 * v - 1.1 * t, c2 = Math.cos(3.4 * u + 2.9 * v + 1.7 * t), s3 = Math.sin(4.6 * u - 3.8 * v - 2.1 * t);
+        const pu = 2.2 * Math.cos(a1) * Math.sin(b1) + 1.7 * c2 - 1.61 * s3, pv = 2.6 * Math.sin(a1) * Math.cos(b1) + 1.45 * c2 + 1.33 * s3;
+        fu += A * pv - .1 * E * v; fv += -A * pu + .1 * E * u; }
+      f.vu += (fu - f.vu) * k; f.vv += (fv - f.vv) * k;
+      f.u += f.vu * dt; f.v += f.vv * dt;
+      const r = Math.hypot(f.u, f.v), lim = WALL - f.s;
+      if (r > lim) { const nu = f.u / r, nv = f.v / r, dot = f.vu * nu + f.vv * nv; f.u = nu * lim; f.v = nv * lim; if (dot > 0) { f.vu -= dot * nu * 1.2; f.vv -= dot * nv * 1.2; } }
+      // reaching the snow at the bottom
+      if (E < .5 && gy > .45 && f.vu * gx + f.vv * gy > 0 && f.v >= surf(binOf(f.u)) - f.s * .5) land(f);
+    }
+    if (wasStormy && E < .12 && (stormT > 14 || F.reduce((n, f) => n + f.down, 0) > N * .75)) { wasStormy = false; $('hint').dataset.s = ''; $('hint').textContent = shookOnce ? 'Shake again!' : 'Shake your phone!'; $('hint').classList.add('big'); chimes(); shineAt = performance.now() / 1000; say('The snow has settled. ' + SAY_MSG + '.'); }
+  }
+
+  /* ── drawing ── */
+  const SKY = []; for (let i = 0; i < (calm ? 30 : 70); i++) SKY.push({ x: Math.random(), y: Math.random(), s: .6 + Math.random() * 1.8, sp: .012 + Math.random() * .03, ph: Math.random() * 6.3 });
+  function drawSky(t, dt) {
+    sx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    const g = sx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0b1530'); g.addColorStop(1, '#22365e'); sx.fillStyle = g; sx.fillRect(0, 0, W, H);
+    const glow = sx.createRadialGradient(cx, cy, R * .4, cx, cy, R * 2.2); glow.addColorStop(0, 'rgba(255,214,140,.16)'); glow.addColorStop(1, 'rgba(255,214,140,0)'); sx.fillStyle = glow; sx.fillRect(0, 0, W, H);
+    sx.globalAlpha = .55;
+    for (const p of SKY) { p.y += p.sp * dt; if (p.y > 1.02) { p.y = -.02; p.x = Math.random(); } const px = (p.x + Math.sin(t * .4 + p.ph) * .01) * W; sx.drawImage(flake, px - p.s * 2, p.y * H - p.s * 2, p.s * 4, p.s * 4); }
+    sx.globalAlpha = 1;
+  }
+  function plate(t) {
+    const y0 = cy + R * .86, top = R * .8, bot = R * 1.04, hgt = R * (gold ? .7 : .5);
+    // body
+    x.beginPath(); x.moveTo(cx - top, y0); x.lineTo(cx + top, y0); x.lineTo(cx + bot, y0 + hgt); x.ellipse(cx, y0 + hgt, bot, R * .1, 0, 0, Math.PI); x.closePath();
+    let g = x.createLinearGradient(cx - bot, 0, cx + bot, 0); g.addColorStop(0, '#3f0d16'); g.addColorStop(.35, '#9a2a3a'); g.addColorStop(.6, '#7c1f2d'); g.addColorStop(1, '#330a12'); x.fillStyle = g; x.fill();
+    // gold bands
+    x.lineWidth = Math.max(1.5, R * .018); x.strokeStyle = '#e2b45a';
+    x.beginPath(); x.ellipse(cx, y0 + hgt * .9, top + (bot - top) * .9, R * .095, 0, 0, Math.PI); x.stroke();
+    if (gold) {   // the logo, gold on the base, with a glint of light passing over it now and then
+      const lh = R * .37, lw = lh * gold.width / gold.height, mw = (top + (bot - top) * .5) * 1.5, k = Math.min(1, mw / lw), w = lw * k, h = lh * k, lx = cx - w / 2, ly = y0 + R * .435 - h / 2;
+      x.save(); x.imageSmoothingQuality = 'high'; x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowBlur = R * .03; x.shadowOffsetY = R * .01; x.drawImage(gold, lx, ly, w, h); x.shadowColor = 'transparent'; x.drawImage(gold, lx + .4, ly, w, h); x.restore();
+      const p = ((t - shineAt) % 7) / 1.4;
+      if (p >= 0 && p < 1) { if (shine.width !== gold.width) { shine.width = gold.width; shine.height = gold.height; }
+        const g2 = shine.getContext('2d'); g2.globalCompositeOperation = 'source-over'; g2.clearRect(0, 0, shine.width, shine.height); g2.drawImage(logo, 0, 0); g2.globalCompositeOperation = 'source-in';
+        const bx = (p * 1.6 - .3) * shine.width, gr = g2.createLinearGradient(bx - shine.width * .12, 0, bx + shine.width * .12, shine.height * .25);
+        gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(.5, 'rgba(255,250,230,.85)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g2.fillStyle = gr; g2.fillRect(0, 0, shine.width, shine.height);
+        x.drawImage(shine, lx, ly, w, h); }
+      return y0;
+    }
+    // the greeting on the plate
+    const pw = R * 1.05, ph = R * .2, py = y0 + hgt * .52;
+    x.fillStyle = 'rgba(20,6,10,.35)'; rr(cx - pw / 2, py - ph / 2, pw, ph, ph * .25); x.fill();
+    x.strokeStyle = 'rgba(226,180,90,.85)'; x.lineWidth = Math.max(1, R * .008); x.stroke();
+    let fs = ph * .5; x.font = `900 ${fs}px Archivo, "Arial Black", Arial, sans-serif`;
+    const label = (FROM || MSG).toUpperCase(); const w = x.measureText(label).width; if (w > pw * .88) { fs *= pw * .88 / w; x.font = `900 ${fs}px Archivo, "Arial Black", Arial, sans-serif`; }
+    x.fillStyle = '#f1cf86'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(label, cx, py + fs * .05);
+    return y0;
+  }
+  function rr(a, b, w, h, r) { x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
+  /* ── through other eyes: Ben's Blindness Spectrum Simulator maths, applied to what's inside the glass ── */
+  const CONDS = [
+    { id: 'amd', chip: 'Macular', label: 'Macular Degeneration', desc: 'Macular Degeneration: central vision blurs and darkens. Detail vanishes right where you look, while the edges linger.' },
+    { id: 'rp', chip: 'Tunnel', label: 'Retinitis Pigmentosa', desc: 'Retinitis Pigmentosa: a shrinking tunnel of sight. The edges darken and close in, so the eye keeps moving to piece the picture together.' },
+    { id: 'cataracts', chip: 'Cataracts', label: 'Cataracts', desc: 'Cataracts: the eye’s lens clouds over, giving a milky, glaring haze with faded colour and contrast.' },
+    { id: 'floaters', chip: 'Floaters', label: 'Diabetic Retinopathy', desc: 'Diabetic Retinopathy: dark floaters drift across the view and trail behind the eye as it looks around.' },
+    { id: 'glaucoma', chip: 'Glaucoma', label: 'Glaucoma', desc: 'Glaucoma: side vision erodes as a soft, foggy frame closes in, so the eye searches around to see it all.' }];
+  const MODES = { rp: 4, cataracts: 1, amd: 2, floaters: 3, glaucoma: 5 };
+  const SPOTS = [[12, 18, 5], [24, 38, 7], [33, 14, 4], [44, 30, 8], [18, 60, 6], [30, 74, 5], [9, 42, 4.5], [40, 52, 6.5], [52, 20, 5], [58, 44, 8], [66, 24, 4.5], [73, 52, 7], [49, 66, 6], [62, 72, 5], [78, 34, 5.5], [86, 58, 6.5], [88, 22, 4], [70, 12, 4], [22, 86, 5], [54, 86, 6], [82, 80, 5.5], [36, 90, 4.5], [16, 30, 4], [92, 44, 5]];
+  const VS = { cond: '', sev: .5, shown: 0, t: 0 };
+  const FRAG = `precision mediump float;
+varying vec2 vUv; uniform sampler2D map; uniform float sev, hpx, mode; uniform vec2 gaze; uniform vec3 spots[24]; uniform vec2 fshift;
+float farR(vec2 c) { float r = length(c); r = max(r, length(c - vec2(1.0, 0.0))); r = max(r, length(c - vec2(0.0, 1.0))); r = max(r, length(c - vec2(1.0, 1.0))); return r; }
+float pct(vec2 uv, vec2 c) { return length(uv - c) / farR(c) * 100.0; }
+float ramp4(float t, float t0, float a0, float t1, float a1, float t2, float a2, float t3, float a3) {
+  if (t <= t0) return a0; if (t <= t1) return mix(a0, a1, (t - t0) / max(t1 - t0, 1e-4)); if (t <= t2) return mix(a1, a2, (t - t1) / max(t2 - t1, 1e-4)); if (t <= t3) return mix(a2, a3, (t - t2) / max(t3 - t2, 1e-4)); return a3; }
+vec3 vid(vec2 uv) { return texture2D(map, clamp(uv, 0.0, 1.0)).rgb; }
+vec3 blurred(vec2 uv, float px) { if (px < 0.05) return vid(uv); float r = px / hpx; vec3 acc = vid(uv) * 0.16; float w = 0.16;
+  for (int i = 0; i < 8; i++) { float a = float(i) * 0.7853982 + 0.39, b = a + 0.3927;
+    acc += vid(uv + vec2(cos(a), sin(a)) * r * 0.8) * 0.13; acc += vid(uv + vec2(cos(b), sin(b)) * r * 1.9) * 0.075; w += 0.205; } return acc / w; }
+void main() {
+  vec2 uv = vec2(vUv.x, 1.0 - vUv.y); vec2 g = gaze / 100.0; float s = sev; vec3 col;
+  if (mode < 0.5) { col = vid(uv); }
+  else if (mode < 1.5) { col = blurred(uv, s * 5.0); col = (col - 0.5) * (1.0 - s * 0.35) + 0.5; col *= 1.0 + s * 0.18;
+    vec3 sep = vec3(dot(col, vec3(0.393, 0.769, 0.189)), dot(col, vec3(0.349, 0.686, 0.168)), dot(col, vec3(0.272, 0.534, 0.131)));
+    col = clamp(mix(col, sep, s * 0.35), 0.0, 1.0); col = mix(col, vec3(228.0, 221.0, 200.0) / 255.0, 0.1 + s * 0.4); }
+  else if (mode < 2.5) { col = blurred(uv, 1.4 + s * 3.4); float fog = min(1.0, 0.45 + s * 0.85), r1 = 13.0 + s * 15.0, r2 = 28.0 + s * 28.0, t = pct(uv, g);
+    col = mix(col, vec3(22.0, 19.0, 15.0) / 255.0, ramp4(t, 0.0, 0.98 * fog, r1, 0.9 * fog, r2, 0.5 * fog, r2 + 16.0, 0.0)); }
+  else if (mode < 3.5) { col = blurred(uv, s * 1.6); vec2 L = ((uv - 0.5 - fshift) / 1.15) / 1.24 + 0.5; float o = min(1.0, s * 0.88), grow = 1.0 + s * 1.43, keep = 1.0;
+    for (int i = 0; i < 24; i++) { vec2 c = spots[i].xy / 100.0; float r = spots[i].z * grow * 0.5; float t = pct(L, c);
+      float a = t < r * 0.45 ? mix(o, o * 0.78, t / (r * 0.45)) : (t < r ? mix(o * 0.78, 0.0, (t - r * 0.45) / (r * 0.55)) : 0.0); keep *= 1.0 - a; }
+    col = mix(vec3(6.0, 5.0, 3.0) / 255.0, col, keep); }
+  else if (mode < 4.5) { col = blurred(uv, s * 2.25); float amp = min(1.0, s * 1.5125), clr = max(3.0, (1.0 - amp) * 46.0 + 4.0), t = pct(uv, g); col *= 1.0 - s * 0.3;
+    col = mix(col, vec3(0.0), ramp4(t, clr, 0.0, clr + 6.0, 0.4 + s * 0.45, clr + 14.0, 0.7 + s * 0.28, clr + 21.0, 1.0));
+    float wa = t < clr * 0.55 ? mix(s * 0.42, s * 0.22, t / (clr * 0.55)) : (t < clr ? mix(s * 0.22, 0.0, (t - clr * 0.55) / (clr * 0.45)) : 0.0);
+    col = mix(col, vec3(247.0, 243.0, 233.0) / 255.0, wa); }
+  else { col = blurred(uv, s * s * 11.0); float amp = min(1.0, s * 0.52734375), clr = max(2.0, (1.0 - amp) * 40.0 + 3.0);
+    float t = length((uv - g) / 0.64) * 100.0; float a = ramp4(t, clr, 0.0, clr + 7.0, 0.5, clr + 24.0, 0.97, clr + 25.0, 0.97);
+    vec3 fc = mix(vec3(16.0, 14.0, 12.0) / 255.0, vec3(0.0), clamp((t - clr - 7.0) / 17.0, 0.0, 1.0)); col = mix(col, fc, a); }
+  gl_FragColor = vec4(col, 1.0); }`;
+  const inner = document.createElement('canvas'), ix = inner.getContext('2d'), glc = document.createElement('canvas');
+  let GL = null, glFailed = false, U = {};
+  function lensInit() {
+    if (GL || glFailed) return GL; const gl = glc.getContext('webgl', { premultipliedAlpha: false }); if (!gl) { glFailed = true; return null; }
+    const sh = (ty, src) => { const o = gl.createShader(ty); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
+    try { const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 p; varying vec2 vUv; void main() { vUv = p * 0.5 + 0.5; gl_Position = vec4(p, 0.0, 1.0); }'));
+      gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FRAG)); gl.linkProgram(pr); if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error('link'); gl.useProgram(pr);
+      const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+      const ap = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
+      const tx = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tx);
+      for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
+      for (const n of ['map', 'sev', 'hpx', 'mode', 'gaze', 'fshift']) U[n] = gl.getUniformLocation(pr, n);
+      gl.uniform1i(U.map, 0); gl.uniform3fv(gl.getUniformLocation(pr, 'spots[0]'), new Float32Array(SPOTS.flat())); GL = gl;
+    } catch (e) { console.warn('vision lens off:', e); glFailed = true; }
+    return GL;
+  }
+  // the places the eye visits: faces, the hats, the trees and lamp, the scarves; it glides to one, rests, then moves on
+  const SCAN = { rp: 1, glaucoma: 1, floaters: 1 }, LOOK = [[31, 47], [50, 41], [69, 46], [50, 24], [30, 25], [72, 26], [34, 70], [52, 68], [68, 72], [50, 52]];
+  const SC = { a: [50, 47], b: [50, 47], t: 1, dur: .6, hold: .8 }, LAG = [50, 47];
+  function scan(dt) {
+    if (SC.t < 1) SC.t = Math.min(1, SC.t + dt / SC.dur);
+    else if ((SC.hold -= dt) <= 0) { SC.a = SC.b; let n; do n = LOOK[Math.floor(Math.random() * LOOK.length)]; while (n === SC.a);
+      SC.b = n; SC.t = 0; SC.dur = .45 + Math.hypot(n[0] - SC.a[0], n[1] - SC.a[1]) / 80; SC.hold = .6 + Math.random() * 1.1; }
+    const e = (1 - Math.cos(Math.PI * SC.t)) / 2; return [SC.a[0] + (SC.b[0] - SC.a[0]) * e, SC.a[1] + (SC.b[1] - SC.a[1]) * e];
+  }
+  function lens(t, dt) {   // returns true when it redrew the inside of the glass
+    VS.t += dt; const target = VS.cond ? VS.sev : 0; VS.shown += (target - VS.shown) * Math.min(1, dt * (VS.cond ? 1.6 : 3));
+    if (VS.shown < .004 && !VS.cond) { VS.shown = 0; return false; }
+    const gl = lensInit(); if (!gl) return false;
+    const n = Math.max(64, Math.min(720, Math.round(2 * R * DPR)));
+    if (inner.width !== n) { inner.width = inner.height = n; glc.width = glc.height = n; gl.viewport(0, 0, n, n); }
+    ix.drawImage(cv, (cx - R) * DPR, (cy - R) * DPR, 2 * R * DPR, 2 * R * DPR, 0, 0, n, n);   // what's inside the glass, as just drawn
+    try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, inner); } catch (e) { return false; }
+    // where the eye looks: tilt the phone to look around; it wanders a little on its own
+    let gxp, gyp;
+    if (SCAN[VS.cond || VS.last]) { const q = scan(dt); gxp = q[0] + gx * 18; gyp = q[1]; }   // looking around to piece the picture together
+    else { gxp = 50 + gx * 34 + Math.sin(VS.t / 3.1) * 6; gyp = 47 + Math.cos(VS.t / 4.3) * 5; }
+    // floaters sit in the eye: they go where it looks, and trail behind when it moves
+    LAG[0] += (gxp - LAG[0]) * Math.min(1, dt * 2.2); LAG[1] += (gyp - LAG[1]) * Math.min(1, dt * 2.2);
+    gl.uniform1f(U.sev, VS.shown); gl.uniform1f(U.hpx, 2 * R * 1.4); gl.uniform1f(U.mode, MODES[VS.cond || VS.last] || 0);
+    gl.uniform2f(U.gaze, gxp, gyp); gl.uniform2f(U.fshift, (LAG[0] - 50) / 100 * .9 + Math.sin(VS.t / 3.1) * .01, (LAG[1] - 47) / 100 * .9 + Math.cos(VS.t / 4.3) * .008);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    x.save(); x.setTransform(DPR, 0, 0, DPR, 0, 0); x.beginPath(); x.arc(cx, cy, R, 0, 6.283); x.clip(); x.drawImage(glc, cx - R, cy - R, 2 * R, 2 * R); x.restore();
+    return true;
+  }
+  function draw(t) {
+    x.setTransform(DPR, 0, 0, DPR, 0, 0); x.clearRect(0, 0, W, H);
+    // shadow under the globe
+    x.fillStyle = 'rgba(0,0,0,.35)'; x.beginPath(); x.ellipse(cx, cy + R * (gold ? 1.58 : 1.38), R * 1.15, R * .14, 0, 0, 6.283); x.fill();
+    const y0 = plate(t);
+    x.save(); x.beginPath(); x.arc(cx, cy, R, 0, 6.283); x.clip();
+    // the picture, a touch magnified like through glass
+    if (img.complete && img.naturalWidth) { const s = Math.max(2 * R / img.naturalWidth, 2 * R / img.naturalHeight) * 1.04, w = img.naturalWidth * s, h = img.naturalHeight * s; x.drawImage(img, cx - w / 2, cy - h / 2, w, h); }
+    else { x.fillStyle = '#2a3b60'; x.fillRect(cx - R, cy - R, 2 * R, 2 * R); }
+    { const dtw = Math.max(0, Math.min(.05, t - (draw.lt || t))); draw.lt = t; const playing = waveOn && !wave.paused && !wave.ended;
+      waveA = Math.max(0, Math.min(1, waveA + (playing ? 1 : -1) * dtw / .9)); if (!playing && waveA === 0) waveOn = false; if (!playing && LOFI && LOFI.playing) LOFI.stop(2.2);
+      if (waveA > 0 && wave.readyState >= 2 && wave.videoWidth) { const s = Math.max(2 * R / wave.videoWidth, 2 * R / wave.videoHeight) * 1.04, w = wave.videoWidth * s, h = wave.videoHeight * s;
+        x.globalAlpha = waveA; x.drawImage(wave, cx - w / 2, cy - h / 2, w, h); x.globalAlpha = 1; } }
+    let g = x.createRadialGradient(cx, cy, R * .55, cx, cy, R); g.addColorStop(0, 'rgba(10,20,45,0)'); g.addColorStop(1, 'rgba(10,20,45,.45)'); x.fillStyle = g; x.fillRect(cx - R, cy - R, 2 * R, 2 * R);
+    // the pile of settled snow
+    x.beginPath(); x.moveTo(cx - R, cy + R);
+    for (let b = 0; b <= NB; b++) { const u = b / NB * 2 - 1, i = Math.min(NB - 1, b), hh = (pile[Math.max(0, i - 1)] + pile[i] * 2 + pile[Math.min(NB - 1, i + 1)]) / 4; const edge = Math.sqrt(Math.max(0, 1 - u * u)); x.lineTo(cx + u * R, cy + (edge - Math.min(1, hh / .012) * (edge - floorAt(u)) - hh) * R); }
+    x.lineTo(cx + R, cy + R); x.closePath(); x.fillStyle = 'rgba(244,247,255,.93)'; x.fill();
+    // the flakes: far ones small and dim, near ones big and soft
+    for (const f of F) { const sz = f.s * R * (1.4 + f.z * 1.6) * 2, a = .5 + f.z * .5; x.globalAlpha = a; x.drawImage(flake, cx + f.u * R - sz / 2, cy + f.v * R - sz / 2, sz, sz); }
+    x.globalAlpha = 1; x.restore();
+    lens(t, Math.max(0, Math.min(.05, t - (draw.vt || t)))); draw.vt = t;
+    // the glass
+    g = x.createRadialGradient(cx - R * .35, cy - R * .45, R * .05, cx, cy, R * 1.02); g.addColorStop(0, 'rgba(255,255,255,.22)'); g.addColorStop(.35, 'rgba(255,255,255,.04)'); g.addColorStop(.85, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(200,225,255,.28)');
+    x.fillStyle = g; x.beginPath(); x.arc(cx, cy, R, 0, 6.283); x.fill();
+    x.lineWidth = Math.max(1.5, R * .022); x.strokeStyle = 'rgba(220,235,255,.55)'; x.stroke();
+    x.save(); x.lineCap = 'round'; x.lineWidth = R * .045; x.strokeStyle = 'rgba(255,255,255,.35)'; x.beginPath(); x.arc(cx, cy, R * .86, Math.PI * 1.08, Math.PI * 1.36); x.stroke();
+    x.lineWidth = R * .02; x.strokeStyle = 'rgba(255,255,255,.25)'; x.beginPath(); x.arc(cx, cy, R * .86, Math.PI * 1.42, Math.PI * 1.48); x.stroke(); x.restore();
+    // the collar the glass sits in
+    g = x.createLinearGradient(cx - R * .8, 0, cx + R * .8, 0); g.addColorStop(0, '#8a6324'); g.addColorStop(.4, '#f0cc7a'); g.addColorStop(1, '#6e4c18');
+    x.fillStyle = g; x.beginPath(); x.ellipse(cx, y0, R * .8, R * .11, 0, 0, Math.PI); x.ellipse(cx, y0 - R * .05, R * .8, R * .11, 0, Math.PI, 0, true); x.closePath(); x.fill();
+  }
+
+  /* ── sound: a whoosh while it swirls, glassy tinkles, chimes when it settles ── */
+  let AC = null, OUT = null, WH = null, soundOn = true;
+  function ac() {
+    try {
+      if (!AC) { AC = new (window.AudioContext || window.webkitAudioContext)(); OUT = AC.createGain(); OUT.gain.value = .7; OUT.connect(AC.destination);
+        const n = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate), d = n.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        const s = AC.createBufferSource(); s.buffer = n; s.loop = true; const f = AC.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 650; f.Q.value = .7;
+        WH = AC.createGain(); WH.gain.value = 0; s.connect(f); f.connect(WH); WH.connect(OUT); s.start(); }
+      if (AC.state === 'suspended') AC.resume();
+    } catch (e) { AC = null; }
+    return AC;
+  }
+  function bell(fq, when, v) { if (!AC || !soundOn) return; const t = AC.currentTime + (when || 0);
+    for (const [m, a] of [[1, 1], [2.76, .25], [5.4, .08]]) { const o = AC.createOscillator(), g = AC.createGain(); o.type = 'sine'; o.frequency.value = fq * m;
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime((v || .12) * a, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + 1.6 / m + .3); o.connect(g); g.connect(OUT); o.start(t); o.stop(t + 2.2); } }
+  const NOTES = [1046.5, 1174.66, 1318.5, 1567.98, 1760, 2093];
+  function chimes() { [0, 2, 4, 3, 5].forEach((n, i) => bell(NOTES[n] / 2, i * .32, .1)); bell(NOTES[0] / 4, 1.7, .08); }
+  let tinkleT = 0;
+  function sound(dt) {
+    if (!AC || !WH) return; WH.gain.setTargetAtTime(soundOn ? Math.min(.22, E * .085) : 0, AC.currentTime, .08);
+    tinkleT -= dt; if (E > .15 && tinkleT <= 0) { bell(NOTES[Math.floor(Math.random() * NOTES.length)], 0, .025 + Math.min(.05, E * .02)); tinkleT = .05 + Math.random() * .35 / (E + .2); }
+  }
+
+  /* ── input: shake and tilt, swipe, the Shake button, the S key ── */
+  let lastA = null;
+  function onMotion(e) {
+    const m = e.acceleration;   // the phone's own movement, without gravity
+    if (m && m.x != null) { const g = Math.hypot(m.x, m.y, m.z || 0); if (g > 2.5) stir(Math.min(.35, (g - 2.5) * .03), -m.x * .05, m.y * .05); return; }
+    const a = e.accelerationIncludingGravity; if (!a || a.x == null) return;
+    if (lastA) { const j = Math.hypot(a.x - lastA.x, a.y - lastA.y, (a.z || 0) - (lastA.z || 0)); if (j > 4) stir(Math.min(.35, (j - 4) * .03)); }
+    lastA = { x: a.x, y: a.y, z: a.z };
+  }
+  function onTilt(e) {
+    if (e.gamma == null) return; const ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+    let side = ang === 90 ? e.beta : ang === -90 || ang === 270 ? -e.beta : ang === 180 ? -e.gamma : e.gamma;
+    side = Math.max(-.85, Math.min(.85, Math.sin(side * Math.PI / 180) * 1.3)); tgx = side; tgy = Math.sqrt(1 - side * side);
+  }
+  let drag = null;
+  cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, t: performance.now() }; ac(); });
+  addEventListener('pointerup', () => { drag = null; });
+  cv.addEventListener('pointermove', e => {
+    if (!drag) return; const now = performance.now(), dt = Math.max(8, now - drag.t) / 1000, du = (e.clientX - drag.x) / R / dt, dv = (e.clientY - drag.y) / R / dt;
+    const pu = (e.clientX - cx) / R, pv = (e.clientY - cy) / R;
+    if (pu * pu + pv * pv < 1.3) { for (const f of F) { const d = Math.hypot(f.u - pu, f.v - pv); if (d < .45) { const k = (1 - d / .45) * .5; if (f.down) { f.down = false; pile[f.b] = Math.max(0, pile[f.b] - f.add); } f.vu += du * k; f.vv += dv * k; } }
+      stir(Math.min(.3, Math.hypot(du, dv) * .015), du * .08, dv * .08); }
+    drag = { x: e.clientX, y: e.clientY, t: now };
+  });
+  $('shake').onclick = () => { ac(); stir(2.6, (Math.random() - .5) * .6, -.4); };
+  addEventListener('keydown', e => { if ((e.key === 's' || e.key === 'S') && !e.metaKey && !e.ctrlKey) { ac(); stir(2.6, 0, -.4); } });
+  $('share').onclick = () => AAShareLink.open({ url: location.href.split('#')[0], title: MSG + ' · Snow Globe', text: MSG + ((FROM || (LOGO_SRC ? 'Ora' : '')) ? ' from ' + (FROM || 'Ora') : '') + '! Shake your phone to make it snow.' });
+  /* the "Other eyes" panel */
+  const conds = $('conds');
+  CONDS.forEach(c => { const b = document.createElement('button'); b.type = 'button'; b.textContent = c.chip; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-label', c.chip + ': ' + c.label);
+    b.onclick = () => pickCond(c.id); conds.appendChild(b); });
+  { const b = document.createElement('button'); b.type = 'button'; b.className = 'shk'; b.innerHTML = '❄ Shake globe'; b.setAttribute('aria-label', 'Shake the globe');
+    b.onclick = () => $('shake').click(); conds.appendChild(b); }
+  const START = { rp: 50, glaucoma: 63, floaters: 88, cataracts: 75, amd: 63 }; let sevTouched = false;
+  function pickCond(id) {
+    if (id && !sevTouched) { $('sev').value = START[id]; VS.sev = START[id] / 100; $('sevP').textContent = START[id] + '%'; }
+    VS.cond = id; if (id) VS.last = id; const c = CONDS.find(k => k.id === id);
+    conds.querySelectorAll('button:not(.shk)').forEach((b, i) => b.setAttribute('aria-pressed', CONDS[i].id === id ? 'true' : 'false'));
+    $('visDesc').textContent = c ? c.desc : 'Pick an eye condition to see the snow globe the way someone living with it might.';
+    $('eyes').setAttribute('aria-pressed', id ? 'true' : 'false'); $('eyesT').textContent = c ? 'Simulator: ' + c.chip : 'Turn on blindness simulator';
+    $('eyes').setAttribute('aria-label', c ? 'Blindness simulator on: ' + c.label + '. Change or turn off' : 'Turn on the blindness simulator');
+    if (c && glFailed) $('visDesc').textContent = 'This browser can’t show the eye conditions. Try Chrome or Safari on your phone.';
+  }
+  $('eyes').onclick = () => { const v = $('vis'); v.hidden = !v.hidden; if (!v.hidden) { if (!VS.cond) pickCond('amd'); (conds.querySelector('[aria-pressed=true]') || conds.firstChild).focus(); } };
+  $('sev').oninput = () => { sevTouched = true; VS.sev = $('sev').value / 100; $('sevP').textContent = $('sev').value + '%'; };
+  $('visOff').onclick = () => { pickCond(''); $('vis').hidden = true; $('eyes').focus(); say('Back to your own eyes.'); };
+  $('visDone').onclick = () => { $('vis').hidden = true; $('eyes').focus(); };
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !$('vis').hidden) { $('vis').hidden = true; $('eyes').focus(); } });
+  $('snd').onclick = () => { soundOn = !soundOn; $('snd').textContent = soundOn ? 'Sound on' : 'Sound off'; $('snd').setAttribute('aria-pressed', soundOn); if (waveOn) wave.muted = !soundOn; if (LOFI) LOFI.mute(!soundOn); };
+  $('start').onclick = async () => {
+    ac();
+    try { if (window.DeviceMotionEvent && DeviceMotionEvent.requestPermission) await DeviceMotionEvent.requestPermission(); } catch (e) {}
+    try { if (window.DeviceOrientationEvent && DeviceOrientationEvent.requestPermission) await DeviceOrientationEvent.requestPermission(); } catch (e) {}
+    addEventListener('devicemotion', onMotion); addEventListener('deviceorientation', onTilt);
+    $('go').remove(); $('shake').focus({ preventScroll: true });
+    // let the video play with sound later (this tap is what allows it on phones), then wait for the first shake
+    if (VID) { wave.muted = false; wave.play().then(() => { if (!waveOn) { wave.pause(); wave.currentTime = 0; } }, () => {}); }
+    say(SAY_MSG + '. A snow globe holding the painting Walk Through Fear, a figure with a white cane walking toward the light. Shake your phone, tilt it, or press Shake to make it snow.');
+  };
+
+  /* ── run ── */
+  let last = performance.now();
+  (function frame(now) {
+    const dt = Math.max(0, Math.min(.05, (now - last) / 1000)), t = now / 1000; last = now;
+    step(dt, t); drawSky(t, dt); draw(t); sound(dt);
+    requestAnimationFrame(frame);
+  })(last);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { size(); draw(performance.now() / 1000); });
+})();
+</script>
+</body>
+</html>

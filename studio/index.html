@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" href="../favicon.png">
 <meta name="description" content="Bring a still painting to life with motion, light, sound and story.">
 <script src="../site-config.js"></script><script src="../site.js" defer></script>
-<script src="../capture.js"></script>
+<script src="../capture.js"></script><script src="../share.js"></script><script src="../stats.js"></script>
 <script src="../account.js"></script>
 <style id="aa-skin">
 html:root{--ink:#15191f;--panel:#1d222a;--line:#2c333d;--text:#f2ede4;--soft:#a7adb6;--red:#ff7a2a;--blue:#2aa8e0;--gold:#f5a623;--orange:#ff7a2a}
@@ -1548,6 +1548,14 @@ function project() {
     tod: $('todOn').checked, mood: moodId, story: storyStarts, sliders: sl, blink: $('blinkOn').checked, recipe: recipeId,
     movers: movers.map(({ sprite, patch, ...m }) => ({ ...m, path: m.path.map(p => p.slice()) })), emitters, light: { ...light }, scenes, narr: narr.map(n => ({ t: n.t, text: n.text })) };
 }
+/* a photo of the moment: the camera with the living picture on it, then share or save */
+function arPhoto(P, name, code) {
+  if (!window.AAShare || !P || !P.q || !P.bw) { live('Point at the picture first. When it comes alive, take the photo.'); return; }
+  const k = Math.min(2, devicePixelRatio || 1);
+  const c = AAShare.photo({ w: P.bw * k, h: P.bh * k, base: [P.vid], layers: [{ src: P.lc, quad: P.q.map(([x, y]) => [x * k, y * k]) }] });
+  AAShare.flash(); const log = kind => { if (window.AAStats && code) AAStats.log(code, kind); };
+  AAShare.sheet(c, { name: name || 'art-alive', title: name, onShare: () => log('share'), onSave: () => log('save') }); log('capture');
+}
 function loadProject(pr) {
   const apply = () => { ARRS.forEach((a, i) => a.set(b64f32(pr.arrs[i]))); eyes = pr.eyes || []; pin = pr.pin || [.5, .5]; pinSet = !!pr.pinSet; triggers = pr.triggers || [];
     setCam(pr.cam || 'still'); setChips('atmos', atmoOn, pr.atmo || []); setChips('weather', wxOn, pr.wx || []); setChips('sounds', soundOn, pr.snd || []); $('todOn').checked = !!pr.tod; setMood(pr.mood || 'natural');
@@ -2335,7 +2343,7 @@ body.aa-play .bench{display:block!important}body.aa-play .bench>:not(.stagecol){
   A.getPublished(code).then(p => {
     if (!p) return fail('This piece isn’t published right now. It may have been taken down by its creator.');
     if (p.kind !== 'studio') { location.replace('../p/?c=' + encodeURIComponent(code)); return; }
-    p.data.title = p.title; loadProject(p.data); setMode('try');
+    p.data.title = p.title; loadProject(p.data); setMode('try'); if (window.AAStats) AAStats.log(code, 'open');
     $('plT').textContent = p.title; $('plBy').textContent = p.data.artist && p.data.artist !== 'Your image' ? 'by ' + p.data.artist : ''; document.title = p.title + ' · Art Alive';
     const b = $('plGo'); b.disabled = false; b.textContent = 'Start'; b.focus({ preventScroll: true }); live(p.title + ' is ready. Press Start.');
   }).catch(e => fail('Couldn’t load it. Check your connection and try again.'));
@@ -2348,10 +2356,12 @@ body.aa-play .bench{display:block!important}body.aa-play .bench>:not(.stagecol){
   /* point the camera at the real picture: the living version sits right on it */
   let P = null;
   $('plAR').onclick = () => {
+    if (window.AAStats) AAStats.log(code, 'camera');
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.AACapture) { live('This browser can’t use the camera here. Try Chrome or Safari on your phone.'); return; }
     ensureAudio(); setPlaying(true);
     const ov = document.createElement('div'); ov.className = 'aa-ar'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Camera view');
     ov.innerHTML = '<div class="aa-ar-box"><video playsinline muted autoplay></video><canvas class="aa-ar-live" aria-hidden="true"></canvas></div><p class="aa-ar-tip" aria-live="polite">Point your camera at the picture. Keep all four corners in view.</p><div class="aa-ar-bar"><button type="button" class="aa-ar-x">Back</button></div>';
+    if (window.AAShare) { const pb = AAShare.button('Photo'); ov.querySelector('.aa-ar-bar').appendChild(pb); pb.onclick = () => arPhoto(P, $('plT').textContent, code); }
     document.body.appendChild(ov); document.body.style.overflow = 'hidden';
     const vid = ov.querySelector('video'), tip = ov.querySelector('.aa-ar-tip'); ov.querySelector('.aa-ar-x').onclick = close; ov.querySelector('.aa-ar-x').focus();
     navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false }).then(st => {
@@ -2363,13 +2373,13 @@ body.aa-play .bench{display:block!important}body.aa-play .bench>:not(.stagecol){
   };
   function frameAR() {
     if (!P) return; const { vid, box, lc, tip } = P, vw = vid.videoWidth, vh = vid.videoHeight; if (!vw) return;
-    const s = Math.min(innerWidth / vw, innerHeight / vh), bw = vw * s, bh = vh * s; box.style.width = bw + 'px'; box.style.height = bh + 'px';
+    const s = Math.min(innerWidth / vw, innerHeight / vh), bw = vw * s, bh = vh * s; box.style.width = bw + 'px'; box.style.height = bh + 'px'; P.bw = bw; P.bh = bh;
     if (lc.width !== cv.width || lc.height !== cv.height) { lc.width = cv.width; lc.height = cv.height; }
     const g = lc.getContext('2d'); g.clearRect(0, 0, lc.width, lc.height); g.drawImage(cv, 0, 0); g.drawImage($('fx'), 0, 0, lc.width, lc.height);
-    if (!P.trk && AACapture.tracker) P.trk = AACapture.tracker();
+    if (!P.trk && AACapture.tracker) P.trk = AACapture.tracker({ target: () => baseC });   // the picture itself, so the art sits on the art (not its frame or mat)
     const r = P.trk ? P.trk.update(vid, vw, vh) : AACapture.detect(vid, vw, vh);
     if (r) { P.q = r.c.map(([x, y]) => [x * bw, y * bh]); P.lost = 0;
-      if (!P.seen) { P.seen = 1; tip.textContent = 'Found it!'; live('Found the picture. It is alive.'); try { navigator.vibrate && navigator.vibrate([30, 30, 60]); } catch (e) {} setTimeout(() => { if (P) tip.classList.add('hide'); }, 2000); } }
+      if (!P.seen) { P.seen = 1; if (window.AAStats) AAStats.log(code, 'found'); tip.textContent = 'Found it!'; live('Found the picture. It is alive.'); try { navigator.vibrate && navigator.vibrate([30, 30, 60]); } catch (e) {} setTimeout(() => { if (P) tip.classList.add('hide'); }, 2000); } }
     else if (P.q && ++P.lost === 20) { tip.textContent = 'Lost it. Point back at the picture.'; tip.classList.remove('hide'); }
     if (P.q) { const H = AACapture.homography([[0, 0], [lc.width, 0], [lc.width, lc.height], [0, lc.height]], P.q);
       lc.style.transform = `matrix3d(${H[0]},${H[3]},0,${H[6]},${H[1]},${H[4]},0,${H[7]},0,0,1,0,${H[2]},${H[5]},0,1)`; lc.style.opacity = P.lost > 20 ? .3 : 1; }
@@ -2430,7 +2440,7 @@ body.aa-play .bench{display:block!important}body.aa-play .bench>:not(.stagecol){
   A.publishedCollection(kc).then(col => {
     if (!col) return fail('This collection isn’t published right now.');
     items = (col.items || []).filter(i => i.code); title = col.title; known = items.filter(it => it.fp).map(it => ({ it, f: A.FP.decode(it.fp) }));
-    $('kT').textContent = title; document.title = title + ' · Art Alive';
+    $('kT').textContent = title; document.title = title + ' · Art Alive'; if (window.AAStats) AAStats.log(kc, 'open');
     $('kBy').textContent = items.length + (items.length === 1 ? ' piece' : ' pieces');
     const b = $('kGo'); b.disabled = false; b.textContent = 'Start'; b.focus({ preventScroll: true }); live(title + '. ' + items.length + ' pieces. Press Start.');
   }).catch(() => fail('Couldn’t load it. Check your connection and try again.'));
@@ -2453,6 +2463,7 @@ body.aa-play .bench{display:block!important}body.aa-play .bench>:not(.stagecol){
     if (!counted[it.code]) { counted[it.code] = 1; A.countView(it.code); } window.__aaPlaying = it.code;
   }
   function show(it) {
+    if (window.AAStats) AAStats.log(it.code, 'found');
     if (it.kind !== 'studio') {   // a game: offer a button
       pause(); cur = null; window.__aaPlaying = null; const f = P.found; f.hidden = false;
       f.innerHTML = '<span>Found a game</span><b>' + esc(it.title) + '</b><a href="../p/?c=' + it.code + '&cam=1">Play the game</a><button type="button">Keep looking</button>';
@@ -2472,10 +2483,13 @@ body.aa-play .bench{display:block!important}body.aa-play .bench>:not(.stagecol){
   function lostIt() { pause(); window.__aaPlaying = null; if (P) { P.tip.textContent = 'Point at any picture in ' + title + '.'; P.tip.classList.remove('hide'); } live('Paused. Point at the next picture.'); }
   function identify(r, vid, vw, vh) {   // which picture is it? compare the inside of the frame with each piece's fingerprint
     const GW = 480, GH = Math.round(480 * vh / vw); if (gc.width !== GW) { gc.width = GW; gc.height = GH; } gx.drawImage(vid, 0, 0, GW, GH);
-    const d = gx.getImageData(0, 0, GW, GH).data, f = A.FP.fromQuad(d, GW, GH, r.c.map(([x, y]) => [x * GW, y * GH]));
+    const d = gx.getImageData(0, 0, GW, GH).data, f = A.FP.fromQuad(d, GW, GH, r.c.map(([x, y]) => [x * GW, y * GH])), FPX = A.FP;
+    const Qs = (() => { const Hq = AACapture.homography([[0, 0], [1, 0], [1, 1], [0, 1]], r.c.map(([x, y]) => [x * GW, y * GH]));   // the shape as found, and pulled in past a mat or frame
+      return [0, .06, .12, .18].map(e => [[e, e], [1 - e, e], [1 - e, 1 - e], [e, 1 - e]].map(([u, v]) => { const z = Hq[6] * u + Hq[7] * v + 1; return [(Hq[0] * u + Hq[1] * v + Hq[2]) / z, (Hq[3] * u + Hq[4] * v + Hq[5]) / z]; })); })(),
+      fs = Qs.map(Q => FPX.fromQuad(d, GW, GH, Q)), scoreOf = kf => Math.max(...fs.map(x => FPX.score(x, kf)));
     const qa = (Math.hypot(r.c[1][0] - r.c[0][0], (r.c[1][1] - r.c[0][1]) * vh / vw) + Math.hypot(r.c[2][0] - r.c[3][0], (r.c[2][1] - r.c[3][1]) * vh / vw)) / (Math.hypot(r.c[3][0] - r.c[0][0], (r.c[3][1] - r.c[0][1]) * vh / vw) + Math.hypot(r.c[2][0] - r.c[1][0], (r.c[2][1] - r.c[1][1]) * vh / vw) || 1);
     let best = null, second = -1, curSc = -1;
-    for (const k of known) { let sc = A.FP.score(f, k.f); const ratio = Math.max(qa, k.it.aspect || 1) / Math.min(qa, k.it.aspect || 1); if (ratio > 1.45) sc -= .12;
+    for (const k of known) { let sc = scoreOf(k.f); const ratio = Math.max(qa, k.it.aspect || 1) / Math.min(qa, k.it.aspect || 1); if (ratio > 1.45) sc -= .12;
       if (cur && k.it.code === cur.code) curSc = sc;
       if (!best || sc > best.sc) { if (best) second = Math.max(second, best.sc); best = { it: k.it, sc }; } else second = Math.max(second, sc); }
     window.__aaScores = (window.__aaScores || []).concat([known.map(k => k.it.title.slice(0, 8) + ':' + A.FP.score(f, k.f).toFixed(2)).join(' ')]).slice(-4);
@@ -2487,10 +2501,10 @@ body.aa-play .bench{display:block!important}body.aa-play .bench>:not(.stagecol){
   }
   function frameColl() {
     if (!P) return; const { vid, box, lc } = P, vw = vid.videoWidth, vh = vid.videoHeight; if (!vw) return;
-    const s = Math.min(innerWidth / vw, innerHeight / vh), bw = vw * s, bh = vh * s; box.style.width = bw + 'px'; box.style.height = bh + 'px';
+    const s = Math.min(innerWidth / vw, innerHeight / vh), bw = vw * s, bh = vh * s; box.style.width = bw + 'px'; box.style.height = bh + 'px'; P.bw = bw; P.bh = bh;
     if (on) { if (lc.width !== cv.width || lc.height !== cv.height) { lc.width = cv.width; lc.height = cv.height; }
       const g = lc.getContext('2d'); g.clearRect(0, 0, lc.width, lc.height); g.drawImage(cv, 0, 0); g.drawImage($('fx'), 0, 0, lc.width, lc.height); }
-    if (!P.trk && AACapture.tracker) P.trk = AACapture.tracker();
+    if (!P.trk && AACapture.tracker) P.trk = AACapture.tracker({ target: () => on ? baseC : null });   // once a piece is playing, match its picture
     const r = P.trk ? P.trk.update(vid, vw, vh) : AACapture.detect(vid, vw, vh), now = performance.now();
     if (r) { P.q = r.c.map(([x, y]) => [x * bw, y * bh]); P.lost = 0;
       if (now - lastCheck > (on ? 700 : 250) && known.length) { lastCheck = now; identify(r, vid, vw, vh); } }
@@ -2499,10 +2513,12 @@ body.aa-play .bench{display:block!important}body.aa-play .bench>:not(.stagecol){
       lc.style.transform = `matrix3d(${H[0]},${H[3]},0,${H[6]},${H[1]},${H[4]},0,${H[7]},0,0,1,0,${H[2]},${H[5]},0,1)`; lc.style.opacity = 1; } else lc.style.opacity = 0;
   }
   $('kGo').onclick = () => {
+    if (window.AAStats) AAStats.log(kc, 'camera');
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.AACapture) { $('kBy').textContent = 'This browser can’t use the camera here. Choose a piece from the list instead.'; return; }
     ensureAudio(); soundLive = true; if (master) master.gain.value = 0;
     const ov = document.createElement('div'); ov.className = 'aa-ar'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Camera view');
     ov.innerHTML = '<div class="aa-ar-box"><video playsinline muted autoplay></video><canvas class="aa-ar-live" aria-hidden="true" style="opacity:0"></canvas></div><p class="aa-ar-tip" aria-live="polite">Point at any picture in ' + esc(title) + '. Keep all four corners in view.</p><div class="aa-k-found" hidden></div><div class="aa-ar-bar"><button type="button" class="aa-ar-x">Back</button><button type="button" class="aa-k-snd" aria-pressed="true">Sound on</button></div>';
+    if (window.AAShare) { const pb = AAShare.button('Photo'); ov.querySelector('.aa-ar-bar').appendChild(pb); pb.onclick = () => on && cur ? arPhoto(P, cur.title || title, cur.code) : live('Point at a picture first. When it comes alive, take the photo.'); }
     document.body.appendChild(ov); document.body.style.overflow = 'hidden';
     const vid = ov.querySelector('video'); ov.querySelector('.aa-ar-x').onclick = close; ov.querySelector('.aa-ar-x').focus();
     snd = true; ov.querySelector('.aa-k-snd').onclick = e => { snd = !snd; if (!snd) hush(); if (AC) { if (snd) AC.resume(); else AC.suspend(); } e.target.textContent = snd ? 'Sound on' : 'Sound off'; e.target.setAttribute('aria-pressed', snd); };

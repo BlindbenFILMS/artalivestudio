@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>A Magic Postcard · Art Alive</title>
+<meta name="description" content="Point your phone at the postcard and watch it come alive.">
+<meta name="theme-color" content="#1f3352">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&family=Yellowtail&family=Caveat:wght@500;600;700&display=swap">
+<style>
+[hidden]{display:none!important}
+html,body{margin:0;background:#1f3352;color:#f6f1e8;font:18px/1.5 'Atkinson Hyperlegible',Verdana,Arial,sans-serif;touch-action:manipulation}
+main{max-width:760px;margin:0 auto;padding:18px 16px 40px;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}.top img{height:40px;width:auto}
+.k{margin:0;font:800 13px/1 Archivo,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#ec9a72}
+h1{margin:0;font:900 clamp(28px,7vw,50px)/1 Archivo,'Arial Black',Arial,sans-serif;font-stretch:118%;text-transform:uppercase;overflow-wrap:anywhere}
+.card{position:relative;width:100%;aspect-ratio:3/2;border-radius:6px;overflow:hidden;box-shadow:0 30px 60px -25px rgba(0,0,0,.9)}
+.card canvas{position:absolute;inset:0;width:100%;height:100%}
+.card video{position:absolute;left:0;top:0;width:66.6667%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.card canvas.anim{left:0;top:0;width:66.6667%;height:100%;opacity:0;transition:opacity .6s}.card.on canvas.anim{opacity:1}
+.card .top{position:absolute;left:0;top:0;width:66.6667%;height:100%;opacity:0;transition:opacity .6s;pointer-events:none}
+.card.on video,.card.on .top{opacity:1}
+.cam .live canvas{position:absolute;inset:0;width:100%;height:100%}
+/* the video message under the card, like the artist's clip under a Blind Canvas painting: a black strip with FROM and their name, then the video */
+.from{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.strip{background:#000;color:#fff;border-radius:3px;padding:16px 12px;text-align:center;font:900 clamp(22px,5.4vw,38px)/1 Archivo,'Arial Black',Arial,sans-serif;font-stretch:118%;letter-spacing:.06em;text-transform:uppercase;overflow-wrap:anywhere}
+.fvid{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:3px;overflow:hidden}
+.fvid video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;cursor:pointer}
+.fvid .pp{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:72px;height:72px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font:900 24px/1 Archivo,Arial,sans-serif;cursor:pointer}
+.fvid.on .pp{opacity:0}.fvid.on .pp:focus-visible{opacity:1}
+.cam .under{position:absolute;left:0;top:0;width:576px;transform-origin:0 0;opacity:0;transition:opacity .35s;display:flex;flex-direction:column;gap:8px}
+.cam .under .strip{padding:0;height:64px;display:flex;align-items:center;justify-content:center;font-size:34px;border-radius:2px}
+.cam .under .uv{position:relative;width:576px;background:#000;border-radius:2px;overflow:hidden}
+.cam .under video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+.bar{display:flex;flex-wrap:wrap;gap:10px}
+.bar button{flex:1 1 200px;min-height:56px;padding:0 18px;border-radius:999px;border:2px solid rgba(185,207,230,.35);background:transparent;color:#f6f1e8;font:800 15px/1 Archivo,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.bar .pri{background:#ec9a72;border-color:#ec9a72;color:#14100c}
+button:focus-visible{outline:3px solid #f2c14e;outline-offset:3px}
+.msg{background:#fbf8f2;color:#1b1f26;border-radius:6px;padding:20px 22px;font:500 26px/1.35 Caveat,'Segoe Print',cursive;white-space:pre-line}
+.msg small{display:block;margin-bottom:6px;font:800 12px/1 Archivo,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#b4531a}
+.made{text-align:center;color:#b9cfe6;font-size:15px}.made a{color:#f6f1e8}
+.wait{display:flex;align-items:center;gap:12px;color:#b9cfe6}.spin{width:30px;height:30px;border-radius:50%;border:4px solid rgba(185,207,230,.25);border-top-color:#ec9a72;animation:s 1s linear infinite}@keyframes s{to{transform:rotate(1turn)}}
+/* the camera */
+.cam{position:fixed;inset:0;z-index:50;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.cam .box{position:relative}.cam .box>video{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.cam .live{position:absolute;left:0;top:0;transform-origin:0 0;opacity:0;transition:opacity .35s;pointer-events:none;overflow:hidden;background:#000}
+.cam .live video{width:100%;height:100%;object-fit:cover;display:block}
+.cam .tip{position:fixed;left:50%;top:max(16px,env(safe-area-inset-top));transform:translateX(-50%);margin:0;padding:10px 16px;border-radius:999px;background:rgba(0,0,0,.75);color:#fff;font-weight:700;max-width:calc(100% - 32px);text-align:center}
+.cam .tip.hide{display:none}
+.cam .cbar{position:fixed;left:16px;right:16px;bottom:max(16px,env(safe-area-inset-bottom));display:flex;gap:10px;justify-content:center}
+.cam .cbar button{flex:0 1 200px;min-height:54px;border-radius:999px;border:0;background:rgba(0,0,0,.75);color:#fff;font:800 15px/1 Archivo,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+/* send a video reply */
+.reply{margin-top:22px;background:#26406a;border-radius:10px;padding:20px 18px;display:flex;flex-direction:column;gap:12px}
+.reply h2{margin:0;font:900 22px/1.15 Archivo,'Arial Black',Arial,sans-serif;font-stretch:112%;text-transform:uppercase}
+.reply p{margin:0;color:#d5e3f2;font-size:16px}
+.reply .pick{display:flex;flex-wrap:wrap;gap:10px}
+.reply input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
+.reply label.b,.reply button{flex:1 1 160px;min-height:52px;padding:0 16px;border-radius:999px;border:2px solid rgba(185,207,230,.4);background:transparent;color:#f6f1e8;font:800 14px/1 Archivo,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-align:center}
+.reply .b.pri,.reply button.pri{background:#ec9a72;border-color:#ec9a72;color:#14100c}.reply>button{flex:none}
+.reply input[type=file]:focus-visible + label{outline:3px solid #f2c14e;outline-offset:3px}
+.reply button:disabled{opacity:.45;cursor:not-allowed}
+.reply .f{display:flex;flex-direction:column;gap:6px;font-size:15px;color:#d5e3f2}
+.reply .f input,.reply .f textarea{min-height:48px;padding:10px 12px;border-radius:10px;border:1px solid rgba(185,207,230,.35);background:#1f3352;color:#f6f1e8;font:17px 'Atkinson Hyperlegible',Verdana,sans-serif}
+.reply video{width:100%;max-height:60vh;background:#000;border-radius:6px}
+.reply .st{min-height:1.4em;font-weight:700;color:#f2c14e}
+.reply .sent{display:flex;flex-direction:column;gap:10px}
+.reply .tabs{display:flex;gap:6px;background:#1f3352;border-radius:999px;padding:5px}
+.reply .tabs button{flex:1 1 0;min-height:46px;border:0;background:transparent;color:#d5e3f2}
+.reply .tabs button[aria-pressed="true"]{background:#f6f1e8;color:#14100c}
+.reply .mic{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0}
+.reply .mic button.rec{width:112px;height:112px;flex:none;border-radius:50%;border:6px solid #f6f1e8;background:#e8433a;color:#fff;font-size:14px;padding:0}
+.reply .mic button.rec.on{background:#14100c;border-color:#e8433a;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 12px rgba(232,67,58,.25)}}
+.reply .meter{width:100%;height:12px;border-radius:999px;background:#1f3352;overflow:hidden}.reply .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7be08f,#f2c14e,#ec9a72);transition:width .08s}
+.reply .time{font:800 22px/1 Archivo,Arial,sans-serif;letter-spacing:.06em}
+.reply audio{width:100%}
+@media (prefers-reduced-motion:reduce){.reply .mic button.rec.on{animation:none}}
+.reply .sent a{color:#14100c;background:#ec9a72;border-radius:999px;padding:14px 18px;text-align:center;font:800 15px/1 Archivo,Arial,sans-serif;text-decoration:none;text-transform:uppercase;letter-spacing:.06em}
+</style>
+</head>
+<body>
+<main>
+  <a class="top" href="../" aria-label="Art Alive home"><img src="../art-alive-mark.png" alt=""><span class="k">Magic Postcard</span></a>
+  <h1 id="t">Opening your postcard…</h1>
+  <div class="wait" id="wait"><div class="spin" aria-hidden="true"></div><span>One moment…</span></div>
+  <div id="view" hidden>
+    <div class="card" id="card"><canvas id="cf" role="img" aria-label="The front of the postcard"></canvas><video id="vid" loop playsinline aria-label="The postcard's video"></video><canvas class="top" id="ctop" aria-hidden="true"></canvas></div>
+    <div class="bar" style="margin-top:14px"><button type="button" class="pri" id="camBtn">Point at your postcard</button><button type="button" id="watchBtn">Watch it here</button></div>
+    <div class="from" id="from" hidden><div class="strip" id="strip"></div><div class="fvid" id="fbox"><video id="mvid" playsinline loop preload="metadata"></video><button type="button" class="pp" id="pp" aria-label="Play the video message">&#9654;</button></div></div>
+    <div class="msg" id="msg" style="margin-top:14px" hidden></div>
+    <div class="from" id="from2" hidden><p class="k" style="margin:4px 0 0">On the back</p><div class="strip" id="strip2"></div><div class="fvid" id="fbox2"><video id="mvid2" playsinline loop preload="metadata"></video><button type="button" class="pp" id="pp2" aria-label="Play the video from the back">&#9654;</button></div></div>
+  </div>
+  <section class="reply" id="reply" hidden aria-labelledby="replyH">
+    <h2 id="replyH">Send a reply</h2>
+    <p id="replyP">Say thank you, wave hello, show them where you are. Up to a minute. Only they will see or hear it.</p>
+    <div class="tabs" role="group" aria-label="Kind of reply"><button type="button" id="tVid" aria-pressed="true">Video reply</button><button type="button" id="tAud" aria-pressed="false">Voice reply</button></div>
+    <div id="pVid">
+      <div class="pick"><input type="file" id="rRec" accept="video/*" capture="user"><label class="b pri" for="rRec">Record a video</label><input type="file" id="rUp" accept="video/*"><label class="b" for="rUp">Upload a video</label></div>
+      <video id="rPrev" controls playsinline hidden style="margin-top:12px"></video>
+    </div>
+    <div id="pAud" hidden>
+      <div class="mic"><button type="button" class="rec" id="rMic">Record</button><span class="time" id="rTime" aria-live="off">0:00 / 1:00</span><div class="meter" aria-hidden="true"><i id="rLvl"></i></div></div>
+      <audio id="rAud" controls hidden></audio>
+      <div class="pick"><input type="file" id="rAudUp" accept="audio/*"><label class="b" for="rAudUp">Upload a voice memo</label></div>
+    </div>
+    <label class="f">Your name<input id="rName" maxlength="60" autocomplete="name"></label>
+    <label class="f">A short note (optional)<textarea id="rNote" maxlength="300" rows="2"></textarea></label>
+    <button type="button" class="pri" id="rSend" disabled>Send my reply</button>
+    <p class="st" id="rSt" role="status" aria-live="polite"></p>
+  </section>
+  <p class="made" id="made" hidden>A Magic Postcard from <a href="../">Art Alive</a> · <a href="./">Send one yourself</a></p>
+</main>
+<script src="../site-config.js"></script><script src="../capture.js"></script><script src="../share.js"></script><script src="../stats.js"></script><script src="../account.js"></script><script src="../qr.js"></script><script src="postcard.js"></script><script src="animate.js"></script><script src="sound.js"></script>
+<script>
+(async function () {
+  'use strict';
+  const $ = id => document.getElementById(id), MP = window.MagicPostcard, C = window.ART_ALIVE || {};
+  const qs = new URLSearchParams(location.search), code = (qs.get('c') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const live = t => { let r = $('sr'); if (!r) { r = document.createElement('p'); r.id = 'sr'; r.setAttribute('aria-live', 'polite'); r.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)'; document.body.appendChild(r); } r.textContent = ''; setTimeout(() => { r.textContent = t; }, 60); };
+  function fail(h, t) { $('wait').hidden = true; $('t').textContent = h; const p = document.createElement('p'); p.textContent = t; $('wait').after(p); $('made').hidden = false; document.title = h + ' · Art Alive'; }
+  const loadImg = src => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = src; });
+  if (!window.AAAccount || !AAAccount.configured) return fail('Not ready yet', 'Magic Postcards are being set up. Please try again soon.');
+  if (!code) return fail('Nothing to show here', 'This link is missing its code. Try scanning the QR code again.');
+
+  // the postcard's files: pictures come down whole (small); videos stream from a private link that lasts a few hours,
+  // so a long video starts quickly and never sits in the phone's memory all at once
+  async function media(d) { const cl = await AAAccount.load(), jobs = [];
+    for (const k of Object.keys(d)) { const v = d[k]; if (typeof v !== 'string' || !v.startsWith('aa-media:')) continue; const path = v.slice(9);
+      const whole = () => cl.storage.from('media').download(path).then(({ data, error }) => { if (error) throw error; d[k] = URL.createObjectURL(data); });
+      jobs.push(/\.(mp4|webm|mov|bin)$/i.test(path) || /^video2?$/.test(k)
+        ? cl.storage.from('media').createSignedUrl(path, 21600).then(({ data, error }) => { if (error || !data) return whole(); d[k] = data.signedUrl; }).catch(whole)
+        : whole()); }
+    await Promise.all(jobs); }
+  let row; try { row = await AAAccount.published(code); if (row) { await media(row.data); AAAccount.countView(code); if (window.AAStats) AAStats.log(code, 'open'); } } catch (e) { return fail('Couldn’t load it', 'Check your connection and try again.'); }
+  if (!row || row.kind !== 'postcard') return fail('Not available', 'This postcard isn’t available right now.');
+  const d = row.data;
+  const url = AAAccount.PUB_URL ? AAAccount.PUB_URL(code) : new URL('../p/?c=' + code, location.href).href;
+  let photo, icon; try { photo = await loadImg(d.photo); } catch (e) { return fail('Couldn’t load it', 'The picture didn’t load. Check your connection and try again.'); }
+  icon = await loadImg(d.icon && d.icon !== 'aa' ? d.icon : '../art-alive-mark.png').catch(() => loadImg('../art-alive-mark.png')).catch(() => null);
+  const card = { photo, icon, place: d.place, greet: d.greet, greetText: d.greetText, to: d.to, message: d.message, from: d.from, accent: d.accent, qr: url, address: { name: d.to || ' ' } };
+  await MP.draw($('cf'), 'front', card, { scale: Math.min(3, (devicePixelRatio || 1) * 1.5) });
+  const vsrc = p => p && /\.mp4$/.test(p) && !document.createElement('video').canPlayType('video/mp4; codecs="avc1.4D401E"') ? p.replace(/\.mp4$/, '.webm') : p;
+  // how the picture moves: the place's own animation (a video), or Art Alive effects on their photo.
+  // d.video is their video message, which plays under the card. (Early postcards kept a place's animation in d.video.)
+  const isStock = p => typeof p === 'string' && /^stock\//.test(p);
+  // a video saved with the postcard comes back as data: play it from a blob, which phones handle far better
+  const asUrl = v => { if (typeof v !== 'string' || !v.startsWith('data:')) return v; try { const i = v.indexOf(','), mime = v.slice(5, i).split(';')[0], bin = atob(v.slice(i + 1)), u = new Uint8Array(bin.length);
+    for (let k = 0; k < bin.length; k++) u[k] = bin.charCodeAt(k); return URL.createObjectURL(new Blob([u], { type: mime || 'video/mp4' })); } catch (e) { return v; } };
+  const picSrc = vsrc(d.picVideo || (isStock(d.video) ? d.video : null)), msgSrc = d.video && !isStock(d.video) ? asUrl(vsrc(d.video)) : null,
+    msg2Src = d.video2 ? asUrl(vsrc(d.video2)) : null;   // the back's own video message (if none, the front one plays there too)
+  // the place's soundscape (waves, gulls, fireworks…), in step with the picture; quieter while a video message talks
+  const soundUrl = d.sound || (/asbury-park/.test(picSrc || '') ? 'stock/sounds/asbury-park.mp3' : null);
+  let clock = () => 0; const scape = soundUrl && window.MagicSound ? MagicSound.create(soundUrl, { getTime: () => clock() }) : null;
+  const vidSrc = picSrc; if (vidSrc) $('vid').src = vidSrc; await MP.drawTop($('ctop'), card, { scale: 2 });
+  const fromText = d.from ? 'From ' + d.from : 'A video message';
+  const anim = !vidSrc && d.anim && window.MagicAnimate ? MagicAnimate.create(card.photo, d.anim) : null;
+  if (anim) { anim.canvas.className = 'anim'; anim.canvas.setAttribute('aria-hidden', 'true'); $('card').insertBefore(anim.canvas, $('ctop')); }
+  $('t').textContent = d.to ? 'A postcard for ' + d.to : 'A Magic Postcard'; document.title = $('t').textContent + ' · Art Alive';
+  $('cf').setAttribute('aria-label', 'The front of the postcard' + (d.place ? ': ' + (d.greet !== false ? (d.greetText != null ? d.greetText : 'Greetings from') + ' ' : '') + d.place : ''));
+  const mv = $('mvid'); let ar = 9 / 16;   // the video message's height for its width
+  if (msgSrc) { $('strip').textContent = fromText; mv.src = msgSrc; mv.setAttribute('aria-label', 'Video message' + (d.from ? ' from ' + d.from : '')); $('from').hidden = false;
+    mv.addEventListener('loadedmetadata', () => { if (mv.videoWidth) { ar = mv.videoHeight / mv.videoWidth; $('fbox').style.aspectRatio = mv.videoWidth + '/' + mv.videoHeight; } });
+    ['play', 'pause'].forEach(ev => mv.addEventListener(ev, () => { const on = !mv.paused; $('fbox').classList.toggle('on', on); $('pp').innerHTML = on ? '&#10074;&#10074;' : '&#9654;'; $('pp').setAttribute('aria-label', (on ? 'Pause' : 'Play') + ' the video message'); })); }
+  const msgPlay = on => { if (!msgSrc) return; if (on) { mv.muted = false; mv.play().catch(() => { mv.muted = true; mv.play().catch(() => {}); }); } else mv.pause(); };
+  $('pp').onclick = mv.onclick = () => msgPlay(mv.paused);
+  ['play', 'pause', 'volumechange'].forEach(ev => mv.addEventListener(ev, () => { if (scape) scape.duck(!mv.paused && !mv.muted); }));
+  if (msg2Src) { const v2 = $('mvid2'); $('strip2').textContent = fromText; v2.src = msg2Src; v2.setAttribute('aria-label', 'Video from the back of the card' + (d.from ? ', from ' + d.from : '')); $('from2').hidden = false;
+    v2.addEventListener('loadedmetadata', () => { if (v2.videoWidth) $('fbox2').style.aspectRatio = v2.videoWidth + '/' + v2.videoHeight; });
+    ['play', 'pause'].forEach(ev => v2.addEventListener(ev, () => { const on = !v2.paused; $('fbox2').classList.toggle('on', on); $('pp2').innerHTML = on ? '&#10074;&#10074;' : '&#9654;'; if (on) mv.pause(); }));
+    mv.addEventListener('play', () => v2.pause());
+    $('pp2').onclick = v2.onclick = () => { if (v2.paused) { v2.muted = false; v2.play().catch(() => { v2.muted = true; v2.play().catch(() => {}); }); } else v2.pause(); }; }
+  if (d.message || d.from) { const m = $('msg'); m.innerHTML = '<small>A message for you</small>'; m.appendChild(document.createTextNode((d.message || '') + (d.from ? '\n\n— ' + d.from : ''))); m.hidden = false; }
+  $('wait').hidden = true; $('view').hidden = false; $('made').hidden = false;
+  live('The postcard is ready. Press Point at your postcard, then point your phone at it. Or press Watch it here.');
+
+  $('watchBtn').onclick = () => { const on = !$('card').classList.contains('on'); $('card').classList.toggle('on', on); $('watchBtn').textContent = on ? 'Stop' : 'Watch it here';
+    msgPlay(on);
+    if (scape) { clock = anim ? () => anim.time : () => $('vid').currentTime; if (on) scape.start(); else scape.stop(); }
+    if (anim) { if (on) anim.start(); else anim.stop(); return; }
+    const v = $('vid'); v.muted = true; if (on) v.play().catch(() => {}); else v.pause(); };
+
+  /* the camera: find the postcard, work out which side is up, and play the video right on its picture */
+  const sides = {}, sideCv = {};
+  for (const side of ['front', 'back']) { const cv = side === 'front' ? $('cf') : await MP.draw(document.createElement('canvas'), 'back', card, { scale: 1 }); sideCv[side] = cv; sides[side] = AAAccount.FP.fromImage(cv, cv.width, cv.height); }
+  // what the scanner matches, so it sits on the card itself and ignores the placemat, book or phone beside it:
+  // the whole front, the front's square picture by itself (close up), and the back
+  const sqCv = document.createElement('canvas'); { const f = $('cf'), k = MP.REGIONS.front[2]; sqCv.width = Math.round(f.width * k); sqCv.height = f.height; sqCv.getContext('2d').drawImage(f, 0, 0, sqCv.width, f.height, 0, 0, sqCv.width, f.height); }
+  const apply = (H, u, v) => { const z = H[6] * u + H[7] * v + 1; return [(H[0] * u + H[1] * v + H[2]) / z, (H[3] * u + H[4] * v + H[5]) / z]; };
+  $('camBtn').onclick = () => {
+    if (window.AAStats) AAStats.log(code, 'camera');
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.AACapture) { live('This browser can’t use the camera here. Press Watch it here instead.'); return; }
+    const ov = document.createElement('div'); ov.className = 'cam'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Camera');
+    ov.innerHTML = '<div class="box"><video playsinline muted autoplay></video><div class="live"><video loop playsinline muted></video><canvas aria-hidden="true"></canvas></div><div class="under" hidden><div class="strip"></div><div class="uv"><video loop playsinline></video></div></div></div><p class="tip" aria-live="polite">Point your phone at the postcard. Keep all four corners in view.</p><div class="cbar"><button type="button" data-x="snd">Sound on</button><button type="button" data-x="back">Back</button></div>';
+    document.body.appendChild(ov); document.body.style.overflow = 'hidden'; const mainEl = document.querySelector('main'); if (mainEl) mainEl.inert = true;
+    const cam = ov.querySelector('.box>video'), box = ov.querySelector('.box'), lv = ov.querySelector('.live'), pv = lv.querySelector('video'), tip = ov.querySelector('.tip');
+    if (vidSrc) { pv.src = vidSrc; pv.muted = true; }
+    // the video message rides under the card: started now (this tap lets it play with sound), paused until the card is found
+    const un = ov.querySelector('.under'), uv = un.querySelector('video'), ubox = un.querySelector('.uv'), snd = ov.querySelector('[data-x=snd]');
+    let uside = 'front', ustart = { front: 0, back: 0 };   // which side's video is under the card, and where each one was up to
+    if (msgSrc) { un.hidden = false; un.querySelector('.strip').textContent = fromText; uv.crossOrigin = 'anonymous'; uv.src = msgSrc; uv.muted = false; mv.pause(); $('mvid2').pause();
+      uv.play().then(() => { if (!seen) uv.pause(); }).catch(() => { uv.muted = true; soundOn = false; if (scape) scape.mute(true); });
+      un.onclick = () => { if (uv.paused) uv.play().catch(() => {}); else uv.pause(); };
+      uv.addEventListener('volumechange', () => { snd.textContent = uv.muted ? 'Sound on' : 'Sound off'; });
+      snd.textContent = 'Sound off'; }
+    // one sound button for everything: the video message and the place's soundscape
+    if (window.MagicSound) MagicSound.unlock();
+    let soundOn = true; if (scape) { scape.stop(); clock = anim ? () => anim.time : () => pv.currentTime; scape.mute(false); }
+    uv.addEventListener('play', () => { if (scape) scape.duck(!uv.muted); }); uv.addEventListener('pause', () => { if (scape) scape.duck(false); });
+    // on the front, the place name and badge stay on top of the moving picture
+    const topc = lv.querySelector('canvas'); MP.drawTop(topc, card, { scale: 1.2 });
+    if (anim) { pv.style.display = 'none'; lv.insertBefore(anim.canvas, topc); anim.start(); }
+    if (!msgSrc && !scape) snd.hidden = true; else if (!msgSrc) { snd.textContent = 'Sound off'; }
+    const gc = document.createElement('canvas'), gx = gc.getContext('2d', { willReadFrequently: true });
+    let st = null, run = true, trk = null, q = null, qu = null, seen = 0, lost = 0, lock = null, lastId = 0;
+    const close = () => { run = false; removeEventListener('keydown', esc); if (mainEl) mainEl.inert = false; if (st) st.getTracks().forEach(t => t.stop()); pv.pause(); uv.pause(); if (scape) { scape.stop(); if ($('card').classList.contains('on')) { clock = anim ? () => anim.time : () => $('vid').currentTime; scape.start(); } } if (anim) { $('card').insertBefore(anim.canvas, $('ctop')); if (!$('card').classList.contains('on')) anim.stop(); } ov.remove(); document.body.style.overflow = ''; $('camBtn').focus(); };
+    const esc = e => { if (e.key === 'Escape' && run) close(); }; addEventListener('keydown', esc);
+    ov.querySelector('[data-x=back]').onclick = close;
+    // a photo of the moment: the camera, the card alive on it, and the video message under it, then share or save
+    if (window.AAShare) { const pb = AAShare.button('Photo'); ov.querySelector('.cbar').insertBefore(pb, ov.querySelector('[data-x=back]'));
+      pb.onclick = () => {
+        if (!q) { tip.textContent = 'Point at the postcard first'; tip.classList.remove('hide'); return; }
+        const k = Math.min(2, devicePixelRatio || 1), bw = parseFloat(box.style.width), bh = parseFloat(box.style.height), sc = pts => pts.map(([x, y]) => [x * k, y * k]), layers = [];
+        if (lock && lock.side === 'front') layers.push({ src: anim ? anim.canvas : pv, quad: sc(q) }, { src: topc, quad: sc(q) });
+        if (qu && msgSrc) { const uc = document.createElement('canvas'); uc.width = qu.W; uc.height = qu.H; const g = uc.getContext('2d');
+          g.fillStyle = '#000'; g.fillRect(0, 0, qu.W, 64); g.fillStyle = '#fff'; g.font = '900 30px Archivo, "Arial Black", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(fromText.toUpperCase(), qu.W / 2, 33);
+          try { g.drawImage(uv, 0, 72, qu.W, qu.H - 72); } catch (e) {} layers.push({ src: uc, quad: sc(qu.c) }); }
+        const c = AAShare.photo({ w: bw * k, h: bh * k, base: [cam], layers }), log = kind => { if (window.AAStats) AAStats.log(code, kind); };
+        AAShare.flash(); AAShare.sheet(c, { name: 'magic-postcard' + (d.place ? '-' + d.place : ''), title: d.place ? 'a Magic Postcard from ' + d.place : 'a Magic Postcard', onShare: () => log('share'), onSave: () => log('save') }); log('capture');
+      }; }
+    snd.onclick = e => { soundOn = !soundOn; if (msgSrc) { uv.muted = !soundOn; if (soundOn && seen) uv.play().catch(() => {}); } if (scape) { scape.mute(!soundOn); if (soundOn && seen && !scape.running) scape.start(); }
+      e.target.textContent = soundOn ? 'Sound off' : 'Sound on'; };
+    ov.querySelector('[data-x=back]').focus();
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false }).then(s => {
+      st = s; cam.srcObject = s; cam.play().catch(() => {}); if (AACapture.resetTracking) AACapture.resetTracking(); requestAnimationFrame(frame); live('Camera on. Point at the postcard.');
+    }).catch(() => { close(); live('The camera wasn’t allowed. Press Watch it here instead.'); });
+
+    // which side, and which way round: try all four turns of the corners against both sides of the card
+    function identify(c, vw, vh) {
+      const GW = 320, GH = Math.round(320 * vh / vw); gc.width = GW; gc.height = GH; gx.drawImage(cam, 0, 0, GW, GH);
+      const px = gx.getImageData(0, 0, GW, GH).data; let best = null;
+      for (let r = 0; r < 4; r++) { const qq = [0, 1, 2, 3].map(i => c[(i + r) % 4]), f = AAAccount.FP.fromQuad(px, GW, GH, qq.map(([x, y]) => [x * GW, y * GH]));
+        for (const side of ['front', 'back']) { const sc = AAAccount.FP.score(f, sides[side]); if (!best || sc > best.sc) best = { sc, side, r }; } }
+      return best;
+    }
+    function frame(now) {
+      if (!run) return; requestAnimationFrame(frame);
+      const vw = cam.videoWidth, vh = cam.videoHeight; if (!vw) return;
+      const s = Math.min(innerWidth / vw, innerHeight / vh), bw = vw * s, bh = vh * s; box.style.width = bw + 'px'; box.style.height = bh + 'px';
+      if (!trk && AACapture.tracker) trk = AACapture.tracker({ target: () => !lock || lock.guess ? [sideCv.front, sqCv, sideCv.back] : lock.side === 'front' ? [sideCv.front, sqCv] : [sideCv.back] });
+      const r = trk ? trk.update(cam, vw, vh) : AACapture.detect(cam, vw, vh);
+      if (r) {
+        lost = 0;
+        if (!lock || now - lastId > 1500) { lastId = now; const b = identify(r.c, vw, vh); if (b && b.sc > .22) lock = b; else if (!lock) lock = { side: 'front', r: 0, sc: 0, guess: true }; }
+        const c = [0, 1, 2, 3].map(i => r.c[(i + lock.r) % 4]);
+        // a square in view is the picture by itself; otherwise it's the whole card and the picture is part of it
+        const P = c.map(([x, y]) => [x * bw, y * bh]), wd = (Math.hypot(P[1][0] - P[0][0], P[1][1] - P[0][1]) + Math.hypot(P[2][0] - P[3][0], P[2][1] - P[3][1])) / 2,
+          ht = (Math.hypot(P[3][0] - P[0][0], P[3][1] - P[0][1]) + Math.hypot(P[2][0] - P[1][0], P[2][1] - P[1][1])) / 2, sq = Math.max(wd, ht) / Math.min(wd, ht) < 1.2;
+        // on the back, the message stays readable: nothing moves on the card itself, the back's video plays under it
+        topc.style.display = lock.side === 'front' ? '' : 'none'; lv.style.display = lock.side === 'front' ? '' : 'none';
+        if (msgSrc && msg2Src && lock.side !== uside) { ustart[uside] = uv.currentTime; uside = lock.side; const was = !uv.paused || !seen;
+          uv.src = uside === 'back' ? msg2Src : msgSrc; uv.addEventListener('loadedmetadata', () => { uv.currentTime = ustart[uside] || 0; }, { once: true }); if (was && seen) uv.play().catch(() => {}); }
+        // Hc: the whole card's corners (0..1 across and down) on screen. Seeing only the square picture, the card goes on past its right edge.
+        const sqf = sq && lock.side === 'front', Hs = AACapture.homography([[0, 0], [1, 0], [1, 1], [0, 1]], P), k = MP.REGIONS.front[2];
+        const Hc = sqf ? AACapture.homography([[0, 0], [1, 0], [1, 1], [0, 1]], [[0, 0], [1 / k, 0], [1 / k, 1], [0, 1]].map(([u, v]) => apply(Hs, u, v))) : Hs;
+        const reg = MP.REGIONS[lock.side];
+        q = [[reg[0], reg[1]], [reg[2], reg[1]], [reg[2], reg[3]], [reg[0], reg[3]]].map(([u, v]) => apply(Hc, u, v));
+        // under the card, like the Blind Canvas clip: a gap, the FROM strip, then the video. Sizes in card pixels (576 x 384).
+        if (msgSrc) { const ua = uv.videoWidth ? uv.videoHeight / uv.videoWidth : ar, UW = 576, UH = 64 + 8 + Math.round(UW * ua), top = (MP.H + 12) / MP.H, bot = (MP.H + 12 + UH) / MP.H;
+          ubox.style.height = Math.round(UW * ua) + 'px'; un.style.height = UH + 'px';
+          qu = { W: UW, H: UH, c: [[0, top], [1, top], [1, bot], [0, bot]].map(([u, v]) => apply(Hc, u, v)) }; }
+        if (!seen && scape && soundOn) scape.start();
+        if (!seen) { seen = 1; if (window.AAStats) AAStats.log(code, 'found'); tip.textContent = 'Found it!'; live('Found the postcard. It is alive.' + (msgSrc ? ' ' + fromText + ' plays under it.' : '')); try { navigator.vibrate && navigator.vibrate([30, 30, 60]); } catch (e) {} pv.play().catch(() => {}); if (msgSrc) uv.play().catch(() => { uv.muted = true; uv.play().catch(() => {}); }); setTimeout(() => { if (run) tip.classList.add('hide'); }, 2000); }
+      } else if (q && ++lost === 20) { tip.textContent = 'Lost it. Point back at the postcard.'; tip.classList.remove('hide'); }
+      if (q) { const LW = 400, LH = 400; lv.style.width = LW + 'px'; lv.style.height = LH + 'px';
+        const H = AACapture.homography([[0, 0], [LW, 0], [LW, LH], [0, LH]], q);
+        lv.style.transform = `matrix3d(${H[0]},${H[3]},0,${H[6]},${H[1]},${H[4]},0,${H[7]},0,0,1,0,${H[2]},${H[5]},0,1)`; lv.style.opacity = lost > 20 ? .3 : 1; }
+      if (qu) { const H = AACapture.homography([[0, 0], [qu.W, 0], [qu.W, qu.H], [0, qu.H]], qu.c);
+        un.style.transform = `matrix3d(${H[0]},${H[3]},0,${H[6]},${H[1]},${H[4]},0,${H[7]},0,0,1,0,${H[2]},${H[5]},0,1)`; un.style.opacity = lost > 20 ? .3 : 1; }
+    }
+  };
+  /* "they opened it": the first time a postcard is opened, the sender gets an email (not when the sender opens their own) */
+  const FN = C.supabaseUrl ? C.supabaseUrl.replace(/\/$/, '') + '/functions/v1/postcard-events' : '';
+  async function helper(body) { const h = { 'Content-Type': 'application/json', apikey: C.supabaseKey };
+    try { const cl = await AAAccount.load(), { data } = await cl.auth.getSession(); if (data && data.session) h['x-user-token'] = data.session.access_token; } catch (e) {}
+    const r = await fetch(FN, { method: 'POST', headers: h, body: JSON.stringify(Object.assign({ code }, body)) }); let o = {}; try { o = await r.json(); } catch (e) {}
+    if (!r.ok) throw new Error(o.error || 'Something went wrong. Please try again.'); return o; }
+  const mark = k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, setMark = k => { try { localStorage.setItem(k, '1'); } catch (e) {} };
+  if (FN && !qs.get('print') && !mark('aa-pc-mine-' + code) && !mark('aa-pc-open-' + code)) helper({ action: 'open' }).then(() => setMark('aa-pc-open-' + code)).catch(() => {});
+
+  /* a reply: a video, or a voice recording for the camera-shy. It goes privately to the sender */
+  if (FN && d.replies !== false && !qs.get('print')) {
+    const sender = (d.from || '').trim(), files = { video: null, audio: null }; let kind = 'video';
+    $('replyH').textContent = 'Send ' + (sender || 'them') + ' a reply'; if (sender) $('replyP').textContent = 'Say thank you, wave hello, show ' + sender + ' where you are. Up to a minute. Only ' + sender + ' will see or hear it.';
+    $('rName').value = (d.to || '').trim(); $('reply').hidden = false;
+    const rSay = t => { $('rSt').textContent = t; }, ready = () => { $('rSend').disabled = !files[kind]; };
+    function setKind(k) { kind = k; $('tVid').setAttribute('aria-pressed', k === 'video'); $('tAud').setAttribute('aria-pressed', k === 'audio'); $('pVid').hidden = k !== 'video'; $('pAud').hidden = k !== 'audio'; ready(); rSay(''); }
+    $('tVid').onclick = () => setKind('video'); $('tAud').onclick = () => setKind('audio');
+    const tooBig = f => { if (f.size > 50 * 1048576) { rSay('That file is ' + Math.round(f.size / 1048576) + ' MB. Please keep it under 50 MB (about a minute).'); return true; } return false; };
+    function preview(el, f, k) { const u = URL.createObjectURL(f); el.src = u; el.hidden = false;
+      el.onloadedmetadata = () => { if (isFinite(el.duration) && el.duration > 65) { files[k] = null; ready(); rSay('That is ' + Math.round(el.duration) + ' seconds. Please keep it to a minute.'); return; } files[k] = f; ready(); rSay('Sounds good. Press Send my reply.'); };
+      el.onerror = () => { files[k] = f; ready(); rSay('Ready to send.'); }; }
+    ['rRec', 'rUp'].forEach(id => { $(id).onchange = () => { const f = $(id).files[0]; $(id).value = ''; if (f && !tooBig(f)) preview($('rPrev'), f, 'video'); }; });
+    $('rAudUp').onchange = () => { const f = $('rAudUp').files[0]; $('rAudUp').value = ''; if (f && !tooBig(f)) preview($('rAud'), f, 'audio'); };
+    // recording a voice message right here: a big button, a level meter, and a one-minute timer
+    let rec = null, stream = null, tick = 0, raf = 0, actx = null;
+    const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+    async function startRec() {
+      if (!navigator.mediaDevices || !window.MediaRecorder) { rSay('This browser can\u2019t record here. Please upload a voice memo instead.'); return; }
+      try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
+      catch (e) { if (actx) actx.close().catch(() => {}); actx = null; rSay('The microphone wasn\u2019t allowed. You can upload a voice memo instead.'); return; }
+      const mt = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm', 'audio/ogg;codecs=opus'].find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || '';
+      const chunks = []; rec = new MediaRecorder(stream, mt ? { mimeType: mt } : undefined);
+      rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); clearInterval(tick); cancelAnimationFrame(raf); if (actx) actx.close().catch(() => {}); actx = null; $('rLvl').style.width = '0';
+        const type = (rec.mimeType || mt || 'audio/webm').split(';')[0], ext = /mp4/.test(type) ? 'm4a' : /ogg/.test(type) ? 'ogg' : 'webm';
+        $('rMic').classList.remove('on'); $('rMic').textContent = 'Record again'; rec = null;
+        if (chunks.length) preview($('rAud'), new File([new Blob(chunks, { type })], 'voice.' + ext, { type }), 'audio'); };
+      rec.start(250); const t0 = Date.now(); $('rMic').classList.add('on'); $('rMic').textContent = 'Stop'; $('rAud').hidden = true; files.audio = null; ready(); rSay('Recording… press Stop when you\u2019re done.');
+      tick = setInterval(() => { const sec = (Date.now() - t0) / 1000; $('rTime').textContent = fmt(sec) + ' / 1:00'; if (sec >= 60 && rec) rec.stop(); }, 200);
+      try { if (actx.state === 'suspended') await actx.resume(); const an = actx.createAnalyser(); an.fftSize = 512; actx.createMediaStreamSource(stream).connect(an); const buf = new Uint8Array(an.fftSize);
+        (function lvl() { an.getByteTimeDomainData(buf); let m = 0; for (const x of buf) m = Math.max(m, Math.abs(x - 128)); $('rLvl').style.width = Math.min(100, m / 1.1) + '%'; raf = requestAnimationFrame(lvl); })(); } catch (e) {}
+    }
+    // the meter's audio is opened right in the tap (phones only allow it then)
+    let starting = false;
+    $('rMic').onclick = async () => { if (rec) { rec.stop(); return; } if (starting) return; starting = true; try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { actx = null; } try { await startRec(); } finally { starting = false; } };
+    $('rSend').onclick = async () => { const f = files[kind]; if (!f) return; const btn = $('rSend'); btn.disabled = true;
+      try { rSay('Sending your reply…'); const t = await helper({ action: 'reply-start', type: f.type || (kind === 'audio' ? 'audio/mp4' : 'video/mp4'), size: f.size });
+        rSay(kind === 'audio' ? 'Uploading your voice message…' : 'Uploading your video… (this can take a minute)');
+        const cl = await AAAccount.load(), up = await cl.storage.from('media').uploadToSignedUrl(t.path, t.token, f, { contentType: f.type || (kind === 'audio' ? 'audio/mp4' : 'video/mp4') }); if (up.error) throw up.error;
+        await helper({ action: 'reply-done', path: t.path, name: $('rName').value.trim(), note: $('rNote').value.trim() }); if (window.AAStats) AAStats.log(code, 'reply');
+        $('reply').innerHTML = '<div class="sent"><h2>Sent! Thank you</h2><p>' + (sender ? sender.replace(/[<>&"]/g, '') + ' will get it by email.' : 'They will get it by email.') + '</p><p>Want to send one of your own? Pick a place, record a hello, and we mail it.</p><a href="./">Make a Magic Postcard</a></div>';
+        live('Your reply was sent.'); }
+      catch (e) { rSay((e && e.message) || 'Something went wrong. Please try again.'); btn.disabled = false; } };
+  }
+
+  // for printing: play.html?c=CODE&print=1 adds buttons for the print files (the printing service adds the address)
+  if (qs.get('print') === '1') { const b = document.createElement('div'); b.className = 'bar'; b.style.marginTop = '14px';
+    b.innerHTML = '<button type="button" data-s="front">Print file: front</button><button type="button" data-s="back">Print file: back</button>'; $('view').appendChild(b);
+    b.querySelectorAll('button').forEach(btn => btn.onclick = async () => { const side = btn.dataset.s, cv = await MP.print(side, Object.assign({}, card, { address: null }));
+      cv.toBlob(bl => { const a = document.createElement('a'); a.href = URL.createObjectURL(bl); a.download = 'magic-postcard-' + code + '-' + side + '.png'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000); }, 'image/png'); }); }
+  if (qs.get('cam') === '1') $('camBtn').click();
+})();
+</script>
+</body>
+</html>

@@ -512,9 +512,9 @@ function bell(f, at, v) { if (!AC) return; const o = AC.createOscillator(), o2 =
 function crackle() { if (!AC) return; const n = Math.round(AC.sampleRate * .02), b = AC.createBuffer(1, n, AC.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3);
   const s = AC.createBufferSource(); s.buffer = b; const f = AC.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 1500 + Math.random() * 2500; const g = AC.createGain(); g.gain.value = .05 * (.4 + Math.random()); s.connect(f); f.connect(g); g.connect(master); s.start(); }
 /* ── Ben's voice tracks: the welcome plays over any rectangle; Funny Money plays over a dollar bill ── */
-const VO = { welcome: { src: 'welcome.mp3' }, money: { src: 'funny-money.mp3' } };
+const VO = { welcome: { src: 'welcome.mp3' }, money: { src: 'funny-money.mp3' }, panda: { src: 'panda.mp3' } };
 for (const k in VO) VO[k].raw = fetch(VO[k].src).then(r => r.ok ? r.arrayBuffer() : null).catch(() => null);
-let voG = null, voSrc = null, voKey = '', voStart = 0, voStopT = 0; const voOff = { welcome: 0, money: 0 };
+let voG = null, voSrc = null, voKey = '', voStart = 0, voStopT = 0; const voOff = { welcome: 0, money: 0, panda: 0 };
 function loadVO() { if (!AC) return; voG = AC.createGain(); voG.gain.value = 1; voG.connect(master);
   for (const k in VO) VO[k].raw.then(b => b && new Promise((ok, no) => AC.decodeAudioData(b.slice(0), ok, no))).then(buf => { if (!buf) return; VO[k].buf = buf; if (locked && kind === k && !voSrc) { voPlay(k); bed(false); } }).catch(() => {}); }
 function voPlay(k) { voStop(); const v = VO[k]; if (!AC || !voG || !v || !v.buf) return false;
@@ -525,6 +525,58 @@ function voStop() { if (!voSrc) return; voOff[voKey] = AC.currentTime - voStart;
 function voTime(k, fallback) { const v = VO[k]; return voSrc && voKey === k && v.buf ? (AC.currentTime - voStart) % v.buf.duration : fallback; }
 function bed(on) { if (bedG) bedG.gain.setTargetAtTime(on ? 1 : 0, AC.currentTime, on ? .8 : .3); }
 $('soundBtn').onclick = () => { soundOn = !soundOn; if (master) master.gain.setTargetAtTime(soundOn ? .9 : 0, AC.currentTime, .1); $('soundBtn').textContent = soundOn ? 'Sound on' : 'Sound off'; $('soundBtn').setAttribute('aria-pressed', soundOn); };
+
+/* ── a hidden surprise (nothing on the page mentions it): the round panda logo, printed on a square card.
+   The scanner finds the card's four corners; the middle of the card is checked against the logo's built-in fingerprint
+   (in any of four turns); then the panda comes out of the logo and eats noodles. The video's right half is its see-through
+   mask, so only the panda and its red circle cover the card, and the printed ring stays real. ── */
+const PANDA_FP = Float32Array.from([-14,-41,-41,-41,-41,-41,-41,-17,46,47,47,47,47,47,47,47,32,-40,-41,-41,-41,-41,-41,-41,-14,-14,-14,-14,-14,-41,-41,-41,-41,-39,46,47,47,47,47,47,47,47,47,47,47,47,11,-41,-41,-41,-41,-41,-17,-14,-14,-14,-14,-41,-41,-41,-32,47,47,47,47,47,47,47,47,47,47,47,47,47,47,36,-41,-41,-41,-41,-18,-14,-14,-14,-14,-34,-41,-37,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,30,-41,-41,-41,-14,-14,-14,-14,-14,-14,-41,46,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,-14,-41,-5,46,-14,-14,-14,-14,-14,7,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,-41,45,47,47,-13,-14,-14,-14,46,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,-17,-40,47,47,47,-14,-14,-14,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,36,-41,-12,47,47,45,-14,-6,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,-41,-41,47,47,47,-14,11,47,47,47,43,-41,-41,6,47,47,47,47,21,-35,8,47,47,47,47,47,47,47,-41,-41,-11,47,47,-14,19,47,47,47,-41,-41,-41,-41,47,47,47,47,-41,-41,-41,5,47,47,47,47,47,47,-41,-41,-41,47,47,-14,14,47,47,44,-41,18,-41,-41,47,47,47,46,-41,-41,-41,-41,47,47,47,47,47,47,-41,-41,-41,46,47,-14,-7,47,47,27,-41,8,-41,30,47,47,47,47,-41,22,4,-41,47,47,47,47,47,45,-41,-41,-41,12,47,-14,-14,47,47,47,-41,-41,-33,47,47,47,47,47,24,-41,-41,-41,47,47,47,47,47,-6,-41,-41,-41,-20,47,-14,-14,18,47,47,-8,-41,34,47,47,47,47,47,47,-41,-41,-28,47,47,47,47,47,-41,-41,-41,-41,-40,47,-14,-17,-41,47,47,47,47,47,47,47,47,47,47,47,18,-19,47,47,47,47,47,-19,-41,-41,-41,-41,-41,47,-14,-36,-41,-32,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,47,-8,-41,-41,-41,-41,-41,-41,47,-14,-41,-41,-41,-33,47,47,47,29,-32,-13,-12,7,47,47,47,47,47,47,-29,-41,-41,-41,-41,-41,-41,-41,0,-14,-41,-41,-41,-41,-41,41,47,47,36,-41,15,47,47,47,47,47,-12,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-17,-41,-41,-41,-41,-41,-41,26,47,47,47,47,47,47,47,-7,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-20,-41,-41,-41,-41,-41,-41,-41,-23,40,47,47,42,-12,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-20,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-15,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-14,-41,-41,-41,-41,-41,-41,-41,-41,-41,-39,-14,-14,-14,-40,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-14,-40,-41,-41,-41,-41,-41,-41,-41,-41,-17,-14,-14,-14,-23,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-14,-24,-41,-41,-41,-41,-41,-41,-41,-41,-14,-14,-14,-14,-21,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-22,-14,-14,-41,-41,-41,-41,-41,-41,-41,-41,-21,-14,-14,-14,-35,-41,-41,-41,-41,-41,-41,-41,-41,-41,-40,-14,-14,-14,-14,-14,-23,-41,-41,-41,-41,-41,-41,-41,-40,-14,-14,-15,-41,-41,-41,-41,-41,-41,-41,-41,-41,-41,-16,-14,-14,-14], x => x / 40);
+const PN = 28, PU0 = .30, PU1 = .70, PANDA_T = .6, PANDA_LEN = 10.04, PANDA_K = 1.0598;   // PANDA_K: the logo's edge sits at 46% of the card's width and 48.75% of the video's
+const pandaVid = document.createElement('video'); pandaVid.muted = true; pandaVid.loop = true; pandaVid.playsInline = true; pandaVid.setAttribute('playsinline', ''); pandaVid.preload = 'auto';
+for (const [src, type] of [['panda-surprise.mp4', 'video/mp4'], ['panda-surprise.webm', 'video/webm']]) { const so = document.createElement('source'); so.src = src; so.type = type; pandaVid.appendChild(so); }
+let pandaOK = false, pandaRot = 0, pandaT = 0, pPan = null, texPan = null;
+const isSquare = q => { const a = (dist(q[0], q[1]) + dist(q[3], q[2])) / (dist(q[0], q[3]) + dist(q[1], q[2]) || 1); return a > .72 && a < 1.38; };
+const rotQ = (q, r) => [0, 1, 2, 3].map(i => q[(i + r) % 4]);
+function pandaPatch(q) {
+  const Hf = squareToQuad(q), W = innerWidth, H = innerHeight, vw = video.videoWidth, vh = video.videoHeight, s = Math.max(W / vw, H / vh), ox = (W - vw * s) / 2, oy = (H - vh * s) / 2, out = new Float32Array(PN * PN);
+  for (let j = 0; j < PN; j++) for (let i = 0; i < PN; i++) {
+    const u = PU0 + (i + .5) / PN * (PU1 - PU0), v = PU0 + (j + .5) / PN * (PU1 - PU0);
+    const X = Hf[0] * u + Hf[1] * v + Hf[2], Y = Hf[3] * u + Hf[4] * v + Hf[5], Z = Hf[6] * u + Hf[7] * v + Hf[8];
+    out[j * PN + i] = gAt(((X / Z - ox) / (vw * s)) * GW, ((Y / Z - oy) / (vh * s)) * GH); }
+  return norm(out);
+}
+function matchPanda(q) { if (!grab()) return { score: 0, rot: 0 }; let best = { score: -1, rot: 0 };
+  for (let r = 0; r < 4; r++) { const P = pandaPatch(rotQ(q, r)); let sc = 0; for (let i = 0; i < P.length; i++) sc += P[i] * PANDA_FP[i]; sc /= P.length; if (sc > best.score) best = { score: sc, rot: r }; }
+  return best; }
+function pandaCheck(q, now, force) {
+  if (!isSquare(q)) { pandaOK = false; return false; }
+  if (force || now - pandaT > 350) { pandaT = now; const m = matchPanda(q); if (m.score > PANDA_T) { pandaOK = true; pandaRot = m.rot; } else if (m.score < PANDA_T - .15) pandaOK = false; }
+  return pandaOK;
+}
+const whichKind = (q, now, force) => billCheck(q, now, force) ? 'money' : pandaCheck(q, now, force) ? 'panda' : 'welcome';
+const PAN = `precision mediump float;
+uniform sampler2D V;uniform mat3 Hi;uniform vec2 R;uniform float dpr,alpha,K;
+void main(){
+  vec2 sp=vec2(gl_FragCoord.x,R.y-gl_FragCoord.y)/dpr;vec3 h=Hi*vec3(sp,1.);vec2 uv=h.xy/h.z,v=.5+(uv-.5)*K;
+  if(h.z<=0.||v.x<0.||v.x>1.||v.y<0.||v.y>1.){gl_FragColor=vec4(0.);return;}
+  vec3 c=texture2D(V,vec2(min(v.x,.996)*.5,v.y)).rgb;float a=texture2D(V,vec2(.5+max(v.x,.004)*.5,v.y)).r*alpha;
+  gl_FragColor=vec4(c*a,a);}`;
+function drawPanda(t0) {
+  if (!pPan) { pPan = program(PAN); const at = gl.getAttribLocation(pPan, 'p'); gl.enableVertexAttribArray(at); gl.vertexAttribPointer(at, 2, gl.FLOAT, false, 0, 0);
+    for (const n of ['V', 'Hi', 'R', 'dpr', 'alpha', 'K']) U['n' + n] = gl.getUniformLocation(pPan, n); texPan = texFrom(null); }
+  const pt = voTime('panda', t0 % PANDA_LEN);
+  if (pandaVid.paused) pandaVid.play().catch(() => {});
+  if (pandaVid.readyState >= 2 && Math.abs(pandaVid.currentTime - pt) > .3 && pt < PANDA_LEN - .5) { try { pandaVid.currentTime = pt; } catch (e) {} }   // in step with the sound
+  if (pandaVid.readyState < 2) return;
+  const dpr = Math.min(2, devicePixelRatio || 1), Hm = inv3(squareToQuad(rotQ(shown, pandaRot))), fade = clamp((PANDA_LEN - pt) / .35, 0, 1);   // melts back into the printed logo just before it starts again
+  gl.useProgram(pPan); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, texPan); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, pandaVid); gl.uniform1i(U.nV, 0);
+  gl.uniformMatrix3fv(U.nHi, false, new Float32Array([Hm[0], Hm[3], Hm[6], Hm[1], Hm[4], Hm[7], Hm[2], Hm[5], Hm[8]]));
+  gl.uniform2f(U.nR, cv.width, cv.height); gl.uniform1f(U.ndpr, dpr); gl.uniform1f(U.nalpha, alphaV * fade); gl.uniform1f(U.nK, PANDA_K);
+  gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); gl.disable(gl.BLEND);
+}
+const FOUND_SAY = { money: 'Dollar bill found. Funny Money, Serious Business is playing on it.', panda: 'Surprise! The panda comes alive and slurps up noodles with chopsticks.', welcome: 'Rectangle found. Art Alive is playing on it.' };
+function setKind(k) { kind = k; kindN = 0; lastSeg = -1; reel.pause(); $('cap').hidden = true; if (k !== 'panda') pandaVid.pause(); else if (window.aaCount) aaCount('demo-panda');
+  bed(!voPlay(k)); say(FOUND_SAY[k]); }
 
 /* ── running the demo ── */
 const video = $('cam');
@@ -544,7 +596,7 @@ async function begin(withCam) {
   }
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}   // play even with the iPhone's silent switch on
   if (!AC) initAudio(); else AC.resume();
-  reel.play().then(() => reel.pause()).catch(() => {});
+  reel.play().then(() => reel.pause()).catch(() => {}); pandaVid.play().then(() => pandaVid.pause()).catch(() => {});
   if (window.aaCount) aaCount(withCam ? 'demo-camera-started' : 'demo-watched-without-camera');
   mode = withCam ? 'cam' : 'nocam'; $('intro').hidden = true; $('stage').hidden = false; $('stage').classList.toggle('nocam', !withCam);
   $('tv').hidden = withCam; $('guide').hidden = !withCam; video.hidden = !withCam;
@@ -560,15 +612,16 @@ function tvRect() { const W = innerWidth, H = innerHeight, room = H - 250, w = M
 function lockOn() {
   if (mode === 'cam' && window.aaCount && !lockOn.counted) { lockOn.counted = true; aaCount('demo-shape-found'); }
   locked = true; lockT = performance.now(); $('guide').hidden = true;
-  kind = mode === 'cam' && target && billCheck(target, performance.now(), true) ? 'money' : 'welcome'; kindN = 0; bed(!voPlay(kind));
+  kind = mode === 'cam' && target ? whichKind(target, performance.now(), true) : 'welcome'; kindN = 0; bed(!voPlay(kind));
   if (AC) { const n = AC.currentTime; bell(659.25, n + .02, .12); bell(987.77, n + .14, .08); }
   try { if (mode === 'cam' && navigator.vibrate) navigator.vibrate(40); } catch (e) {}
   hint(mode === 'cam' ? 'Found it' : 'Playing'); setTimeout(() => { if (locked) hint(mode === 'cam' ? 'Keep it in view' : 'Playing'); }, 1800);
-  say(kind === 'money' ? 'Dollar bill found. Funny Money, Serious Business is playing on it.' : mode === 'cam' ? 'Rectangle found. Art Alive is playing on it.' : 'Playing the demo.');
+  say(mode === 'cam' ? FOUND_SAY[kind] : 'Playing the demo.');
   if (kind === 'money') { reel.pause(); $('cap').hidden = true; if (window.aaCount) aaCount('demo-funny-money'); }
+  if (kind === 'panda') { reel.pause(); $('cap').hidden = true; if (window.aaCount) aaCount('demo-panda'); }
 }
-function unlock() { reel.pause(); voStop(); locked = false; $('guide').hidden = false; bed(false); $('cap').hidden = true; lastSeg = -1; hint('Center the whole shape again'); say('Lost it. Center the whole shape again.'); }
-function exitDemo() { reel.pause(); voStop(); running = false; if (stream) { for (const t of stream.getTracks()) t.stop(); stream = null; } video.srcObject = null; bed(false); try { speechSynthesis.cancel(); } catch (e) {}
+function unlock() { reel.pause(); pandaVid.pause(); voStop(); locked = false; $('guide').hidden = false; bed(false); $('cap').hidden = true; lastSeg = -1; hint('Center the whole shape again'); say('Lost it. Center the whole shape again.'); }
+function exitDemo() { reel.pause(); pandaVid.pause(); voStop(); running = false; if (stream) { for (const t of stream.getTracks()) t.stop(); stream = null; } video.srcObject = null; bed(false); try { speechSynthesis.cancel(); } catch (e) {}
   $('stage').hidden = true; $('intro').hidden = false; $('startBtn').focus(); }
 if (PRESENT) { $('teachBtn').hidden = false; $('teachBtn').textContent = FACE ? 'Re-teach bill' : 'Teach my bill'; $('teachBtn').onclick = teachBill; }
 $('exitBtn').onclick = exitDemo; $('startBtn').onclick = () => begin(true); $('noCamBtn').onclick = () => begin(false);
@@ -591,7 +644,7 @@ function loop(now) {
       if (TRK) target = q;
       else if (!target || dist(q[0], target[0]) + dist(q[2], target[2]) > .5 * dist(target[0], target[2])) target = q; else target = target.map((p, i) => [p[0] + (q[i][0] - p[0]) * .55, p[1] + (q[i][1] - p[1]) * .55]);
       if (!locked && hits >= 3) lockOn();
-      else if (locked && (billCheck(q, now) ? 'money' : 'welcome') !== kind) { if (++kindN > 30) { kind = kind === 'money' ? 'welcome' : 'money'; kindN = 0; lastSeg = -1; reel.pause(); $('cap').hidden = true; bed(!voPlay(kind)); say(kind === 'money' ? 'Dollar bill found. Funny Money, Serious Business is playing on it.' : 'Rectangle found. Art Alive is playing on it.'); } } else kindN = 0; }
+      else if (locked) { const want = whichKind(q, now); if (want !== kind) { if (++kindN > (want === 'panda' ? 12 : 30)) setKind(want); } else kindN = 0; } }
     else { misses++; if (misses > 2) hits = 0; if (misses > 6) prevC = null; if (locked && misses > 12) unlock(); }
   }
   if (target) { const a = (dist(target[0], target[1]) + dist(target[3], target[2])) / (dist(target[0], target[3]) + dist(target[1], target[2]) || 1); if (portrait && a > 1.05) portrait = false; else if (!portrait && a < .85) portrait = true; }
@@ -608,6 +661,7 @@ function draw(now, dt) {
   // running order: the logo, then the film with its text (played twice), then one living painting, and round again
   const VID = 2 * (reel.duration && isFinite(reel.duration) ? reel.duration : 11.67), CYC = VID + SEG;
   if (kind === 'money') { drawPuppet(t, dt); return; }
+  if (kind === 'panda') { drawPanda(t); return; }
   let k = 0, fade = 1, logoA = 0, useComp = false;
   if (t < LOGO_TIME) { logoA = t < 1.6 ? 1 : 1 - (t - 1.6) / (LOGO_TIME - 1.6); fade = 0; }
   else { const s = t - LOGO_TIME, c = Math.floor(s / CYC), ls = s - c * CYC;

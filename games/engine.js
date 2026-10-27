@@ -902,7 +902,7 @@ function create(root, data, opts) {
         if (!AR) return; AR.raf = requestAnimationFrame(tick);
         const vw = vid.videoWidth, vh = vid.videoHeight; if (!vw) return;
         stageEl.style.setProperty('--aag-arr', vw + '/' + vh); stageEl.style.setProperty('--aag-arn', (vw / vh).toFixed(4));
-        if (!AR.trk) AR.trk = AACapture.tracker ? AACapture.tracker() : null;
+        if (!AR.trk) AR.trk = AACapture.tracker ? AACapture.tracker({ target: img }) : null;   // the painting itself, so play sits on the art (not its frame or mat)
         const r = AR.trk ? AR.trk.update(vid, vw, vh) : AACapture.detect(vid, vw, vh), sw = stageEl.clientWidth, sh = stageEl.clientHeight;
         if (r) {
           AR.q = r.c.map(([x, y]) => [x * sw, y * sh]);

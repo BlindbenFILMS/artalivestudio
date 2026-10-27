@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Holiday Snow Globes · Art Alive</title>
+<meta name="description" content="Eight holiday snow globes. Shake your phone to make it snow, and watch each picture come alive.">
+<meta property="og:title" content="Holiday Snow Globes">
+<meta property="og:description" content="Shake your phone to make it snow, and watch each picture come alive.">
+<meta property="og:image" content="https://artalivestudio.com/play/holiday-snowglobe-600.jpg">
+<meta name="theme-color" content="#0b1530">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{--night:#0b1530;--night2:#22365e;--snow:#f6f8ff;--gold:#e2b45a;--soft:#c3cde3;--card:rgba(255,255,255,.05);--line:rgba(255,255,255,.14);color-scheme:dark}
+*{box-sizing:border-box}
+html{background:var(--night)}
+body{margin:0;min-height:100vh;background:linear-gradient(var(--night),var(--night2)) fixed;color:var(--snow);font:17px/1.45 "Atkinson Hyperlegible",Verdana,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(40px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+header{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+h1{margin:0;font:900 clamp(30px,7vw,56px)/1 Archivo,"Arial Black",Arial,sans-serif;font-stretch:118%;letter-spacing:.02em;text-transform:uppercase;text-wrap:balance}
+header p{margin:0;max-width:40ch;color:var(--soft)}
+.from{display:flex;align-items:center;gap:10px;color:var(--soft);font-size:14px;text-transform:uppercase;letter-spacing:.12em}
+.from img{height:46px;width:auto}
+.grid{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:16px}
+.grid a{display:flex;flex-direction:column;align-items:center;gap:10px;height:100%;padding:20px 16px 18px;border-radius:20px;background:var(--card);border:1px solid var(--line);color:inherit;text-decoration:none;text-align:center;transition:transform .2s,background .2s}
+.grid a:hover{transform:translateY(-3px);background:rgba(255,255,255,.09)}
+.grid a:focus-visible{outline:3px solid #7cc4ff;outline-offset:3px}
+.orb{position:relative;width:min(170px,62vw);aspect-ratio:1;border-radius:50%;overflow:hidden;box-shadow:0 0 0 3px rgba(220,235,255,.45),0 18px 40px -18px #000}
+.orb img{width:100%;height:100%;object-fit:cover;display:block}
+.orb::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.35),rgba(255,255,255,0) 38%),radial-gradient(circle,rgba(10,20,45,0) 60%,rgba(10,20,45,.45))}
+.n{font:800 12px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.grid h2{margin:0;font:900 19px/1.15 Archivo,"Arial Black",Arial,sans-serif;text-transform:uppercase;letter-spacing:.03em;text-wrap:balance}
+.by{margin:0;color:var(--soft);font-size:15px}
+.what{margin:0;color:#dfe5f2;font-size:15px}
+.cta{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:32px}
+.cta a{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:10px 22px;border-radius:16px;border:1.5px solid rgba(226,180,90,.7);background:rgba(8,14,32,.55);color:var(--snow);text-decoration:none}
+.cta b{font:800 15px/1.2 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.cta span{font-size:13px;color:var(--soft)}
+.cta a:focus-visible{outline:3px solid #7cc4ff;outline-offset:3px}
+footer{margin-top:28px;text-align:center;color:var(--soft);font-size:13px}
+footer a{color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="from"><span>Happy Holidays from</span><img src="ora-logo-white.png" alt="Ora, The Ophthalmology Research Company"></div>
+    <h1>Holiday Snow Globes</h1>
+    <p>Shake your phone to make it snow, and watch each picture come alive. Every globe also has a blindness simulator, to see it the way someone with sight loss might.</p>
+  </header>
+  <ul class="grid" id="grid"></ul>
+  <div class="cta"><a href="../snowglobe/"><b>Make your own snow globe</b><span>Your photo or video, free with Art Alive</span></a></div>
+  <footer>Made with <a href="../">Art Alive</a></footer>
+</div>
+<script>
+(function () {
+  'use strict';
+  const G = [
+    ['holiday-snowglobe.html', 'holiday-snowglobe-600.jpg', 'Friends in the Snow', '', 'Three friends wave hello from the snow.', 'Three smiling friends in winter hats in a snowy park'],
+    ['holiday-snowglobe-2.html', 'walk-through-fear-globe-600.jpg', 'Walk Through Fear', 'Ben Fox', 'A figure with a white cane walks toward the light.', 'A figure with a white cane walking toward a blazing orange light'],
+    ['holiday-snowglobe-3.html', 'all-lifes-beauty-globe-600.jpg', 'All Life’s Beauty', 'Dave Steele', 'She spins, and flowers fly into the air.', 'A woman in a glowing garden of flowers'],
+    ['holiday-snowglobe-4.html', 'the-only-light-well-see-globe-600.jpg', 'The Only Light We’ll See', 'Dave Steele', 'Rings of moonlight ripple across the lake.', 'A full moon over a still, dark lake'],
+    ['holiday-snowglobe-5.html', 'the-visions-that-we-share-globe-600.jpg', 'The Visions That We Share', 'Dave Steele', 'The eye slowly closes, then opens again.', 'A single eye in blues and golds'],
+    ['holiday-snowglobe-6.html', 'holiday-snowglobe-600.jpg', 'Through Other Eyes', '', 'The friends in the snow, made to try the blindness simulator.', 'Three smiling friends in winter hats in a snowy park'],
+    ['holiday-snowglobe-7.html', 'curating-hope-globe-600.jpg', 'Curating Hope', 'Ben Fox', 'People walk together toward the great tree.', 'A great tree with people gathered at its roots'],
+    ['holiday-snowglobe-8.html', 'almost-blindness-globe-600.jpg', 'Almost Blindness', 'Ben Fox', 'The tunnel swirls as the figure walks into the light.', 'A lone figure walking into a glowing tunnel of paint']
+  ];
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('grid').innerHTML = G.map(([href, img, title, by, what, alt], i) =>
+    '<li><a href="' + href + '"><div class="orb"><img src="' + img + '" alt="' + esc(alt) + '" loading="lazy"></div><span class="n">Globe ' + (i + 1) + '</span><h2>' + esc(title) + '</h2>' +
+    (by ? '<p class="by">by ' + esc(by) + '</p>' : '') + '<p class="what">' + esc(what) + '</p></a></li>').join('');
+})();
+</script>
+</body>
+</html>
