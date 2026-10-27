@@ -2340,7 +2340,8 @@ ${by}
 $('#dlGame').onclick = () => offerSave(new Blob([gameHTML()], { type: 'text/html' }), slug(G.title) + '-game.html');
 $('#dlProj').onclick = () => offerSave(new Blob([JSON.stringify(G)], { type: 'application/json' }), slug(G.title) + '.artalive.json');
 let opened = false;
-function openGame(d, done) { opened = true; G = Object.assign(G, d); Object.keys(edited).forEach(k => delete edited[k]); LINES.forEach(([k]) => { edited[k] = true; });
+function openGame(d, done) { if (d && d.type && !TYPES.some(g => g.id === d.type)) { location.replace('../make/game.html?g=' + encodeURIComponent(d.tpl || d.type) + '&project=' + encodeURIComponent(new URLSearchParams(location.search).get('project') || '')); return; }   // made from a template the Game Maker doesn't edit
+  opened = true; G = Object.assign(G, d); Object.keys(edited).forEach(k => delete edited[k]); LINES.forEach(([k]) => { edited[k] = true; });
   setImage(G.img, () => { $('#tIn').value = G.title || ''; $('#aIn').value = G.artist || ''; setType(G.type); go('play', true); $('#saveMsg').textContent = 'Opened ' + (G.title || 'your game') + '.'; if (done) done(); }); }
 $('#projIn').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return; e.target.value = '';

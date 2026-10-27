@@ -1,5 +1,5 @@
 /* Art Alive game engine. Plays one game made in the Game Maker: marble collect, marble maze, marble bowling,
-   hidden treasures, slide puzzle and memory match. Shared by the maker's Play step and every downloaded game. */
+   hidden treasures, slide puzzle and memory match, plus the template games: flashlight, change the weather and simon says. Shared by the maker's Play step and every downloaded game. */
 (function () {
 'use strict';
 const TAU = Math.PI * 2, clamp = (v, a, b) => v < a ? a : v > b ? b : v, lerp = (a, b, t) => a + (b - a) * t;
@@ -293,7 +293,9 @@ function autoCrops(n, W, H) {
 /* ── the game ── */
 const VIEWS = [['full', 'Full sight'], ['blur', 'Blurry sight'], ['tunnel', 'Tunnel vision'], ['center', 'Center loss'], ['contrast', 'High contrast']];
 const CONTROLS = [['joystick', 'Joystick'], ['buttons', 'Arrow buttons'], ['tilt', 'Tilt the phone']];
-const ACTION = { bowl: 'Roll', memory: 'Flip', puzzle: 'Peek', treasure: 'Listen' };
+const ACTION = { bowl: 'Roll', memory: 'Flip', puzzle: 'Peek', treasure: 'Listen', flashlight: 'Listen', simon: 'Replay' };
+const SIMON = [{ n: 'top left', c: '#ff7a2a', f: 261.63 }, { n: 'top right', c: '#2aa8e0', f: 329.63 }, { n: 'bottom left', c: '#3cc47c', f: 392 }, { n: 'bottom right', c: '#f5c542', f: 523.25 }];
+const WX = [['sun', 'Sun', '☀️'], ['rain', 'Rain', '🌧️'], ['snow', 'Snow', '❄️'], ['storm', 'Storm', '⛈️'], ['night', 'Night', '🌙'], ['rainbow', 'Rainbow', '🌈']];
 
 function create(root, data, opts) {
   opts = opts || {};
@@ -329,7 +331,8 @@ function create(root, data, opts) {
   const csel = $('.aag-csel'), vsel = $('.aag-vsel'), guide = $('.aag-guide');
   csel.value = D.controls || 'joystick'; vsel.value = D.view || 'full';
   cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', (D.title || 'Painting') + (D.artist ? ', by ' + D.artist : '') + '. ' + ((D.lines.about && D.lines.about.text) || ''));
-  if (type === 'memory' || type === 'puzzle') guide.closest('label').hidden = true;
+  if (type === 'memory' || type === 'puzzle' || type === 'simon' || type === 'weather') guide.closest('label').hidden = true;
+  if (type === 'simon' || type === 'weather') csel.closest('label').hidden = true;
   const announce = t => { t = L(t); srEl.textContent = ''; setTimeout(() => { srEl.textContent = t; }, 30); };
 
   let W = 960, H = 720, M = 720, art = null, fxr = null, S = null, running = false, alive = true, raf = 0, last = 0, T = 0;
@@ -339,7 +342,15 @@ function create(root, data, opts) {
   /* controls under the picture */
   function buildPad() {
     const mode = csel.value; pad.innerHTML = ''; src.joy.x = src.joy.y = src.pad.x = src.pad.y = 0;
-    if (mode === 'joystick') {
+    if (type === 'simon') {
+      pad.innerHTML = '<div class="aag-simon">' + SIMON.map((q, i) => `<button type="button" data-i="${i}" style="--q:${q.c}" aria-label="${L(q.n[0].toUpperCase() + q.n.slice(1))}">${i + 1}</button>`).join('') + '</div>';
+      pad.querySelectorAll('button').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); ac(); simonPress(+b.dataset.i); }));
+      pad.querySelectorAll('button').forEach(b => b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); simonPress(+b.dataset.i); } }));
+    } else if (type === 'weather') {
+      pad.innerHTML = '<div class="aag-wx">' + WX.map(w => `<button type="button" data-w="${w[0]}" aria-pressed="false"><span aria-hidden="true">${w[2]}</span>${L(w[1])}</button>`).join('') + '</div>';
+      pad.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { ac(); setWeather(b.dataset.w, true); }));
+      if (S) wxMark();
+    } else if (mode === 'joystick') {
       pad.innerHTML = '<div class="aag-joy" role="application" aria-label="Joystick. Drag to move. Arrow keys work too."><div class="aag-knob"></div></div>';
       const base = pad.firstChild, knob = base.firstChild; let id = null;
       const set = (cx, cy) => { const r = base.getBoundingClientRect(), R = r.width / 2; let dx = cx - (r.left + R), dy = cy - (r.top + R); const d = Math.hypot(dx, dy), m = R * .6; if (d > m) { dx *= m / d; dy *= m / d; } knob.style.transform = `translate(${dx}px,${dy}px)`; src.joy.x = dx / m; src.joy.y = dy / m; };
@@ -397,6 +408,7 @@ function create(root, data, opts) {
     const tag = (e.target && e.target.tagName) || ''; if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
     const map = { ArrowLeft: 'l', ArrowRight: 'r', ArrowUp: 'u', ArrowDown: 'd', a: 'l', d: 'r', w: 'u', s: 'd' };
     const k = map[e.key];
+    if (type === 'simon' && e.type === 'keydown' && /^[1-4]$/.test(e.key)) { simonPress(+e.key - 1); return; }
     if (k) { if (!running && e.type === 'keydown') return; e.preventDefault(); if (e.type === 'keydown' && !keys[k]) { keys[k] = 1; stepOnce = { x: k === 'r' ? 1 : k === 'l' ? -1 : 0, y: k === 'd' ? 1 : k === 'u' ? -1 : 0 }; } else if (e.type === 'keyup') keys[k] = 0; src.key.x = (keys.r || 0) - (keys.l || 0); src.key.y = (keys.d || 0) - (keys.u || 0); }
     if (running && (e.key === ' ' || e.key === 'Enter') && e.target === document.body) { e.preventDefault(); if (e.type === 'keydown' && !e.repeat) doAction(true); if (e.type === 'keyup') doAction(false); }
   }
@@ -441,7 +453,9 @@ function create(root, data, opts) {
 
   const TIPS = {
     collect: 'Roll the marble to collect them all.', maze: 'Roll the marble through the maze to the goal.', bowl: 'Aim, then press Roll.',
-    treasure: 'Search the painting. The beeps speed up as you get close.', puzzle: 'Slide the pieces back into place.', memory: 'Flip two cards at a time to find pairs.'
+    treasure: 'Search the painting. The beeps speed up as you get close.', puzzle: 'Slide the pieces back into place.', memory: 'Flip two cards at a time to find pairs.',
+    flashlight: 'It’s dark! Move your light to find what’s hidden. The beeps speed up as you get close.',
+    simon: 'Watch and listen, then tap the same parts in the same order.', weather: 'Change the weather! Tap the weather it asks for.'
   };
 
   /* ── state per game ── */
@@ -464,6 +478,18 @@ function create(root, data, opts) {
       const c = px(D.pins || { x: .5, y: .3 }), sp = M * .075;
       S.pins = pinRack(D.pins || {}).map(o => { const x = c.x + o.dx * sp, y = c.y - o.dy * sp * .9; return { x, y, hx: x, hy: y, vx: 0, vy: 0, r: M * .03, down: false, fade: 1 }; });
       S.start = { x: S.m.x, y: S.m.y }; S.phase = 'aim'; S.aim = 0; S.power = 0; S.rolls = 0; S.downCount = 0; S.settle = 0;
+    }
+    if (type === 'flashlight') {
+      S.items = (D.treasures || []).map(p => ({ ...px(p), got: false, name: p.name, line: p.line, glim: Math.random() * TAU })); S.got = 0;
+      S.seek = { x: W / 2, y: H * .55 }; S.nextPing = 0; S.lightUp = 0;
+      S.dark = document.createElement('canvas'); S.dark.width = W; S.dark.height = H;
+    }
+    if (type === 'simon') { S.seq = []; S.step = 0; S.phase = 'idle'; S.lit = [0, 0, 0, 0]; S.wait = 0; S.showI = 0; S.miss = 0; S.goal = clamp(D.rounds || 8, 3, 20); S.best = 0; }
+    if (type === 'weather') {
+      S.wx = 'sun'; S.mix = { sun: 1, rain: 0, snow: 0, storm: 0, night: 0, rainbow: 0 }; S.ask = null; S.score = 0; S.goal = clamp(D.rounds || 6, 3, 12);
+      S.drops = []; S.flakes = []; S.flash = 0; S.bolt = null; S.nextBolt = 2; S.wind = 0; S.stars = []; S.nextBird = 1;
+      for (let i = 0; i < 70; i++) S.stars.push({ x: Math.random() * W, y: Math.random() * H * .55, s: .6 + Math.random() * 1.8, ph: Math.random() * TAU });
+      wxMark();
     }
     if (type === 'treasure') {
       S.items = (D.treasures || []).map(p => ({ ...px(p), got: false, name: p.name, line: p.line })); S.got = 0;
@@ -501,6 +527,8 @@ function create(root, data, opts) {
   function begin(first) {
     cover.hidden = true; winEl.hidden = true; running = true; root.classList.add('aag-on'); SFX.start();
     if (first !== false) { if (!sayLine(D.lines.welcome)) announce(TIPS[type]); }
+    if (type === 'simon') { S.phase = 'wait'; S.wait = first !== false && D.lines.welcome && D.lines.welcome.text ? 3.2 : 1.1; S.after = 'add'; }
+    if (type === 'weather') { S.askWait = first !== false && D.lines.welcome && D.lines.welcome.text ? 3 : 1; askMotion(); }
     status();
   }
   const fmtT = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
@@ -511,6 +539,9 @@ function create(root, data, opts) {
     if (type === 'maze') t = `Reach the gold goal · ${fmtT(S.t)}`;
     if (type === 'bowl') t = `Roll ${Math.min(S.rolls + 1, 3)} of 3 · Pins down: ${S.downCount} of ${S.pins.length}`;
     if (type === 'treasure') t = `Treasures found: ${S.got} of ${S.items.length}`;
+    if (type === 'flashlight') t = `Found: ${S.got} of ${S.items.length}`;
+    if (type === 'simon') t = S.phase === 'input' ? `Round ${S.seq.length} of ${S.goal} · Your turn` : `Round ${Math.max(1, S.seq.length)} of ${S.goal} · Watch and listen`;
+    if (type === 'weather') t = S.ask ? `Make it ${WX.find(w => w[0] === S.ask)[1].toLowerCase()}! · ${S.score} of ${S.goal}` : `Weather: ${WX.find(w => w[0] === S.wx)[1]} · ${S.score} of ${S.goal}`;
     if (type === 'puzzle') t = `Pieces in place: ${inPlace()} of ${S.n * S.n - 1} · Moves: ${S.moves}`;
     if (type === 'memory') t = `Pairs: ${S.pairs} of ${S.P} · Turns: ${S.turns}`;
     t = L(t); if (statusEl.textContent !== t) statusEl.textContent = t;
@@ -531,6 +562,8 @@ function create(root, data, opts) {
     S.hintT = 2.2;
     if (type === 'puzzle') announce(`${inPlace()} of ${S.n * S.n - 1} pieces are in place.`);
     if (type === 'memory') { S.reveal = 1.1; }
+    if (type === 'simon' && S.phase === 'input') simonReplay();
+    if (type === 'weather' && S.ask) announce('Tap ' + WX.find(w => w[0] === S.ask)[1] + '.');
   }
 
   /* ── puzzle helpers ── */
@@ -578,13 +611,15 @@ function create(root, data, opts) {
     if (type === 'puzzle') { const n = S.n, c = Math.floor(p.x / (W / n)), r = Math.floor(p.y / (H / n)); slideFrom(clamp(r, 0, n - 1) * n + clamp(c, 0, n - 1)); }
     if (type === 'memory') { for (let i = 0; i < S.cards.length; i++) { const r = cardRect(i); if (p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h) { S.cursor = i; flipCard(i); break; } } }
     if (type === 'bowl' && S.phase === 'aim') { S.aim = clamp(Math.atan2(p.x - S.m.x, S.m.y - p.y), -1, 1); }
+    if (type === 'simon') simonPress((p.x > W / 2 ? 1 : 0) + (p.y > H / 2 ? 2 : 0));
   }
   function doAction(down) {
     if (!running || !S) return;
     if (type === 'bowl') { if (down && S.phase === 'aim') launch(); }
     if (type === 'memory' && down) flipCard(S.cursor);
     if (type === 'puzzle') S.peek = down ? 1 : 0;
-    if (type === 'treasure' && down) { S.nextPing = 0; const n = nearest(S.items, S.seek); if (n) { const d = Math.hypot(n.x - S.seek.x, n.y - S.seek.y) / M; announce(d < .15 ? 'Very close!' : d < .3 ? 'Getting warm.' : d < .5 ? 'Cool.' : 'Cold. Keep looking.'); } }
+    if (type === 'simon' && down && S.phase === 'input') simonReplay();
+    if ((type === 'treasure' || type === 'flashlight') && down) { S.nextPing = 0; const n = nearest(S.items, S.seek); if (n) { const d = Math.hypot(n.x - S.seek.x, n.y - S.seek.y) / M; announce(d < .15 ? 'Very close!' : d < .3 ? 'Getting warm.' : d < .5 ? 'Cool.' : 'Cold. Keep looking.'); } }
   }
   function launch() {
     const sp = M * lerp(1.4, 2.6, S.power);
@@ -722,6 +757,201 @@ function create(root, data, opts) {
     }
   }
 
+  /* ── flashlight: the painting sits in the dark, and a beam of light shows what's hidden ── */
+  function flashStep(dt) {
+    const s = S.seek, sp = M * .55;
+    s.x = clamp(s.x + vec.x * sp * dt, 0, W); s.y = clamp(s.y + vec.y * sp * dt, 0, H);
+    if (src.touch) { s.x = lerp(s.x, src.touch.x, .4); s.y = lerp(s.y, src.touch.y, .4); }
+    S.focus = { x: s.x, y: s.y };
+    const n = nearest(S.items, s); if (!n) return;
+    const d = Math.hypot(n.x - s.x, n.y - s.y), warm = clamp(1 - d / (M * .7), 0, 1); S.warm = warm;
+    if (d < M * .065) {
+      n.got = true; S.got++; SFX.found(); buzz([40, 30, 80]); fxr.burst(n.x, n.y, '#ffe9a8', 40); fxr.ring(n.x, n.y);
+      announce('Found ' + (n.name || 'it') + '!'); if (!sayLine(n.line)) good(); status();
+      if (S.got === S.items.length) setTimeout(() => { S.lightUp = .001; win({ big: 'You found them all!', small: fmtT(S.t) }); }, 900);
+      return;
+    }
+    if (guide.checked) {
+      S.nextPing -= dt;
+      if (S.nextPing <= 0) { SFX.ping(warm, clamp((n.x - s.x) / (M * .5), -1, 1)); if (warm > .72) buzz(Math.round(10 + warm * 25)); S.nextPing = lerp(1.1, .11, Math.pow(warm, 1.4)); }
+    }
+  }
+  function drawFlash() {
+    const s = S.seek, R0 = M * .19, d = S.dark.getContext('2d');
+    if (S.lightUp) S.lightUp = Math.min(1, S.lightUp + .015);
+    // the hidden things glimmer, but only where the light falls
+    for (const it of S.items) {
+      if (it.got) continue;
+      const k = clamp(1 - Math.hypot(it.x - s.x, it.y - s.y) / (R0 * 1.05), 0, 1); if (!k) continue;
+      ctx.save(); ctx.globalAlpha = k * (.55 + .45 * Math.sin(T * 5 + it.glim)); drawItem(ctx, D.itemStyle || 'gem', it.x, it.y, M * .03, T); ctx.restore();
+    }
+    d.setTransform(1, 0, 0, 1, 0, 0); d.globalCompositeOperation = 'source-over'; d.clearRect(0, 0, W, H);
+    d.fillStyle = 'rgba(3,4,8,.965)'; d.fillRect(0, 0, W, H);
+    d.globalCompositeOperation = 'destination-out';
+    const fl = 1 + .025 * Math.sin(T * 13) + .02 * Math.sin(T * 7.3);
+    let g = d.createRadialGradient(s.x, s.y, 0, s.x, s.y, R0 * fl); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(.62, 'rgba(0,0,0,.95)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    d.fillStyle = g; d.beginPath(); d.arc(s.x, s.y, R0 * fl, 0, TAU); d.fill();
+    for (const it of S.items) if (it.got) { const r = M * .11; g = d.createRadialGradient(it.x, it.y, 0, it.x, it.y, r); g.addColorStop(0, 'rgba(0,0,0,.85)'); g.addColorStop(1, 'rgba(0,0,0,0)'); d.fillStyle = g; d.beginPath(); d.arc(it.x, it.y, r, 0, TAU); d.fill(); }
+    ctx.save(); ctx.globalAlpha = 1 - (S.lightUp || 0); ctx.drawImage(S.dark, 0, 0); ctx.restore();
+    // warm light in the beam
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, R0); g.addColorStop(0, 'rgba(255,236,190,.22)'); g.addColorStop(1, 'rgba(255,236,190,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(s.x, s.y, R0, 0, TAU); ctx.fill(); ctx.restore();
+    for (const it of S.items) if (it.got) { ctx.save(); ctx.strokeStyle = '#ffd27a'; ctx.lineWidth = M * .007; ctx.globalAlpha = .9; ctx.beginPath(); ctx.arc(it.x, it.y, M * .05, 0, TAU); ctx.stroke(); drawItem(ctx, D.itemStyle || 'gem', it.x, it.y, M * .026, T); ctx.restore(); }
+  }
+
+  /* ── simon says: four parts of the painting, each with its own note ── */
+  function simonLight(i, dur) { S.lit[i] = 1; S.litDur = dur || .45; const q = SIMON[i]; tone(q.f, Math.max(.3, dur || .45), 'triangle', .22); tone(q.f * 2, .25, 'sine', .05, .02); buzz(18); }
+  function simonShowDur() { return Math.max(.28, .6 - S.seq.length * .03); }
+  function simonReplay() { if (!S || !S.seq.length) return; S.phase = 'show'; S.showI = 0; S.wait = .5; S.step = 0; announce('Watch and listen: ' + S.seq.length + (S.seq.length > 1 ? ' notes.' : ' note.')); status(); }
+  function simonPress(i) {
+    if (!running || !S || S.done || type !== 'simon') return;
+    if (S.phase !== 'input') { SFX.bump(.05); return; }
+    simonLight(i, .32);
+    const r = cardQuad(i); fxr.ring(r.x + r.w / 2, r.y + r.h / 2, SIMON[i].c === '#ff7a2a' ? 'rgba(255,170,110,' : 'rgba(255,240,200,');
+    if (i === S.seq[S.step]) {
+      S.step++;
+      if (S.step === S.seq.length) {
+        S.best = S.seq.length; good();
+        if (S.seq.length >= S.goal) { S.phase = 'done'; setTimeout(() => win({ big: 'You remembered them all!', small: `${S.goal} rounds` }), 500); return; }
+        S.phase = 'wait'; S.wait = 1; S.after = 'add'; announce('Yes! Round ' + (S.seq.length + 1) + '.'); setTimeout(() => SFX.collect(S.seq.length), 280);
+      }
+    } else {
+      SFX.wrong(); buzz([60, 40, 60]); S.miss++;
+      if (S.miss >= 3) { S.phase = 'done'; setTimeout(() => win({ big: `You reached round ${S.seq.length}!`, small: 'Play again to go further.' }), 600); return; }
+      S.phase = 'wait'; S.wait = 1.3; S.after = 'replay'; announce(`Not quite. That was the ${SIMON[i].n}. Watch again.` + (S.miss === 2 ? ' Last try!' : ''));
+    }
+    status();
+  }
+  function simonStep(dt) {
+    for (let k = 0; k < 4; k++) S.lit[k] = Math.max(0, S.lit[k] - dt / (S.litDur || .45));
+    if (S.phase === 'wait') { S.wait -= dt; if (S.wait <= 0) { if (S.after === 'add') { S.seq.push(Math.floor(Math.random() * 4)); simonReplay(); } else simonReplay(); } return; }
+    if (S.phase === 'show') {
+      S.wait -= dt; if (S.wait > 0) return;
+      if (S.showI < S.seq.length) { const dur = simonShowDur(); simonLight(S.seq[S.showI], dur); S.showI++; S.wait = dur + .2; }
+      else { S.phase = 'input'; S.step = 0; announce('Your turn.'); status(); }
+    }
+  }
+  function cardQuad(i) { return { x: (i % 2) * W / 2, y: Math.floor(i / 2) * H / 2, w: W / 2, h: H / 2 }; }
+  function drawSimon() {
+    const g2 = M * .012;
+    ctx.save(); ctx.fillStyle = 'rgba(6,8,12,.58)'; ctx.fillRect(0, 0, W, H); ctx.restore();
+    for (let i = 0; i < 4; i++) {
+      const r = cardQuad(i), q = SIMON[i], k = S.lit[i];
+      if (k > 0) { ctx.save(); ctx.beginPath(); ctx.rect(r.x, r.y, r.w, r.h); ctx.clip(); drawArt(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .45 * k; ctx.fillStyle = q.c; ctx.fillRect(r.x, r.y, r.w, r.h); ctx.restore(); }
+      ctx.save(); ctx.strokeStyle = q.c; ctx.globalAlpha = .55 + .45 * k; ctx.lineWidth = g2 * (1 + k * 1.5); ctx.shadowColor = q.c; ctx.shadowBlur = 8 + 30 * k;
+      roundRect(ctx, r.x + g2 * 1.6, r.y + g2 * 1.6, r.w - g2 * 3.2, r.h - g2 * 3.2, M * .03); ctx.stroke(); ctx.restore();
+      // the part's number, so it matches the buttons
+      const cx = r.x + (i % 2 ? r.w - M * .07 : M * .07), cy = r.y + (i < 2 ? M * .07 : r.h - M * .07);
+      ctx.save(); ctx.fillStyle = q.c; ctx.globalAlpha = .9; ctx.beginPath(); ctx.arc(cx, cy, M * .035, 0, TAU); ctx.fill(); ctx.fillStyle = '#14100c'; ctx.font = `900 ${M * .04}px Archivo, Arial, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(i + 1), cx, cy + 1); ctx.restore();
+    }
+    const kids = pad.querySelectorAll('.aag-simon button'); kids.forEach((b, i) => b.classList.toggle('on', S.lit[i] > .25));
+    if (S.phase === 'input' || S.phase === 'show') {
+      const txt = L(S.phase === 'input' ? 'Your turn' : 'Watch'), fs = M * .055;
+      ctx.save(); ctx.font = `900 ${fs}px Archivo, Arial, sans-serif`; const w = ctx.measureText(txt).width + fs * 1.4;
+      ctx.fillStyle = S.phase === 'input' ? 'rgba(255,122,42,.92)' : 'rgba(10,12,16,.75)'; roundRect(ctx, W / 2 - w / 2, H / 2 - fs * .85, w, fs * 1.7, fs * .85); ctx.fill();
+      ctx.fillStyle = S.phase === 'input' ? '#14100c' : '#f2ede4'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(txt, W / 2, H / 2 + fs * .04); ctx.restore();
+    }
+  }
+
+  /* ── change the weather ── */
+  let WXA = null;   // the weather's sound: one looping noise through a filter
+  function wxSound() {
+    const a = AC; if (!a) return;
+    if (!WXA) { const s2 = a.createBufferSource(); s2.buffer = noiseBuf(a); s2.loop = true; const f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 1200; const g = a.createGain(); g.gain.value = 0;
+      s2.connect(f); f.connect(g); g.connect(OUT); s2.start(); WXA = { f, g }; }
+    const m = S.mix, w = 1 + S.wind * 1.5, t = a.currentTime;
+    const vol = (m.rain * .11 + m.storm * .2 + m.snow * .035 * w + m.night * .008) * (running || S.done ? 1 : .4);
+    WXA.g.gain.setTargetAtTime(vol, t, .25);
+    WXA.f.frequency.setTargetAtTime(m.storm * 900 + m.rain * 2600 + m.snow * (500 + S.wind * 900) + m.night * 300 + 300, t, .3);
+  }
+  function wxMark() { pad.querySelectorAll('.aag-wx button').forEach(b => { const on = b.dataset.w === S.wx; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); }
+  function newAsk() {
+    const opts2 = WX.map(w => w[0]).filter(k => k !== S.wx && k !== S.lastAsk); S.ask = opts2[Math.floor(Math.random() * opts2.length)]; S.lastAsk = S.ask; S.askPulse = 1;
+    const w = WX.find(x => x[0] === S.ask); announce('Make it ' + w[1].toLowerCase() + '!'); tone(659.25, .18, 'triangle', .12); tone(880, .25, 'triangle', .12, .12); status();
+  }
+  function setWeather(k, byHand) {
+    if (!S || type !== 'weather') return;
+    const was = S.wx; S.wx = k; wxMark();
+    const w = WX.find(x => x[0] === k);
+    if (k === 'rainbow') [0, 2, 4, 7, 9, 11].forEach((n, j) => tone(SCALE[n] * 2, .5, 'sine', .09, j * .07));
+    if (k === 'sun') [4, 7].forEach((n, j) => tone(SCALE[n], .4, 'triangle', .1, j * .1));
+    if (k === 'storm') { S.nextBolt = .6; }
+    if (k === 'night') { tone(196, 1.2, 'sine', .07); tone(293.66, 1.2, 'sine', .05, .1); }
+    if (k === 'snow') [9, 7, 4].forEach((n, j) => tone(SCALE[n] * 2, .6, 'sine', .06, j * .12));
+    if (byHand && running && S.ask) {
+      if (k === S.ask) {
+        S.score++; S.ask = null; SFX.found(); buzz([30, 30, 60]); fxr.burst(W / 2, H * .35, '#ffd27a', 40); good(); announce(w[1] + '! ' + S.score + ' of ' + S.goal + '.');
+        if (S.score >= S.goal) { setTimeout(() => win({ big: 'Weather master!', small: `${S.goal} out of ${S.goal}` }), 900); }
+        else S.askWait = 2.2;
+      } else if (k !== was) announce(w[1] + '. Now try ' + WX.find(x => x[0] === S.ask)[1].toLowerCase() + '!');
+    } else if (k !== was) announce(w[1]);
+    status();
+  }
+  let motionOn = false;
+  function onMotion(e) { const a = e.accelerationIncludingGravity || e.acceleration; if (!a || !S || type !== 'weather') return; const m = Math.hypot(a.x || 0, a.y || 0, a.z || 0);
+    const jolt = Math.abs(m - (S.g0 || m)); S.g0 = (S.g0 || m) * .9 + m * .1; if (jolt > 6) { S.wind = Math.min(1, S.wind + jolt / 25); S.windDir = (a.x || 0) > 0 ? 1 : -1; } }
+  function askMotion() {
+    if (motionOn) return; motionOn = true; const go = () => window.addEventListener('devicemotion', onMotion);
+    try { if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') DeviceMotionEvent.requestPermission().then(st => { if (st === 'granted') go(); }, () => { motionOn = false; }); else go(); } catch (e) { go(); }
+  }
+  function weatherStep(dt) {
+    for (const k in S.mix) S.mix[k] = clamp(S.mix[k] + (k === S.wx ? 1 : -1) * dt / .9, 0, 1);
+    S.wind = Math.max(0, S.wind - dt * .35);
+    if (running && !S.ask && S.score < S.goal) { S.askWait -= dt; if (S.askWait <= 0) newAsk(); }
+    if (S.askPulse) S.askPulse = Math.max(0, S.askPulse - dt * .8);
+    const m = S.mix, slant = (S.windDir || 1) * (S.wind * 1.4 + m.storm * .35);
+    // rain and storm drops
+    const wantDrops = Math.round(m.rain * 140 + m.storm * 260);
+    while (S.drops.length < wantDrops) S.drops.push({ x: Math.random() * W * 1.4 - W * .2, y: Math.random() * -H, v: (900 + Math.random() * 600) * M / 600, l: (14 + Math.random() * 20) * M / 600 });
+    for (let i = S.drops.length - 1; i >= 0; i--) { const p = S.drops[i]; p.y += p.v * dt; p.x += p.v * slant * .35 * dt;
+      if (p.y > H) { if (S.drops.length > wantDrops) { S.drops.splice(i, 1); continue; } if (Math.random() < .25) fxr.bursts.push({ x: p.x, y: H - Math.random() * M * .05, vx: (Math.random() - .5) * 60, vy: -40 - Math.random() * 60, life: 0, max: .25, c: '#cfe6ff', s: 1.2 * M / 600 }); p.y = -Math.random() * H * .3; p.x = Math.random() * W * 1.4 - W * .2; } }
+    const wantFl = Math.round(m.snow * 160);
+    while (S.flakes.length < wantFl) S.flakes.push({ x: Math.random() * W, y: Math.random() * -H, v: (25 + Math.random() * 45) * M / 600, s: (1.4 + Math.random() * 3.2) * M / 600, ph: Math.random() * TAU });
+    for (let i = S.flakes.length - 1; i >= 0; i--) { const p = S.flakes[i]; p.y += p.v * dt * (1 + S.wind); p.x += (Math.sin(T * .8 + p.ph) * 18 + slant * 160) * dt * M / 600;
+      if (p.y > H + 6) { if (S.flakes.length > wantFl) { S.flakes.splice(i, 1); continue; } p.y = -6; p.x = Math.random() * W; } if (p.x > W + 8) p.x = -8; if (p.x < -8) p.x = W + 8; }
+    // lightning
+    S.flash = Math.max(0, S.flash - dt * 2.6); if (S.bolt) { S.bolt.a -= dt * 2.2; if (S.bolt.a <= 0) S.bolt = null; }
+    if (m.storm > .5) { S.nextBolt -= dt; if (S.nextBolt <= 0) {
+      S.nextBolt = 2.5 + Math.random() * 4; S.flash = 1; const pts = []; let x = W * (.15 + Math.random() * .7), y = 0; pts.push([x, y]); while (y < H * (.5 + Math.random() * .35)) { x += (Math.random() - .5) * M * .12; y += M * (.04 + Math.random() * .06); pts.push([x, y]); } S.bolt = { pts, a: 1 };
+      buzz([20, 40, 120]); const dly = .2 + Math.random() * .6, a2 = AC; if (a2) { setTimeout(() => { noise(1.8, .35, 90, .7); noise(1.2, .2, 220, .9); tone(55, 1.4, 'sine', .14); }, dly * 1000); } } }
+    // birds in the sun, crickets at night
+    S.nextBird -= dt;
+    if (S.nextBird <= 0) {
+      if (m.sun > .6 || m.rainbow > .6) { const f0 = 2200 + Math.random() * 1400; for (let j = 0; j < 3; j++) { tone(f0 + j * 180, .07, 'sine', .035, j * .09); } S.nextBird = 1.5 + Math.random() * 3; }
+      else if (m.night > .6) { for (let j = 0; j < 6; j++) tone(4200, .025, 'square', .012, j * .05); S.nextBird = .7 + Math.random() * 1.6; }
+      else S.nextBird = 1;
+    }
+    wxSound();
+  }
+  function drawWeather() {
+    const m = S.mix; let g;
+    if (m.sun > 0 || m.rainbow > 0) { const k = Math.max(m.sun, m.rainbow * .7);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; g = ctx.createRadialGradient(W * .82, H * .08, 0, W * .82, H * .08, M * 1.1); g.addColorStop(0, `rgba(255,214,140,${.38 * k})`); g.addColorStop(.5, `rgba(255,190,110,${.12 * k})`); g.addColorStop(1, 'rgba(255,190,110,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      ctx.globalAlpha = .07 * k; ctx.fillStyle = '#fff2c8'; ctx.translate(W * .82, H * .08); ctx.rotate(T * .05);
+      for (let i = 0; i < 9; i++) { ctx.rotate(TAU / 9); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(M * 1.5, -M * .07); ctx.lineTo(M * 1.5, M * .07); ctx.closePath(); ctx.fill(); } ctx.restore(); }
+    const dim = m.rain * .32 + m.storm * .52 + m.night * .62 + m.snow * .1;
+    if (dim > 0) { ctx.save(); ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = `rgba(${Math.round(120 - m.night * 80)},${Math.round(135 - m.night * 80)},${Math.round(170 - m.night * 40)},1)`; ctx.globalAlpha = Math.min(.9, dim * 1.3); ctx.fillRect(0, 0, W, H); ctx.restore(); }
+    if (m.snow > 0) { ctx.save(); ctx.globalAlpha = m.snow; ctx.fillStyle = 'rgba(220,235,255,.16)'; ctx.fillRect(0, 0, W, H);
+      g = ctx.createLinearGradient(0, H * .82, 0, H); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(250,252,255,.85)'); ctx.fillStyle = g; ctx.fillRect(0, H * .8, W, H * .2);
+      ctx.fillStyle = '#fff'; for (const p of S.flakes) { ctx.globalAlpha = m.snow * .9; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, TAU); ctx.fill(); } ctx.restore(); }
+    if (m.night > 0) { ctx.save(); for (const st of S.stars) { ctx.globalAlpha = m.night * (.45 + .55 * Math.sin(T * 2 + st.ph) ** 2); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(st.x, st.y, st.s * M / 600, 0, TAU); ctx.fill(); }
+      const mx = W * .8, my = H * .16, mr = M * .07; ctx.globalAlpha = m.night; g = ctx.createRadialGradient(mx, my, 0, mx, my, mr * 4); g.addColorStop(0, 'rgba(230,236,255,.35)'); g.addColorStop(1, 'rgba(230,236,255,0)'); ctx.fillStyle = g; ctx.fillRect(mx - mr * 4, my - mr * 4, mr * 8, mr * 8);
+      ctx.fillStyle = '#f4f1e2'; ctx.beginPath(); ctx.arc(mx, my, mr, 0, TAU); ctx.fill(); ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.beginPath(); ctx.arc(mx + mr * .4, my - mr * .2, mr * .85, 0, TAU); ctx.fill();
+      for (let i = 0; i < 14; i++) { const fx2 = W * (.5 + .45 * Math.sin(T * .3 + i * 2.1)), fy = H * (.62 + .3 * Math.sin(T * .41 + i * 1.3)); ctx.globalAlpha = m.night * Math.max(0, Math.sin(T * 2.2 + i)); ctx.fillStyle = '#e8ff8a'; ctx.beginPath(); ctx.arc(fx2, fy, M * .006, 0, TAU); ctx.fill(); }
+      ctx.restore(); }
+    if (m.rainbow > 0) { ctx.save(); ctx.globalAlpha = m.rainbow * .5; const cx = W * .5, cy = H * 1.05, r0 = M * .78, bw = M * .028;
+      ['#ff4b4b', '#ff9a3c', '#ffe14d', '#57d16b', '#3ab0ff', '#5a6bff', '#a35bff'].forEach((c, i) => { ctx.strokeStyle = c; ctx.lineWidth = bw; ctx.beginPath(); ctx.arc(cx, cy, r0 - i * bw, Math.PI * 1.04, Math.PI * 1.96); ctx.stroke(); }); ctx.restore(); }
+    if (S.drops.length) { const k = Math.max(m.rain, m.storm), slant = (S.windDir || 1) * (S.wind * 1.4 + m.storm * .35);
+      ctx.save(); ctx.strokeStyle = 'rgba(205,228,255,.55)'; ctx.lineWidth = Math.max(1, M / 600 * 1.4); ctx.globalAlpha = k; ctx.beginPath();
+      for (const p of S.drops) { ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - p.l * slant * .35, p.y - p.l); } ctx.stroke(); ctx.restore(); }
+    if (S.flash > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(220,230,255,${S.flash * .55})`; ctx.fillRect(0, 0, W, H); ctx.restore(); }
+    if (S.bolt) { ctx.save(); ctx.globalAlpha = Math.max(0, S.bolt.a); ctx.strokeStyle = '#fff'; ctx.shadowColor = '#bcd4ff'; ctx.shadowBlur = 24; ctx.lineWidth = M * .008; ctx.lineJoin = 'round'; ctx.beginPath(); S.bolt.pts.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.stroke(); ctx.restore(); }
+    if (S.ask && running) { const w = WX.find(x => x[0] === S.ask), txt = L('Make it ' + w[1].toLowerCase() + '!'), fs = M * .058, sc = 1 + .12 * Math.sin((1 - (S.askPulse || 0)) * Math.PI * 4) * (S.askPulse || 0);
+      ctx.save(); ctx.translate(W / 2, M * .1); ctx.scale(sc, sc); ctx.font = `900 ${fs}px Archivo, Arial, sans-serif`; const tw = ctx.measureText(txt).width, ew = fs * 1.3, bw = tw + ew + fs * 1.4;
+      ctx.fillStyle = 'rgba(255,122,42,.94)'; roundRect(ctx, -bw / 2, -fs * .85, bw, fs * 1.7, fs * .85); ctx.fill();
+      ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.font = `${fs}px sans-serif`; ctx.fillText(w[2], -bw / 2 + fs * .55, fs * .05); ctx.font = `900 ${fs}px Archivo, Arial, sans-serif`; ctx.fillStyle = '#14100c'; ctx.fillText(txt, -bw / 2 + fs * .55 + ew, fs * .05); ctx.restore(); }
+  }
+
   /* ── frame ── */
   function loop(now) {
     if (!alive) return;
@@ -742,10 +972,14 @@ function create(root, data, opts) {
       }
       if (type === 'bowl') bowlStep(dt);
       if (type === 'treasure') treasureStep(dt);
+      if (type === 'flashlight') flashStep(dt);
+      if (type === 'simon') simonStep(dt);
       if (type === 'puzzle' || type === 'memory') stepDiscrete(dt);
       if (type === 'memory' && S.wait > 0) { S.wait -= dt; if (S.wait <= 0) { S.open.forEach(k => { S.cards[k].up = false; }); S.open = []; } }
       if (Math.floor(S.t) !== Math.floor(S.t - dt)) status();
     } else if (S && S.m) rollSound(0);
+    if (type === 'weather' && S && art) weatherStep(dt);
+    if (type === 'simon' && S && !running) for (let k = 0; k < 4; k++) S.lit[k] = Math.max(0, S.lit[k] - dt / (S.litDur || .45));
     if (S && S.hintT) S.hintT = Math.max(0, S.hintT - dt);
     if (S && S.reveal) S.reveal = Math.max(0, S.reveal - dt);
     fxr.update(dt, D.fx);
@@ -769,12 +1003,15 @@ function create(root, data, opts) {
     if (type === 'maze') drawMaze();
     if (type === 'bowl') drawBowl();
     if (type === 'treasure') drawTreasure();
+    if (type === 'flashlight') drawFlash();
+    if (type === 'simon') drawSimon();
+    if (type === 'weather') drawWeather();
     if (S.trail && S.trail.length) { ctx.save(); for (const p of S.trail) { p.a *= .995; ctx.globalAlpha = p.a * .55; ctx.fillStyle = '#ff7a2a'; ctx.beginPath(); ctx.arc(p.x, p.y, S.m.r * .5, 0, TAU); ctx.fill(); } ctx.restore(); }
     if (S.m) drawMarble(ctx, D.marble || 'eye', S.m.x, S.m.y, S.m.r, S.m.vx, S.m.vy, T, S.m.look);
     fxr.draw(ctx, T);
     if (S.hintT && S.m && type === 'collect') { const n = nearest(S.items, S.m); if (n) arrow(S.m, n); }
     if (S.hintT && type === 'maze') arrow(S.m, S.goal);
-    if (S.hintT && type === 'treasure') { const n = nearest(S.items, S.seek); if (n) arrow(S.seek, n); }
+    if (S.hintT && (type === 'treasure' || type === 'flashlight')) { const n = nearest(S.items, S.seek); if (n) arrow(S.seek, n); }
     // how it looks with less sight: the dark follows where you play
     if (view === 'tunnel' || view === 'center') {
       const f = S.focus, g = view === 'tunnel' ? ctx.createRadialGradient(f.x, f.y, M * .12, f.x, f.y, M * .42) : ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, M * .2);
@@ -924,10 +1161,10 @@ function create(root, data, opts) {
     stageEl.classList.remove('aag-ar'); cv.style.transform = ''; cv.style.opacity = ''; if (arBtn) arBtn.textContent = L('Play on the painting');
   }
   return {
-    destroy() { stopAR(); alive = false; cancelAnimationFrame(raf); stopVoice(); rollSound(0); window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onKey); window.removeEventListener('deviceorientation', onTilt); root.innerHTML = ''; },
+    destroy() { if (WXA) { try { WXA.g.gain.value = 0; } catch (e) {} } window.removeEventListener('devicemotion', onMotion); stopAR(); alive = false; cancelAnimationFrame(raf); stopVoice(); rollSound(0); window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onKey); window.removeEventListener('deviceorientation', onTilt); root.innerHTML = ''; },
     get state() { return S; }, start() { begin(); }, canvas: cv
   };
 }
 
-window.AAGame = { create, prepArt, makeFx, drawItem, drawMarble, sizeFor, pinRack, autoCrops, SFX, sayLine, stopVoice, ac, VIEWS, NOUN };
+window.AAGame = { WX, SIMON, create, prepArt, makeFx, drawItem, drawMarble, sizeFor, pinRack, autoCrops, SFX, sayLine, stopVoice, ac, VIEWS, NOUN };
 })();

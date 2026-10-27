@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Make Your Own Game · Art Alive</title>
+<meta name="description" content="Turn your picture into a game: a slide puzzle, memory match, flashlight hunt, Simon Says, change the weather and more. Free, no app, and every game can be played by ear.">
+<meta name="theme-color" content="#15191f">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Art Alive">
+<meta property="og:title" content="Make your own game">
+<meta property="og:description" content="Turn your picture into a game in a minute. Puzzles, memory, a flashlight hunt, Simon Says, weather and more. Free, no app.">
+<meta property="og:url" content="https://artalivestudio.com/make/">
+<meta property="og:image" content="https://artalivestudio.com/make/img/share.jpg?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Make your own game: your picture, your game. Nine games including a puzzle, memory, a flashlight hunt, Simon Says and the weather.">
+<meta property="og:video" content="https://artalivestudio.com/make/img/share.mp4?v=2">
+<meta property="og:video:secure_url" content="https://artalivestudio.com/make/img/share.mp4?v=2">
+<meta property="og:video:type" content="video/mp4">
+<meta property="og:video:width" content="1200">
+<meta property="og:video:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Make your own game">
+<meta name="twitter:description" content="Turn your picture into a game in a minute. Free, no app, playable by ear.">
+<meta name="twitter:image" content="https://artalivestudio.com/make/img/share.jpg?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="../site.css">
+<style>
+.mg-how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;list-style:none;margin:0;padding:0;counter-reset:s}
+.mg-how li{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;background:var(--wall);border:1px solid var(--line);counter-increment:s;min-width:0}
+.mg-how li::before{content:counter(s);flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;font:900 18px/1 var(--display);color:#14100c;background:var(--c)}
+.mg-how li:nth-child(1){--c:var(--orange)}.mg-how li:nth-child(2){--c:var(--blue)}.mg-how li:nth-child(3){--c:var(--gold)}
+.mg-how b{display:block;font:800 16px/1.2 var(--display);letter-spacing:.02em}
+.mg-how span{color:var(--muted);font-size:15px}
+.mgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
+.mgrid .gimg{aspect-ratio:1;position:relative}
+.mgrid .gnew{position:absolute;top:10px;left:10px;padding:6px 10px;border-radius:999px;background:var(--orange);color:#14100c;font:900 11px/1 var(--display);letter-spacing:.12em;text-transform:uppercase}
+.mgrid .gtxt .row2{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.mgrid .gtxt .row2 .btn{margin-top:0}
+.mgrid .ex{font-weight:700;font-size:15px;color:var(--cream)}
+.mg-ear{display:flex;gap:14px;align-items:flex-start;padding:18px 20px;border-radius:18px;border:1px solid var(--line);background:var(--wall)}
+.mg-ear p{margin:0;color:var(--muted)}.mg-ear b{color:var(--cream)}
+.mg-ear svg{flex:none;width:34px;height:34px;color:var(--blue)}
+.ideas{display:flex;flex-direction:column;gap:14px}
+.ideas h2{margin:0;font:900 clamp(28px,4vw,44px)/1 var(--display);font-stretch:118%;text-transform:uppercase}
+.ideas .lede{margin:0;max-width:60ch}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px}
+.idea{background:var(--wall);border:1px solid var(--line);border-radius:18px;padding:18px;min-width:0}
+.idea h3{margin:0;font:800 20px/1.15 var(--display);font-stretch:112%}
+.idea .sub{margin:2px 0 10px;color:var(--gold);font:800 12px/1.2 var(--display);letter-spacing:.12em;text-transform:uppercase}
+.idea ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.idea li{color:var(--muted);font-size:15px;line-height:1.4}
+.idea li b{color:var(--cream)}
+.idea li i{display:block;font-style:normal;font-size:13px;color:#8a919b}
+.idea .qk{margin:0;color:var(--cream);line-height:2}
+.idea .qkn{margin:8px 0 0;color:var(--muted);font-size:14px}
+.rdy{display:inline-block;padding:2px 8px;border-radius:999px;background:#2d6b46;color:#e8fff0;font:800 11px/1.5 var(--display);letter-spacing:.08em;text-transform:uppercase;vertical-align:1px}
+@media (max-width:760px){.mg-how{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="../" aria-label="Art Alive home"><img src="../art-alive-mark.png" alt=""><img class="wm" src="../art-alive-wordmark.png" alt="Art Alive"></a>
+    <div class="top-act"><a class="btn small acct-btn" data-acct href="../login.html?new=1" aria-label="Create a free account" style="color:#14100c;text-decoration:none">Create account</a><button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button></div>
+    <nav id="nav" aria-label="Main">
+      <ul class="util"><li><a href="../gallery.html">Gallery</a></li><li><a href="./" aria-current="page">Make a game</a></li><li><a href="../how-to.html">How to</a></li><li><a href="../plans.html">Plans</a></li><li><a href="../about.html">About</a></li></ul>
+      <ul class="aud"><li><a href="../for-creators.html">For Creators</a></li><li><a href="../for-galleries.html">For Galleries</a></li><li><a href="../for-businesses.html">For Businesses</a></li><li><a href="../for-everyone.html">For Everyone</a></li><li><a href="../games/index.html">Game Maker</a></li><li><a class="studio" href="../studio/index.html">Creator Studio</a></li></ul>
+    </nav>
+  </header>
+  <main class="wrap" id="main">
+    <section class="page-head"><span class="eyebrow">Make your own game</span><h1>Turn your picture into a game.</h1><div class="rule" aria-hidden="true"></div>
+      <p class="lede">Pick a game, add a photo or a painting, and share it with a link or a QR code. It takes about a minute, and it’s free.</p></section>
+    <ol class="mg-how" aria-label="How it works">
+      <li><div><b>Pick a game</b><span>Nine ready to go.</span></div></li>
+      <li><div><b>Add your picture</b><span>See it come alive as you go.</span></div></li>
+      <li><div><b>Share it</b><span>A link and a QR code.</span></div></li>
+    </ol>
+    <section class="ggrid mgrid" id="grid" aria-label="Games you can make"></section>
+    <div class="mg-ear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8.5a6 6 0 1 1 12 0c0 3.5-3 4.5-3 7.5a3 3 0 0 1-6 0"/><path d="M9.5 8.5a2.5 2.5 0 0 1 5 0"/></svg>
+      <p><b>Every game can be played by ear.</b> Beeps guide the way, every part has its own note, and a voice welcomes players and reads out your description of the picture. Made with the Blind Canvas Project.</p></div>
+    <section class="ideas" aria-labelledby="ideasH"><span class="eyebrow">Brainstorm</span><h2 id="ideasH">Games we could make next</h2>
+      <p class="lede">Ideas from the Blind Canvas Project games. Each was first made for one painting, and could become a template for any picture. The ones marked <span class="rdy">Ready</span> you can make today.</p>
+      <div class="igrid"><section class="idea"><h3>Light in the dark</h3><p class="sub">Light up what’s hidden</p><ul><li><b>Night light</b> <span class="rdy">Ready as Flashlight</span> <span>The room goes dark and the phone is a flashlight. Find seven hidden things to a lofi beat.</span> <i>from Midnight Melodies</i></li><li><b>Pieces of me</b> <span>Find broken pieces of a mirror in the dark. Each holds a word about who you are.</span> <i>from The Mirror</i></li><li><b>Light the night</b> <span>Carry a small light across a dark lake to find what’s hidden, each with its own sound.</span> <i>from The Only Light We’ll See</i></li><li><b>Light the glass</b> <span>Rub a finger across dark stained glass and each piece lights up like a sunrise, with a chime.</span> <i>from A New Day</i></li><li><b>Glow it bright</b> <span>Sing or hum: a glowing orb rises and falls with your voice to light things up.</span> <i>from Rhythm of Life</i></li></ul></section><section class="idea"><h3>Find it by ear</h3><p class="sub">Sound hunts</p><ul><li><b>Sound safari</b> <span>Everyday sounds that help a blind person get around hide in the fog. They get louder as you get close.</span> <i>from Almost Blindness</i></li><li><b>Open road safari</b> <span>City sounds hide between the roads, and you tame the weather too.</span> <i>from Pathways Unveiled</i></li><li><b>Fish for the sisters</b> <span>Point out the fish swimming past so the sisters can see them.</span> <i>from Reflections of Sisterhood</i></li><li><b>Family apples</b> <span>Grow an apple for each person in the family, then find them again through a low-vision filter.</span> <i>from Roots of Kinship</i></li></ul></section><section class="idea"><h3>Seeing differently</h3><p class="sub">Play through another person’s eyes</p><ul><li><b>See it my way</b> <span>Find hidden words through cataracts, macular degeneration, glaucoma and RP.</span> <i>from Walk Through Fear</i></li><li><b>Catch the words</b> <span>A tunnel of sight follows the eye. Catch the words of a poem as they drift past.</span> <i>from The Visions That We Share</i></li><li><b>Metamorphosis</b> <span>Hold the phone very still and the fog settles so you can see what’s growing inside.</span> <i>from The Gray Zone</i></li><li><b>Show her</b> <span>A window opens onto paintings by other visually impaired artists.</span> <i>from All the Possibilities</i></li></ul></section><section class="idea"><h3>Music and memory</h3><p class="sub">Listen, then play it back</p><ul><li><b>Light memory</b> <span class="rdy">Ready as Simon Says</span> <span>The people under the tree each sing a note. Sing their song back by tapping them in order.</span> <i>from Curating Hope</i></li><li><b>Jazz says</b> <span>A musical Simon Says with five instruments living in the painting.</span> <i>from Rhapsody in Blue</i></li><li><b>Night bus</b> <span>The bus rolls through the city while you play a trumpet solo.</span> <i>from The Dark Uncertainty</i></li><li><b>Robot dance party</b> <span>Move your phone and the robot dances to a live funk band. Copy his moves.</span> <i>from Fearless Request</i></li><li><b>Dance in the flowers</b> <span>Tilt to sway and wave to twirl, to a gentle waltz.</span> <i>from All Life’s Beauty</i></li></ul></section><section class="idea"><h3>Your voice</h3><p class="sub">Talk, and the painting talks back</p><ul><li><b>Say it from the creek</b> <span>A face becomes a puppet that says your answer back.</span> <i>from The Bridge of Perception</i></li><li><b>Healthy self-talk</b> <span>Two heads for the two voices inside: the worry, and the kind answer.</span> <i>from The Scope of Communication</i></li><li><b>What should I paint?</b> <span>Tell the artist an idea and she imagines it.</span> <i>from Flow State</i></li><li><b>Riddles of the lighthouse</b> <span>A talking face by the sea asks riddles about living with blindness.</span> <i>from Lighthouse of Hope</i></li></ul></section><section class="idea"><h3>Move your body</h3><p class="sub">Walk, lean and ride</p><ul><li><b>Calm walk</b> <span>Red light, green light: walk toward the painting while breathing calmly.</span> <i>from Inner Peace in Outer Chaos</i></li><li><b>Ride the block</b> <span>Be Bill’s eyes. Warn him about things in the road by their sounds.</span> <i>from Pedals of Freedom</i></li><li><b>Ride by feel</b> <span>A buddy calls each curve and you lean into it, by sound alone.</span> <i>from Back of a Harley</i></li><li><b>Sunset joyride</b> <span>Tilt to keep the car in its lane as the boulevard curves.</span> <i>from Joyride</i></li><li><b>Straight as an arrow</b> <span>Drive the highway at dusk as the poles bend over at the top.</span> <i>from Telephone Poles</i></li></ul></section><section class="idea"><h3>Weather and calm</h3><p class="sub">Change the sky</p><ul><li><b>Blow the storm away</b> <span class="rdy">Ready as Change the Weather</span> <span>A storm rolls into town. Blow it away so the band can keep playing.</span> <i>from Harmonious Gathering</i></li><li><b>Tides of decision</b> <span>Tilt to give strength to the calm side or the fiery side of a big choice.</span> <i>from Decision Divide</i></li><li><b>Calm the crossing</b> <span>Calm the storms so the people on the bridge can meet in the middle.</span> <i>from Moment of Communion</i></li></ul></section><section class="idea"><h3>Caring and together</h3><p class="sub">Help someone else</p><ul><li><b>Style the dream</b> <span>Be the stylist: dress three clients from the clothes on the wall.</span> <i>from Haute Couture Dreams</i></li><li><b>Hold on together</b> <span>Link the family’s hands. Every link adds a note to their chord.</span> <i>from Embracing Unity</i></li></ul></section><section class="idea"><h3>Quick games</h3><p class="sub">The first game for all 49 paintings</p><p class="qk"><b>Sliding mosaic</b> <span class="rdy">Ready</span> · <b>Catch</b> · <b>Rhythm</b> · <b>Runner</b> · <b>Reveal</b> · <b>Beam</b> · <b>Balance</b> · <b>Echo</b> · <b>Connect</b> · <b>Pop</b> · <b>Stack</b> · <b>Sort</b></p><p class="qkn">Each is about a minute long, plays over the painting, and can be played by ear.</p></section></div></section>
+    <section class="cta-row"><h2>Want full control?</h2><p>Place every treasure yourself, draw your own maze walls, record your own voice, and more.</p>
+      <div class="go"><a class="btn" href="../games/index.html">Open the Game Maker</a><a class="btn blue" href="../snowglobe/">Make a snow globe</a></div></section>
+  </main>
+  <footer>
+    <div class="row"><img src="../art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="../for-creators.html">For Creators</a></li><li><a href="../for-galleries.html">For Galleries</a></li><li><a href="../for-businesses.html">For Businesses</a></li><li><a href="../for-everyone.html">For Everyone</a></li><li><a href="../studio/index.html">Creator Studio</a></li><li><a href="../games/index.html">Game Maker</a></li></ul></div>
+    <span>Art Alive is made by the <a href="https://blindcanvasproject.com/" target="_blank" rel="noopener">Blind Canvas Project</a> and Able Art Alliance.</span>
+  </footer>
+</div>
+<script src="../site-config.js"></script><script src="../site.js"></script><script src="../account.js"></script><script src="templates.js"></script>
+<script>
+(function () {
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('grid').innerHTML = AATemplates.list.map(t => `<article class="gcard">
+    <a class="gimg" href="game.html?g=${t.id}" tabindex="-1" aria-hidden="true"><img src="img/${t.id}.jpg" alt="" loading="lazy">${t.isNew ? '<span class="gnew">New</span>' : ''}</a>
+    <div class="gtxt"><span class="gkind">${t.isNew ? 'New · ' : ''}${esc(t.short)}</span><h3>${esc(t.name)}</h3><p>${esc(t.line)}</p>
+      <div class="row2"><a class="btn small" href="game.html?g=${t.id}" aria-label="Make your own ${esc(t.name)} game">Make yours</a>${t.example ? `<a class="ex" href="${t.example}" aria-label="Play an example ${esc(t.name)} game">Play an example</a>` : ''}</div></div></article>`).join('');
+  const b = document.querySelector('.menu-btn'), n = document.getElementById('nav'); if (!b) return;
+  b.addEventListener('click', () => { const o = n.classList.toggle('open'); b.setAttribute('aria-expanded', o); b.textContent = o ? 'Close' : 'Menu'; });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && n.classList.contains('open')) { n.classList.remove('open'); b.setAttribute('aria-expanded', 'false'); b.textContent = 'Menu'; b.focus(); } });
+})();
+</script>
+</body>
+</html>

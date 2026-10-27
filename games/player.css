@@ -48,3 +48,14 @@
 .aag-artip{position:absolute;left:10px;right:10px;bottom:10px;margin:0;padding:10px 14px;border-radius:12px;background:rgba(10,12,16,.82);text-align:center;font-weight:700;font-size:17px;transition:opacity .4s}
 .aag-artip.hide{opacity:0}
 .aag-bar .aag-arbtn{border-color:var(--a-blue);color:#bfe9ff}
+
+/* simon says: four big buttons that match the four parts of the painting */
+.aag-simon{display:grid;grid-template-columns:repeat(2,96px);grid-template-rows:repeat(2,96px);gap:10px}
+.aag-simon button{border:3px solid var(--q);border-radius:22px;background:color-mix(in srgb,var(--q) 22%,#15191f);color:var(--a-cream);font:900 30px/1 'Archivo','Arial Black',Arial,sans-serif;touch-action:manipulation;user-select:none;-webkit-user-select:none;transition:background .08s,transform .08s}
+.aag-simon button.on,.aag-simon button:active{background:var(--q);color:#14100c;transform:scale(.97);box-shadow:0 0 26px -2px var(--q)}
+/* change the weather: one big button for each kind of weather */
+.aag-wx{display:grid;grid-template-columns:repeat(3,minmax(92px,1fr));gap:10px;width:min(100%,420px)}
+.aag-wx button{min-height:76px;border:2px solid var(--a-line);border-radius:18px;background:var(--a-wall);color:var(--a-cream);font-weight:700;font-size:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;touch-action:manipulation}
+.aag-wx button span{font-size:28px;line-height:1}
+.aag-wx button.on{border-color:var(--a-orange);background:#2a2018;box-shadow:inset 0 0 0 2px var(--a-orange)}
+@media (max-width:420px){.aag-simon{grid-template-columns:repeat(2,84px);grid-template-rows:repeat(2,84px)}}
