@@ -167,6 +167,22 @@ Customers log in with an email link (no password) and save their animations and 
 - Videos can be up to a minute and 50 MB. Snow globes count towards the plan, like animations and games.
 - The Ora holiday globe is at `play/holiday-snowglobe.html`.
 
+## Pet snow globes (artalivestudio.com/petglobe)
+
+Anyone can put their pet in a snow globe and share a link. **No account needed**, to make one or to open one.
+
+- **Making one:** choose a photo. The pet is cut out right on their phone or computer (the photo itself never leaves it). Art Alive zooms in on the head; they tap the eyes and nose, so the pet blinks, watches the snow, twitches its ears and sneezes at a snowflake. Then a name for the plaque and words for the glass.
+- **Sharing:** **Get a link to share** saves only the cutout picture, the name, the words and the three taps, and gives a link like `artalivestudio.com/petglobe/?g=abcd2345`. **Share** opens the phone's share sheet (or the share panel on a computer).
+- **Opening one:** the link shows the globe straight away. Shaking the phone stirs the snow (iPhones ask permission the first time). There's a **Make one with your pet** button and a small **Report** link.
+- **Accounts are optional:** under the link there's a small "save it to a free account" option, for people who want to change it later and keep it for good. Links made without an account last a year.
+- **Limits:** one person can make 15 an hour, and 3,000 can be made a day in total. Three different people reporting a globe hides it and removes its picture. Reported globes are in Table Editor → `petglobe_reports`.
+- The cutout uses the small U²-Net model (`petglobe/u2netp.onnx`, Apache 2.0 licence, free for paid products) running in the browser with ONNX Runtime Web.
+
+**One-time setup:**
+
+1. In Supabase, open **SQL Editor → New query**, paste everything from `setup/petglobe-setup.sql`, and press **Run**.
+2. In Supabase, open **Edge Functions**, deploy a new function with the editor, name it `petglobe`, and paste all of `setup/petglobe.ts`. In its settings, turn **off** "Verify JWT" (people making and opening globes don't have accounts). No secrets to add.
+
 ## Photos to share
 
 - When a piece comes alive in the camera (Studio player, collections, Magic Postcards, the mug lab), a **Photo** button takes a picture of the moment with the living artwork on it, plus a small "Made with Art Alive" credit. Visitors can **Share** it straight to their apps or **Save** it.

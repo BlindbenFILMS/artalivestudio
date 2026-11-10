@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pet Snow Globe · Art Alive</title>
+<meta name="description" content="Put your pet in a snow globe. Add a photo, give it a shake, and share the link. No app, no account.">
+<meta name="theme-color" content="#15131c">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Art Alive">
+<meta property="og:title" content="A snow globe for you">
+<meta property="og:description" content="Open it and give it a shake.">
+<meta property="og:image" content="https://artalivestudio.com/share-card.jpg?v=2">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+  /* A warm winter night: the globe glows in a dark room; the steps sit beside it (below it on a phone). */
+  :root {
+    --room: #15131c;
+    --room-glow: #2a2438;
+    --card: #1f1b29;
+    --line: #3a3348;
+    --brass: #d9b36c;
+    --ink: #efe8dc;
+    --muted: #a99fb3;
+    --display: "Marcellus", "Trajan Pro", Georgia, serif;
+    --body: "Nunito Sans", system-ui, -apple-system, sans-serif;
+    color-scheme: dark;
+  }
+  [hidden] { display: none !important; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0; background: radial-gradient(ellipse at 50% 30%, var(--room-glow), var(--room) 65%); background-color: var(--room);
+    color: var(--ink); font-family: var(--body); font-size: 15px; overflow-x: hidden;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 24px;
+  }
+  .page { max-width: 980px; margin: 0 auto; display: grid; gap: 22px; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: start; }
+  @media (max-width: 760px) { .page { grid-template-columns: minmax(0, 1fr); } }
+  header { grid-column: 1 / -1; }
+  h1 { font: 400 clamp(28px, 6vw, 40px)/1.05 var(--display); margin: 0 0 6px; letter-spacing: .02em; text-wrap: balance; }
+  header p { margin: 0; color: var(--muted); max-width: 60ch; }
+  .globe { position: relative; width: min(100%, 460px); justify-self: center; aspect-ratio: 1 / 1.18; touch-action: none; cursor: grab; transform-origin: 50% 88%; }
+  canvas { display: block; width: 100%; height: 100%; }
+  .steps { display: grid; gap: 14px; min-width: 0; }
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 10px; }
+  .step h2 { margin: 0; font: 700 12px var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--brass); }
+  label { font-weight: 600; font-size: 14px; }
+  input[type=text], input[type=email] {
+    width: 100%; box-sizing: border-box; font: 16px var(--body); color: var(--ink); background: var(--room);
+    border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+  }
+  input[type=text]:focus-visible, input[type=email]:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+  .btn {
+    font: 700 15px var(--body); letter-spacing: .03em; color: var(--room); background: var(--brass);
+    border: 0; border-radius: 999px; padding: 12px 22px; cursor: pointer; text-align: center; display: inline-block;
+  }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  .btn:focus-visible, .pick:focus-within { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .pick { position: relative; overflow: hidden; }
+  .pick input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .status { font-size: 14px; color: var(--muted); min-height: 1.4em; margin: 0; }
+  .status.err { color: #f2a28f; }
+  .bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--brass); transition: width .2s; }
+  .small { font-size: 13px; color: var(--muted); margin: 0; }
+  .drop { border: 2px dashed var(--line); border-radius: 12px; padding: 12px; text-align: center; color: var(--muted); font-size: 13px; }
+  .drop.over { border-color: var(--brass); color: var(--ink); }
+  #pick { display: block; width: 100%; height: 200px; border-radius: 10px; cursor: crosshair; touch-action: manipulation;
+    background: repeating-conic-gradient(#262132 0% 25%, #1c1826 0% 50%) 0 0 / 20px 20px; }
+  .tapsay { margin: 0; font-weight: 700; font-size: 16px; color: var(--ink); }
+  .brand { display: inline-block; margin-bottom: 10px; color: var(--muted); font: 700 12px var(--body); letter-spacing: .14em; text-transform: uppercase; text-decoration: none; }
+  .brand:hover { color: var(--ink); }
+  .btn.big { font-size: 17px; padding: 15px 26px; width: 100%; }
+  .share { border-color: var(--brass); box-shadow: 0 0 0 1px rgba(217,179,108,.25), 0 10px 30px -12px rgba(217,179,108,.35); }
+  .linkrow { display: flex; gap: 8px; }
+  .linkrow input { flex: 1; min-width: 0; font-size: 15px; }
+  .ok { color: #9fe0b0; }
+  .acct { border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 8px; }
+  .textlink { background: none; border: 0; padding: 0; color: var(--muted); font: 600 14px var(--body); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; text-align: left; }
+  .textlink:hover { color: var(--ink); }
+  .textlink:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+  .acct form { display: grid; gap: 8px; }
+  body.viewing .maker { display: none !important; }
+  .viewer { display: none; }
+  body.viewing .viewer { display: grid; }
+</style>
+
+</head>
+<body>
+<div class="page">
+  <header>
+    <a class="brand" href="../">Art Alive</a>
+    <h1 id="title">Pet Snow Globe</h1>
+    <p id="lede">Add a photo of your pet. It's cut out right here on your phone or computer (the photo never leaves it) and set inside a snow globe with their name on the plaque. Then get a link to share. No account needed.</p>
+  </header>
+
+  <div class="globe" id="globe" role="img" aria-label="A snowglobe. Your pet's photo appears inside it, sitting in the snow.">
+    <canvas id="c"></canvas>
+  </div>
+
+  <div class="steps">
+    <section class="step viewer" aria-labelledby="sV">
+      <h2 id="sV">Shake it</h2>
+      <div class="row"><button class="btn" id="shakeV" type="button">Shake the snow globe</button></div>
+      <p class="small" id="viewSay">Shake your phone, tap the globe, or drag it back and forth.</p>
+      <div class="acct" id="acctV" hidden></div>
+      <div class="row"><a class="btn ghost" href="./">Make one with your pet</a></div>
+      <button class="textlink" id="report" type="button">Report this snow globe</button>
+    </section>
+    <section class="step maker" aria-labelledby="s1">
+      <h2 id="s1">Step 1: Your pet's photo</h2>
+      <div class="row">
+        <span class="btn pick" id="pickBtn">Choose a photo<input id="file" type="file" accept="image/*" aria-label="Choose a photo of your pet"></span>
+      </div>
+      <div class="drop" id="drop">or drop a photo here</div>
+      <div class="bar" id="bar" hidden><i id="barFill"></i></div>
+      <p class="status" id="status" role="status">Works best with one pet, the whole body in view, on a plain-ish background.</p>
+    </section>
+
+    <section class="step maker" aria-labelledby="sF" id="face" hidden>
+      <h2 id="sF">Step 2: Tap the eyes and nose</h2>
+      <p class="tapsay" id="faceSay" role="status">Tap your pet’s eye on the left</p>
+      <canvas id="pick" aria-label="Your pet's cutout. Tap the left eye, the right eye, then the nose."></canvas>
+      <div class="row">
+        <button class="btn ghost" id="redo" type="button">Redo taps</button>
+        <button class="btn ghost" id="wrong" type="button">Not the face?</button>
+        <button class="btn ghost" id="skip" type="button">Skip this step</button>
+      </div>
+      <p class="small">We zoom in on the head for you. This lets your pet blink, watch the snow, twitch their ears and sneeze at a snowflake.</p>
+    </section>
+
+    <section class="step maker" aria-labelledby="s2">
+      <h2 id="s2">Step 3: Name and message</h2>
+      <label for="name">Name on the plaque</label>
+      <input id="name" type="text" maxlength="22" placeholder="Biscuit" autocomplete="off">
+      <label for="msg">Words on the glass</label>
+      <input id="msg" type="text" maxlength="34" value="Always in our hearts" autocomplete="off">
+    </section>
+
+    <section class="step maker" aria-labelledby="s3">
+      <h2 id="s3">Step 4: Shake it</h2>
+      <div class="row">
+        <button class="btn" id="shake" type="button">Shake the snow globe</button>
+      </div>
+      <p class="small">Or tap the globe, or drag it back and forth. Your pet watches the snow and may catch a snowflake on the nose. When it settles, the words appear and your pet dozes off.</p>
+    </section>
+
+    <section class="step share maker" aria-labelledby="s5">
+      <h2 id="s5">Step 5: Share it</h2>
+      <button class="btn big" id="makeLink" type="button" disabled>Get a link to share</button>
+      <div id="linkBox" hidden>
+        <div class="linkrow">
+          <input id="linkOut" type="text" readonly aria-label="Your snow globe link">
+          <button class="btn" id="shareLink" type="button">Share</button>
+        </div>
+      </div>
+      <p class="status" id="shareSay" role="status">Add a photo first. Anyone can open the link, no app or account needed.</p>
+      <div class="acct" id="acct" hidden></div>
+    </section>
+  </div>
+</div>
+
+<script src="../site-config.js"></script>
+<script src="../account.js"></script>
+<script src="../snowglobe/sharelink.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.3/dist/ort.wasm.min.js"></script>
+<script>
+(async () => {
+// ---------------------------------------------------------------- cutout (U²-Net small, Apache-2.0), all on this device
+const statusEl = document.getElementById('status'), bar = document.getElementById('bar'), barFill = document.getElementById('barFill');
+const say = (t, err) => { statusEl.textContent = t; statusEl.classList.toggle('err', !!err); };
+const here = new URL('./', location.href).href;
+let session = null;
+
+async function ensureOrt() {
+  if (window.ort) return;
+  await new Promise((ok, bad) => { const s = document.createElement('script'); s.src = here + 'ort-local.js'; s.onload = ok; s.onerror = bad; document.head.appendChild(s); });
+}
+async function getSession() {
+  if (session) return session;
+  await ensureOrt();
+  ort.env.wasm.wasmPaths = here; ort.env.wasm.numThreads = 1; ort.env.wasm.proxy = false;
+  say('Getting the cutout tool ready (first time only)…'); bar.hidden = false; barFill.style.width = '0%';
+  const res = await fetch(here + 'u2netp.onnx');
+  if (!res.ok) throw new Error('model ' + res.status);
+  const total = +res.headers.get('content-length') || 4574861, reader = res.body.getReader(), parts = []; let got = 0;
+  for (;;) { const { done, value } = await reader.read(); if (done) break; parts.push(value); got += value.length; barFill.style.width = Math.min(100, got / total * 100) + '%'; }
+  const buf = new Uint8Array(got); let o = 0; for (const p of parts) { buf.set(p, o); o += p.length; }
+  session = await ort.InferenceSession.create(buf, { executionProviders: ['wasm'] });
+  return session;
+}
+
+function loadImage(file) {
+  return new Promise((ok, bad) => { const u = URL.createObjectURL(file), im = new Image(); im.onload = () => ok(im); im.onerror = () => bad(new Error('image')); im.src = u; });
+}
+
+async function cutout(img) {
+  const s = await getSession();
+  say('Finding your pet…'); barFill.style.width = '100%';
+  await new Promise(r => setTimeout(r, 30));
+  // the photo, at most 1400 px on its long side
+  const k = Math.min(1, 1400 / Math.max(img.naturalWidth, img.naturalHeight));
+  const PW = Math.round(img.naturalWidth * k), PH = Math.round(img.naturalHeight * k);
+  const photo = document.createElement('canvas'); photo.width = PW; photo.height = PH;
+  const pg = photo.getContext('2d'); pg.drawImage(img, 0, 0, PW, PH);
+  // model input: 320×320, scaled by the brightest value, then ImageNet mean/std
+  const N = 320, small = document.createElement('canvas'); small.width = small.height = N;
+  const sg = small.getContext('2d'); sg.drawImage(photo, 0, 0, N, N);
+  const px = sg.getImageData(0, 0, N, N).data; let mx = 1;
+  for (let i = 0; i < px.length; i += 4) mx = Math.max(mx, px[i], px[i + 1], px[i + 2]);
+  const mean = [0.485, 0.456, 0.406], std = [0.229, 0.224, 0.225], x = new Float32Array(3 * N * N);
+  for (let i = 0; i < N * N; i++) for (let c = 0; c < 3; c++) x[c * N * N + i] = (px[i * 4 + c] / mx - mean[c]) / std[c];
+  const out = await s.run({ [s.inputNames[0]]: new ort.Tensor('float32', x, [1, 3, N, N]) });
+  const m = out[s.outputNames[0]].data; let lo = Infinity, hi = -Infinity;
+  for (const v of m) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
+  // mask → keep only the biggest piece (the pet), drop specks
+  const mask = new Float32Array(N * N); for (let i = 0; i < N * N; i++) mask[i] = (m[i] - lo) / (hi - lo + 1e-8);
+  const on = i => mask[i] > 0.35, lab = new Int32Array(N * N); let best = 0, bestN = 0, id = 0;
+  for (let i = 0; i < N * N; i++) {
+    if (!on(i) || lab[i]) continue; id++; let n = 0; const st = [i]; lab[i] = id;
+    while (st.length) { const j = st.pop(); n++; const xx = j % N, yy = (j / N) | 0;
+      for (const q of [xx > 0 ? j - 1 : -1, xx < N - 1 ? j + 1 : -1, yy > 0 ? j - N : -1, yy < N - 1 ? j + N : -1]) if (q >= 0 && !lab[q] && on(q)) { lab[q] = id; st.push(q); } }
+    if (n > bestN) { bestN = n; best = id; }
+  }
+  if (bestN < N * N * 0.01) throw new Error('nopet');
+  // grow the kept piece by a few cells so soft edges survive, then build the alpha at full size
+  const keep = new Uint8Array(N * N); for (let i = 0; i < N * N; i++) keep[i] = lab[i] === best ? 1 : 0;
+  for (let r = 0; r < 3; r++) { const k2 = keep.slice(); for (let i = 0; i < N * N; i++) if (!keep[i]) { const xx = i % N, yy = (i / N) | 0; if ((xx > 0 && k2[i - 1]) || (xx < N - 1 && k2[i + 1]) || (yy > 0 && k2[i - N]) || (yy < N - 1 && k2[i + N])) keep[i] = 1; } }
+  const mc = document.createElement('canvas'); mc.width = mc.height = N; const mg = mc.getContext('2d'), md = mg.createImageData(N, N);
+  for (let i = 0; i < N * N; i++) { const a = keep[i] ? Math.max(0, Math.min(1, (mask[i] - 0.08) / 0.75)) : 0; md.data[i * 4 + 3] = Math.round(a * 255); }
+  mg.putImageData(md, 0, 0);
+  const full = document.createElement('canvas'); full.width = PW; full.height = PH; const fg = full.getContext('2d');
+  fg.imageSmoothingQuality = 'high'; fg.filter = `blur(${Math.max(0.6, PW / 900)}px)`; fg.drawImage(mc, 0, 0, PW, PH); fg.filter = 'none';
+  fg.globalCompositeOperation = 'source-in'; fg.drawImage(photo, 0, 0);
+  // crop to the pet
+  const a = fg.getImageData(0, 0, PW, PH).data; let x0 = PW, y0 = PH, x1 = 0, y1 = 0;
+  for (let yy = 0; yy < PH; yy += 2) for (let xx = 0; xx < PW; xx += 2) if (a[(yy * PW + xx) * 4 + 3] > 40) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy; }
+  const cw = x1 - x0 + 2, ch = y1 - y0 + 2, crop = document.createElement('canvas'); crop.width = cw; crop.height = ch;
+  crop.getContext('2d').drawImage(full, x0, y0, cw, ch, 0, 0, cw, ch);
+  const lim = Math.min(1, 900 / Math.max(cw, ch)); if (lim >= 1) return crop;
+  const out2 = document.createElement('canvas'); out2.width = Math.round(cw * lim); out2.height = Math.round(ch * lim);
+  const og = out2.getContext('2d'); og.imageSmoothingQuality = 'high'; og.drawImage(crop, 0, 0, out2.width, out2.height); return out2;
+}
+
+async function handleFile(file) {
+  if (!file || !file.type.startsWith('image/')) { say('That file isn’t a photo. Try a JPG or PNG.', true); return; }
+  try {
+    const img = await loadImage(file);
+    const t0 = performance.now();
+    pet = await cutout(img); petSettings(); petTexture(); petId++; linkState();
+    bar.hidden = true;
+    say(`Cut out in ${((performance.now() - t0) / 1000).toFixed(1)} s. Now tap the eyes and nose below.`);
+    startFacePick();
+    shake(1); setTimeout(() => shake(-1), 200);
+  } catch (e) {
+    bar.hidden = true;
+    say(e.message === 'nopet' ? 'Couldn’t find a pet in that photo. Try one where your pet is bigger in the frame.' : 'Something went wrong with that photo. Try another one.', true);
+    console.error(e);
+  }
+}
+const fileIn = document.getElementById('file');
+fileIn.addEventListener('change', () => handleFile(fileIn.files[0]));
+const drop = document.getElementById('drop');
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); handleFile(e.dataTransfer.files[0]); });
+window.__petFile = handleFile;
+
+// ---------------------------------------------------------------- the snowglobe
+const nameIn = document.getElementById('name'), msgIn = document.getElementById('msg');
+const globeEl = document.getElementById('globe'), cv = document.getElementById('c'), g = cv.getContext('2d');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let W = 0, H = 0, dpr = 1, R = 0, cx = 0, cy = 0;
+function size() {
+  const r = globeEl.getBoundingClientRect(); dpr = Math.min(2, devicePixelRatio || 1);
+  W = r.width; H = r.height; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); R = W * 0.46; cx = W / 2; cy = R + W * 0.03;
+  if (pet && !faceBox.hidden) drawPick();
+}
+
+const groundAt = x => 0.62 - 0.08 * Math.cos(x * 1.6);
+let pet = null, petW = 0, petH = 0, petFoot = 0, sinkFrac = 0.09, driftSeed = Math.random() * 6;
+function petSettings() {
+  if (!pet) return;
+  const ar = pet.width / pet.height;
+  petH = Math.min(1.4, 1.5 / ar); petW = petH * ar;
+  petFoot = groundAt(0) + petH * sinkFrac + 0.03;
+}
+const P = (x, y) => [cx + x * R, cy + y * R];
+const toGlobe = (px, py) => [-petW / 2 + px * petW / pet.width, petFoot - petH + py * petH / pet.height];
+
+// ---------------------------------------------------------------- tap the eyes and nose
+const faceBox = document.getElementById('face'), pick = document.getElementById('pick'), faceSay = document.getElementById('faceSay');
+const TAP_SAY = ['Tap your pet’s eye on the left', 'Now tap the eye on the right', 'Now tap the tip of the nose'];
+let taps = [], face = null, view = null, choosing = false, dragI = -1;
+function guessHead() {
+  // the head is usually the biggest lump in the top part of the silhouette
+  const w = pet.width, h = pet.height, d = pet.getContext('2d').getImageData(0, 0, w, h).data;
+  const band = Math.round(Math.min(h * 0.4, w * 0.9)), col = new Float64Array(w + 1);
+  for (let y = 0; y < band; y += 2) for (let x = 0; x < w; x += 2) col[x + 1] += d[(y * w + x) * 4 + 3];
+  for (let x = 1; x <= w; x++) col[x] += col[x - 1];
+  const win = Math.round(Math.min(w, band * 1.1)); let bx = 0, best = -1;
+  for (let x = 0; x + win <= w; x += 2) { const v = col[x + win] - col[x]; if (v > best) { best = v; bx = x; } }
+  let top = 0; find: for (let y = 0; y < band; y++) for (let x = bx; x < bx + win; x += 3) if (d[(y * w + x) * 4 + 3] > 120) { top = y; break find; }
+  return boxAt(bx + win / 2, top + band * 0.5, Math.max(win, band * 1.1));
+}
+function boxAt(x, y, side) {
+  side = Math.min(side, Math.max(pet.width, pet.height));
+  return { x: x - side / 2, y: Math.max(-side * 0.1, y - side / 2), w: side, h: side };
+}
+const whole = () => ({ x: 0, y: 0, w: pet.width, h: pet.height });
+function startFacePick() { taps = []; face = null; choosing = false; faceBox.hidden = false; view = guessHead(); faceSay.textContent = TAP_SAY[0]; drawPick(); }
+function pickFit() { const v = view || whole(), w = pick.clientWidth || 300, s = Math.min(w / v.w, 420 / v.h); return { s, w: v.w * s, h: v.h * s, ox: (w - v.w * s) / 2, v }; }
+const toScreen = (f, t) => [f.ox + (t[0] - f.v.x) * f.s, (t[1] - f.v.y) * f.s];
+function drawPick() {
+  const f = pickFit(), d = Math.min(2, devicePixelRatio || 1);
+  pick.style.height = f.h + 'px'; pick.width = Math.round(pick.clientWidth * d); pick.height = Math.round(f.h * d);
+  const c = pick.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, pick.clientWidth, f.h);
+  c.save(); c.beginPath(); c.rect(f.ox, 0, f.w, f.h); c.clip();
+  c.drawImage(pet, f.ox - f.v.x * f.s, -f.v.y * f.s, pet.width * f.s, pet.height * f.s); c.restore();
+  taps.forEach((t, i) => {
+    const [x, y] = toScreen(f, t);
+    c.beginPath(); c.arc(x, y, 13, 0, 7); c.fillStyle = 'rgba(217,179,108,.35)'; c.fill(); c.lineWidth = 2.5; c.strokeStyle = '#d9b36c'; c.stroke();
+    c.beginPath(); c.arc(x, y, 2, 0, 7); c.fillStyle = '#fff'; c.fill();
+    c.fillStyle = '#fff'; c.font = '700 12px "Nunito Sans", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(['L', 'R', 'N'][i], x, y - 22);
+  });
+}
+function pickPoint(e) { const r = pick.getBoundingClientRect(), f = pickFit(); return { f, sx: e.clientX - r.left, sy: e.clientY - r.top, x: f.v.x + (e.clientX - r.left - f.ox) / f.s, y: f.v.y + (e.clientY - r.top) / f.s }; }
+pick.addEventListener('pointerdown', e => {
+  if (!pet) return;
+  const p = pickPoint(e);
+  if (choosing) { choosing = false; view = boxAt(p.x, p.y, Math.min(pet.width, pet.height) * 0.6); faceSay.textContent = TAP_SAY[taps.length] || 'All set! Drag a dot to adjust it.'; drawPick(); return; }
+  // grab a dot that's already placed, to move it
+  dragI = taps.findIndex(t => { const [x, y] = toScreen(p.f, t); return Math.hypot(x - p.sx, y - p.sy) < 22; });
+  if (dragI >= 0) { pick.setPointerCapture(e.pointerId); return; }
+  if (taps.length >= 3) return;
+  taps.push([p.x, p.y]); drawPick();
+  if (taps.length < 3) faceSay.textContent = TAP_SAY[taps.length];
+  else { face = makeFace(taps); faceSay.textContent = 'All set! Drag a dot to adjust it.'; shake(1); setTimeout(() => shake(-1), 200); }
+});
+pick.addEventListener('pointermove', e => { if (dragI < 0) return; const p = pickPoint(e); taps[dragI] = [p.x, p.y]; drawPick(); });
+pick.addEventListener('pointerup', () => { if (dragI >= 0 && taps.length === 3) face = makeFace(taps); dragI = -1; });
+document.getElementById('redo').addEventListener('click', () => { if (pet) { taps = []; face = null; faceSay.textContent = TAP_SAY[0]; drawPick(); } });
+document.getElementById('wrong').addEventListener('click', () => { if (!pet) return; choosing = true; view = whole(); faceSay.textContent = 'Tap your pet’s face'; drawPick(); });
+document.getElementById('skip').addEventListener('click', () => { face = null; taps = []; if (pet) drawPick(); faceSay.textContent = 'Skipped. Your pet will still glow, breathe and nap. Tap the eyes any time to try again.'; });
+window.__tap = (x, y) => { taps.push([x, y]); if (taps.length === 3) { face = makeFace(taps); } };   // for testing
+
+function makeFace([a, b, n]) {
+  const [e1, e2] = a[0] <= b[0] ? [a, b] : [b, a];
+  const mid = [(e1[0] + e2[0]) / 2, (e1[1] + e2[1]) / 2], d = Math.max(8, Math.hypot(e2[0] - e1[0], e2[1] - e1[1]));
+  const nm = Math.max(d * 0.3, Math.hypot(n[0] - mid[0], n[1] - mid[1]));
+  let ux = mid[0] - n[0], uy = mid[1] - n[1]; const ul = Math.hypot(ux, uy) || 1; ux /= ul; uy /= ul;   // "up": from the nose toward the eyes
+  const ear = e => { let sx = e[0] - mid[0], sy = e[1] - mid[1]; const l = Math.hypot(sx, sy) || 1; sx /= l; sy /= l;
+    return { base: [e[0] + ux * 0.6 * d + sx * 0.12 * d, e[1] + uy * 0.6 * d + sy * 0.12 * d], c: [e[0] + ux * 1.05 * d + sx * 0.32 * d, e[1] + uy * 1.05 * d + sy * 0.32 * d], out: sx < 0 ? -1 : 1 }; };
+  return { e1, e2, n, d, mid, tilt: Math.atan2(e2[1] - e1[1], e2[0] - e1[0]),
+    headC: [mid[0] + (n[0] - mid[0]) * 0.35, mid[1] + (n[1] - mid[1]) * 0.35], rIn: d * 0.95, rOut: d * 1.9,
+    pivot: [n[0] - ux * nm * 1.6, n[1] - uy * nm * 1.6], earL: ear(e1), earR: ear(e2), earRad: d * 0.62, rx: d * 0.27, ry: d * 0.17 };
+}
+
+// ---------------------------------------------------------------- the pet, drawn with WebGL so it can bend smoothly (no seams)
+const A = { breath: 0, head: 0, hx: 0, hy: 0, earL: 0, earR: 0, earVL: 0, earVR: 0, bl: null, blinkT: 2.5, squeeze: 0,
+  sleep: 0, settled: 0, glow: 0, msg: 0, watch: null, watchT: 0, look: 0, lookY: 0, sneeze: 0, noseFlake: null, noseAt: 0, puffs: [], zzz: [], zT: 0 };
+const glc = document.createElement('canvas'); let gl = null, prog = null, tex = null, nIdx = 0, PAD = 0, U = {};
+function initGL() {
+  gl = glc.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: true });
+  if (!gl) return;
+  const vs = `attribute vec2 a; uniform vec2 uSize; uniform float uPad, uBreath, uFace;
+    uniform vec4 uEarL, uEarR; uniform vec3 uEarP; uniform vec4 uHeadC; uniform vec3 uHead; uniform vec2 uOff; varying vec2 v;
+    vec2 rot(vec2 p, vec2 c, float an) { float s = sin(an), k = cos(an); vec2 q = p - c; return c + vec2(q.x * k - q.y * s, q.x * s + q.y * k); }
+    void main() { v = a; vec2 p = a * uSize; vec2 q = vec2(p.x, uSize.y - (uSize.y - p.y) * (1.0 + uBreath));
+      if (uFace > 0.5) {
+        float w = 1.0 - smoothstep(0.0, uEarP.x, distance(p, uEarL.zw)); q = rot(q, uEarL.xy, uEarP.y * w);
+        w = 1.0 - smoothstep(0.0, uEarP.x, distance(p, uEarR.zw)); q = rot(q, uEarR.xy, uEarP.z * w);
+        w = 1.0 - smoothstep(uHeadC.z, uHeadC.w, distance(p, uHeadC.xy)); q = rot(q, uHead.xy, uHead.z * w) + uOff * w; }
+      vec2 n = (q + uPad) / (uSize + 2.0 * uPad); gl_Position = vec4(n.x * 2.0 - 1.0, 1.0 - n.y * 2.0, 0.0, 1.0); }`;
+  const fs = `precision mediump float; uniform sampler2D t; varying vec2 v; void main() { gl_FragColor = texture2D(t, v); }`;
+  const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
+  prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog); gl.useProgram(prog);
+  for (const k of ['uSize', 'uPad', 'uBreath', 'uFace', 'uEarL', 'uEarR', 'uEarP', 'uHeadC', 'uHead', 'uOff']) U[k] = gl.getUniformLocation(prog, k);
+  const N = 64, verts = [], idx = [];
+  for (let j = 0; j <= N; j++) for (let i = 0; i <= N; i++) verts.push(i / N, j / N);
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { const q = j * (N + 1) + i; idx.push(q, q + 1, q + N + 1, q + 1, q + N + 2, q + N + 1); }
+  const vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+  const ib = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(idx), gl.STATIC_DRAW); nIdx = idx.length;
+  const loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+}
+function petTexture() {
+  try { if (!gl) initGL(); } catch (e) { console.error(e); gl = null; }
+  if (!gl) return;
+  PAD = Math.round(Math.max(pet.width, pet.height) * 0.12);
+  glc.width = pet.width + PAD * 2; glc.height = pet.height + PAD * 2; gl.viewport(0, 0, glc.width, glc.height);
+  if (!tex) tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, pet);
+  for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
+}
+function renderGL() {
+  gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.uniform2f(U.uSize, pet.width, pet.height); gl.uniform1f(U.uPad, PAD); gl.uniform1f(U.uBreath, A.breath); gl.uniform1f(U.uFace, face ? 1 : 0);
+  if (face) {
+    gl.uniform4f(U.uEarL, face.earL.base[0], face.earL.base[1], face.earL.c[0], face.earL.c[1]);
+    gl.uniform4f(U.uEarR, face.earR.base[0], face.earR.base[1], face.earR.c[0], face.earR.c[1]);
+    gl.uniform3f(U.uEarP, face.earRad, A.earL, A.earR);
+    gl.uniform4f(U.uHeadC, face.headC[0], face.headC[1], face.rIn, face.rOut);
+    gl.uniform3f(U.uHead, face.pivot[0], face.pivot[1], A.head); gl.uniform2f(U.uOff, A.hx, A.hy);
+  }
+  gl.drawElements(gl.TRIANGLES, nIdx, gl.UNSIGNED_SHORT, 0);
+}
+// the same bend, in script, for points we draw on top (eyelids, the nose snowflake)
+const rotP = (p, c, an) => { const s = Math.sin(an), k = Math.cos(an), x = p[0] - c[0], y = p[1] - c[1]; return [c[0] + x * k - y * s, c[1] + x * s + y * k]; };
+const ss = (e0, e1, x) => { const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+const headW = p => 1 - ss(face.rIn, face.rOut, Math.hypot(p[0] - face.headC[0], p[1] - face.headC[1]));
+function warp(p) {
+  let q = [p[0], pet.height - (pet.height - p[1]) * (1 + A.breath)];
+  if (face) {
+    for (const [e, an] of [[face.earL, A.earL], [face.earR, A.earR]]) { const w = 1 - ss(0, face.earRad, Math.hypot(p[0] - e.c[0], p[1] - e.c[1])); if (w > 0) q = rotP(q, e.base, an * w); }
+    const w = headW(p); q = rotP(q, face.pivot, A.head * w); q = [q[0] + A.hx * w, q[1] + A.hy * w];
+  }
+  return q;
+}
+
+// ---------------------------------------------------------------- snow
+const FLAKES = 300, flakes = [];
+function flake(settled) {
+  const x = Math.random() * 1.8 - 0.9;
+  return { x, y: settled ? groundAt(x) - Math.random() * 0.02 : Math.random() * 1.6 - 0.9, vx: 0, vy: 0, r: 0.006 + Math.random() * 0.012, front: Math.random() < 0.55, rest: settled, tw: Math.random() * 6.28 };
+}
+for (let i = 0; i < FLAKES; i++) flakes.push(flake(i % 4 !== 0));
+function stir(power, dirX = 0) { for (const f of flakes) { f.rest = false; f.vx += (Math.random() - 0.5) * power + dirX * (0.5 + Math.random() * 0.6); f.vy -= Math.random() * power * 1.25; } }
+
+let sway = 0, swayV = 0;
+function wake() {
+  A.settled = 0; A.sleep = Math.min(A.sleep, 0.2);
+  if (!face) return;
+  A.earVL += face.earL.out * 7; A.earVR += face.earR.out * 7; startBlink('quick'); A.blinkT = 2;
+  if (!A.noseFlake && !A.noseAt) A.noseAt = performance.now() / 1000 + 2.4 + Math.random();
+}
+function shake(dir = (Math.random() < 0.5 ? -1 : 1)) { stir(1.6, dir * 0.4); if (!reduce) swayV += dir * 0.09; wake(); }
+document.getElementById('shake').addEventListener('click', () => { shake(1); setTimeout(() => shake(-1), 180); setTimeout(() => shake(1), 360); });
+let drag = null;
+globeEl.addEventListener('pointerdown', e => { drag = { x: e.clientX, moved: 0 }; globeEl.setPointerCapture(e.pointerId); });
+globeEl.addEventListener('pointermove', e => {
+  if (!drag) return; const dx = e.clientX - drag.x; drag.x = e.clientX; drag.moved += Math.abs(dx);
+  if (Math.abs(dx) > 1) { stir(Math.min(0.5, Math.abs(dx) / 60), Math.sign(dx) * Math.min(1, Math.abs(dx) / 25)); if (!reduce) swayV += dx * 0.0009; if (drag.moved > 20 && !drag.woke) { drag.woke = true; wake(); } else { A.settled = 0; } }
+});
+globeEl.addEventListener('pointerup', () => { if (drag && drag.moved < 8) shake(); drag = null; });
+globeEl.addEventListener('pointercancel', () => { drag = null; });
+
+// ---------------------------------------------------------------- drawing
+function scene() {
+  const sky = g.createLinearGradient(0, cy - R, 0, cy + R);
+  sky.addColorStop(0, '#1d2752'); sky.addColorStop(0.55, '#4a4f86'); sky.addColorStop(1, '#8c8fc2');
+  g.fillStyle = sky; g.fillRect(cx - R, cy - R, R * 2, R * 2);
+  const [mx, my] = P(0.52, -0.5), moon = g.createRadialGradient(mx, my, 0, mx, my, R * 0.32);
+  moon.addColorStop(0, 'rgba(255,248,226,.95)'); moon.addColorStop(0.18, 'rgba(255,244,214,.85)'); moon.addColorStop(0.2, 'rgba(255,240,210,.25)'); moon.addColorStop(1, 'rgba(255,240,210,0)');
+  g.fillStyle = moon; g.beginPath(); g.arc(mx, my, R * 0.32, 0, 7); g.fill();
+  g.fillStyle = '#5d6299'; g.beginPath(); g.moveTo(cx - R, cy + R * 0.42);
+  for (let x = -1; x <= 1.001; x += 0.05) { const [px, py] = P(x, 0.36 - 0.07 * Math.sin(x * 3.1 + 1)); g.lineTo(px, py); }
+  g.lineTo(cx + R, cy + R); g.lineTo(cx - R, cy + R); g.fill();
+  g.fillStyle = '#3c4378';
+  for (const [x, s] of [[-0.78, 0.17], [-0.62, 0.22], [-0.47, 0.15], [0.55, 0.2], [0.7, 0.16], [0.82, 0.21]]) {
+    const [px, py] = P(x, 0.4 - s * 0.2); g.beginPath(); g.moveTo(px, py - s * R); g.lineTo(px + s * R * 0.32, py + s * R * 0.15); g.lineTo(px - s * R * 0.32, py + s * R * 0.15); g.fill();
+  }
+}
+function snowFill(topY) { const grd = g.createLinearGradient(0, topY, 0, cy + R); grd.addColorStop(0, '#fbfcff'); grd.addColorStop(0.35, '#eef0fb'); grd.addColorStop(1, '#c7cbe8'); return grd; }
+function ground() {
+  g.fillStyle = snowFill(cy + R * 0.5); g.beginPath(); g.moveTo(cx - R, cy + R);
+  for (let x = -1; x <= 1.001; x += 0.04) { const [px, py] = P(x, groundAt(x)); g.lineTo(px, py); }
+  g.lineTo(cx + R, cy + R); g.fill();
+}
+const smooth = x => { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
+function startBlink(kind) { A.bl = { t: 0, dur: kind === 'slow' ? 1.5 : 0.3, kind }; }
+function blinkShut() {
+  const b = A.bl; if (!b) return 0; const p = b.t / b.dur;
+  if (b.kind === 'slow') return p < 0.4 ? smooth(p / 0.4) : p < 0.62 ? 1 : 1 - smooth((p - 0.62) / 0.38);   // a slow, soft "I love you" blink
+  return p < 0.27 ? Math.pow(p / 0.27, 1.6) : p < 0.4 ? 1 : 1 - smooth((p - 0.4) / 0.6);                    // snap shut, open more slowly
+}
+// one eye's lids: the upper lid (fur from just above) slides down and bows like a real lid; the lower lid rises to meet it
+function lids(e, ox, oy, k, shut) {
+  const q = warp(e), sx = ox + q[0] * k, sy = oy + q[1] * k, an = face.tilt + A.head * headW(e);
+  const rx = face.rx * k * 1.14, ry = face.ry * k * 1.2, meet = ry * 0.32;
+  const up = -ry + (ry + meet) * shut, lo = ry - (ry - meet) * shut;
+  const bow = x => (1 - Math.min(1, (x / rx) ** 2)) * ry * 0.42 * Math.min(1, shut * 1.4);
+  const edge = y0 => { const pts = []; for (let i = 0; i <= 16; i++) { const x = -rx - 3 + (2 * rx + 6) * i / 16; pts.push([x, y0 + bow(x)]); } return pts; };
+  const fur = dy => { g.save(); g.rotate(-an); g.drawImage(glc, ox - PAD * k - sx - Math.sin(an) * dy, oy - PAD * k - sy + Math.cos(an) * dy, glc.width * k, glc.height * k); g.restore(); };
+  g.save(); g.translate(sx, sy); g.rotate(an);
+  g.beginPath(); g.ellipse(0, 0, rx, ry, 0, 0, 7); g.clip();
+  // upper lid
+  g.save(); g.beginPath(); g.moveTo(-rx - 3, -ry - 3); g.lineTo(rx + 3, -ry - 3); for (const [x, y] of edge(up).reverse()) g.lineTo(x, y); g.closePath(); g.clip();
+  fur(up + ry);
+  const sh = g.createLinearGradient(0, up - ry * 0.7, 0, up + ry * 0.25); sh.addColorStop(0, 'rgba(30,18,10,0)'); sh.addColorStop(1, 'rgba(30,18,10,.32)');
+  g.fillStyle = sh; g.fillRect(-rx - 3, -ry - 3, 2 * rx + 6, 2 * ry + 6); g.restore();
+  // lower lid
+  g.save(); g.beginPath(); g.moveTo(-rx - 3, ry + 3); g.lineTo(rx + 3, ry + 3); for (const [x, y] of edge(lo).reverse()) g.lineTo(x, y); g.closePath(); g.clip();
+  fur(-(ry - lo)); g.fillStyle = 'rgba(30,18,10,.1)'; g.fillRect(-rx - 3, -ry - 3, 2 * rx + 6, 2 * ry + 6); g.restore();
+  g.restore();
+  // the lash line along the upper lid, with a soft shadow under it while the eye is still partly open
+  const line = edge(up).filter(([x]) => Math.abs(x) <= rx * (0.92 - 0.08 * shut));
+  g.save(); g.translate(sx, sy); g.rotate(an); g.lineCap = 'round'; g.lineJoin = 'round';
+  const path = (dy) => { g.beginPath(); line.forEach(([x, y], i) => i ? g.lineTo(x, y + dy) : g.moveTo(x, y + dy)); };
+  if (shut < 0.95) { g.strokeStyle = `rgba(15,8,4,${0.22 * (1 - shut)})`; g.lineWidth = ry * 0.4; path(ry * 0.14); g.stroke(); }
+  g.strokeStyle = `rgba(22,14,8,${0.4 + 0.35 * shut})`; g.lineWidth = Math.max(1, ry * 0.13); path(0); g.stroke();
+  g.restore();
+}
+function drawPet() {
+  if (!pet) {
+    g.save(); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = 'rgba(255,255,255,.75)';
+    g.font = `${Math.round(R * 0.11)}px Marcellus, Georgia, serif`; g.fillText('Your pet', cx, cy - R * 0.08); g.fillText('goes here', cx, cy + R * 0.06); g.restore(); return;
+  }
+  if (A.glow > 0.01) {
+    const [gx, gy] = P(0, petFoot - petH * 0.55), rg = g.createRadialGradient(gx, gy, R * 0.05, gx, gy, R * 0.85);
+    rg.addColorStop(0, `rgba(255,214,140,${0.55 * A.glow})`); rg.addColorStop(0.5, `rgba(255,190,120,${0.22 * A.glow})`); rg.addColorStop(1, 'rgba(255,180,110,0)');
+    g.fillStyle = rg; g.beginPath(); g.arc(gx, gy, R * 0.85, 0, 7); g.fill();
+  }
+  const [ox, oy] = P(-petW / 2, petFoot - petH), k = petW * R / pet.width;   // screen px per pet px
+  if (gl) { renderGL(); g.drawImage(glc, ox - PAD * k, oy - PAD * k, glc.width * k, glc.height * k); }
+  else g.drawImage(pet, ox, oy, pet.width * k, pet.height * k);
+  // eyelids
+  let shut = face ? Math.min(1, Math.max(blinkShut(), A.squeeze, A.sleep * 0.97)) : 0;
+  if (window.__shut != null) shut = window.__shut;   // for testing
+  if (shut > 0.02 && gl && face) for (const e of [face.e1, face.e2]) lids(e, ox, oy, k, shut);
+  if (face && A.noseFlake && A.noseFlake.landed) { const q = warp(face.n); g.fillStyle = '#fff'; g.beginPath(); g.arc(ox + q[0] * k, oy + q[1] * k - face.d * 0.05 * k, Math.max(2.5, face.d * 0.07 * k), 0, 7); g.fill(); }
+  // a drift banked in front, hiding the bottom edge of the photo
+  const lift = petH * (sinkFrac + 0.02), half = petW / 2;
+  g.beginPath(); let [px, py] = P(-1, groundAt(-1)); g.moveTo(px, py);
+  for (let x = -1; x <= 1.001; x += 0.02) {
+    let y = groundAt(x); const d = Math.abs(x) / (half + 0.2);
+    if (d < 1) { const bump = Math.cos(d * Math.PI / 2) ** 0.6; y = Math.min(y, petFoot - lift * bump + 0.012 * Math.sin(x * 9 + driftSeed) * bump); }
+    [px, py] = P(x, y); g.lineTo(px, py);
+  }
+  g.lineTo(cx + R, cy + R); g.lineTo(cx - R, cy + R); g.closePath(); g.fillStyle = snowFill(P(0, petFoot - lift)[1]); g.fill();
+}
+function snow(front, t) {
+  g.fillStyle = '#fff';
+  for (const f of flakes) { if (f.front !== front) continue; const [px, py] = P(f.x, f.y); g.globalAlpha = f.rest ? 0.9 : 0.75 + 0.25 * Math.sin(t * 2 + f.tw); g.beginPath(); g.arc(px, py, f.r * R * (front ? 1.15 : 0.8), 0, 7); g.fill(); }
+  g.globalAlpha = 1;
+  if (!front || !pet) return;
+  const nf = A.noseFlake; if (nf && !nf.landed) { const [px, py] = P(nf.x, nf.y); g.beginPath(); g.arc(px, py, R * 0.018, 0, 7); g.fill(); }
+  for (const p of A.puffs) { const [px, py] = P(p.x, p.y); g.globalAlpha = Math.max(0, p.life); g.beginPath(); g.arc(px, py, R * p.r, 0, 7); g.fill(); }
+  g.globalAlpha = 1; g.textAlign = 'center'; g.textBaseline = 'middle';
+  for (const z of A.zzz) { const [px, py] = P(z.x, z.y); g.globalAlpha = Math.max(0, Math.min(1, z.life * 2, (1.6 - z.life) * 2)); g.font = `${Math.round(R * z.size)}px Marcellus, Georgia, serif`; g.fillStyle = '#eef0ff'; g.fillText('z', px, py); }
+  g.globalAlpha = 1;
+}
+function message() {
+  const text = msgIn.value.trim(); if (A.msg < 0.01 || !text || !pet) return;
+  g.save(); g.globalAlpha = A.msg; g.font = `${Math.round(R * 0.078)}px Marcellus, Georgia, serif`; g.fillStyle = '#fff8e8';
+  g.shadowColor = 'rgba(255,220,150,.9)'; g.shadowBlur = R * 0.05; g.textAlign = 'center'; g.textBaseline = 'middle';
+  const rad = R * 0.915, chars = [...text], widths = chars.map(ch => g.measureText(ch).width), total = widths.reduce((a, b) => a + b, 0);
+  let ang = -Math.PI / 2 - (total / rad) / 2;
+  for (let i = 0; i < chars.length; i++) { const a = ang + widths[i] / rad / 2; g.save(); g.translate(cx + Math.cos(a) * rad, cy + Math.sin(a) * rad); g.rotate(a + Math.PI / 2); g.fillText(chars[i], 0, 0); g.restore(); ang += widths[i] / rad; }
+  g.restore();
+}
+function glass() {
+  const v = g.createRadialGradient(cx, cy, R * 0.6, cx, cy, R); v.addColorStop(0, 'rgba(255,255,255,0)'); v.addColorStop(1, 'rgba(190,210,255,.22)');
+  g.fillStyle = v; g.beginPath(); g.arc(cx, cy, R, 0, 7); g.fill();
+  g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = R * 0.035; g.lineCap = 'round'; g.beginPath(); g.arc(cx, cy, R * 0.86, Math.PI * 1.1, Math.PI * 1.3); g.stroke();
+  g.strokeStyle = 'rgba(255,255,255,.22)'; g.lineWidth = R * 0.018; g.beginPath(); g.arc(cx, cy, R * 0.9, Math.PI * 0.1, Math.PI * 0.32); g.stroke();
+  g.strokeStyle = 'rgba(220,230,255,.5)'; g.lineWidth = 2; g.beginPath(); g.arc(cx, cy, R, 0, 7); g.stroke();
+}
+function base() {
+  const top = cy + R * 0.86, bw = R * 1.5, bh = H - top - 6;
+  g.save(); const wood = g.createLinearGradient(cx - bw, 0, cx + bw, 0);
+  wood.addColorStop(0, '#3e2614'); wood.addColorStop(0.3, '#7a5130'); wood.addColorStop(0.55, '#6b4527'); wood.addColorStop(1, '#2f1d0f'); g.fillStyle = wood;
+  g.beginPath(); g.moveTo(cx - bw * 0.62, top); g.lineTo(cx + bw * 0.62, top); g.lineTo(cx + bw * 0.78, top + bh * 0.82); g.quadraticCurveTo(cx + bw * 0.8, top + bh, cx + bw * 0.7, top + bh);
+  g.lineTo(cx - bw * 0.7, top + bh); g.quadraticCurveTo(cx - bw * 0.8, top + bh, cx - bw * 0.78, top + bh * 0.82); g.closePath(); g.fill();
+  g.clip(); g.strokeStyle = 'rgba(30,16,6,.25)'; g.lineWidth = 1;
+  for (let i = 0; i < 9; i++) { const y = top + bh * (0.1 + i * 0.1); g.beginPath(); g.moveTo(cx - bw, y); g.bezierCurveTo(cx - bw * 0.3, y + 4 * Math.sin(i), cx + bw * 0.2, y - 5 * Math.cos(i), cx + bw, y + 2); g.stroke(); }
+  g.restore();
+  g.fillStyle = '#2a1a0c'; g.beginPath(); g.ellipse(cx, top, bw * 0.62, R * 0.07, 0, 0, 7); g.fill();
+  const pw = bw * 0.82, ph = bh * 0.34, px = cx - pw / 2, py = top + bh * 0.36, brass = g.createLinearGradient(px, py, px, py + ph);
+  brass.addColorStop(0, '#f0d38f'); brass.addColorStop(0.5, '#c79a4a'); brass.addColorStop(1, '#a87c36');
+  g.fillStyle = brass; g.beginPath(); g.roundRect(px, py, pw, ph, ph * 0.18); g.fill();
+  g.strokeStyle = 'rgba(80,50,15,.6)'; g.lineWidth = 1.5; g.beginPath(); g.roundRect(px + 4, py + 4, pw - 8, ph - 8, ph * 0.14); g.stroke();
+  const name = (nameIn.value.trim() || (document.body.classList.contains('viewing') ? '' : nameIn.placeholder)).toUpperCase();
+  g.textAlign = 'center'; g.textBaseline = 'middle'; let fs = Math.round(ph * 0.46); g.font = `${fs}px Marcellus, Georgia, serif`;
+  while (g.measureText(name).width > pw * 0.86 && fs > 8) { fs--; g.font = `${fs}px Marcellus, Georgia, serif`; }
+  g.fillStyle = 'rgba(255,240,200,.5)'; g.fillText(name, cx, py + ph / 2 + 1.5); g.fillStyle = '#4a3010'; g.fillText(name, cx, py + ph / 2);
+}
+
+// ---------------------------------------------------------------- behaviour
+const approach = (v, to, rate, dt) => v + (to - v) * Math.min(1, rate * dt);
+function behave(dt, t, snowing) {
+  A.settled = snowing ? 0 : A.settled + dt;
+  A.glow = approach(A.glow, snowing && pet ? 1 : 0, snowing ? 2 : 0.5, dt);
+  A.msg = approach(A.msg, A.settled > 1.5 ? 1 : 0, A.settled > 1.5 ? 0.8 : 4, dt);
+  A.sleep = approach(A.sleep, A.settled > 7 ? 1 : 0, A.settled > 7 ? 0.35 : 3, dt);
+  A.breath = Math.sin(t * (A.sleep > 0.5 ? 1.6 : 2.4)) * (0.006 + 0.008 * A.sleep);
+  if (!pet) return;
+  let sneezeRot = 0, sneezeY = 0;
+  if (face) {
+    const d = face.d, [hgx, hgy] = toGlobe(face.mid[0], face.mid[1]);
+    // watch a falling snowflake
+    A.watchT -= dt;
+    if (snowing && A.sleep < 0.3 && (A.watchT <= 0 || !A.watch || A.watch.rest)) {
+      const near = flakes.filter(f => !f.rest && f.front && Math.abs(f.x) < 0.8 && f.y < 0.2);
+      A.watch = near.length ? near[(Math.random() * near.length) | 0] : null; A.watchT = 1 + Math.random() * 1.2;
+    }
+    if (A.watch && snowing && A.sleep < 0.3) { A.look = Math.max(-0.07, Math.min(0.07, (A.watch.x - hgx) * 0.14)); A.lookY = Math.max(-0.06, Math.min(0.05, (A.watch.y - hgy) * 0.2)) * d; }
+    else { A.look = 0; A.lookY = 0; }
+    // the snowflake for the nose, then the sneeze
+    const [nx, ny] = toGlobe(face.n[0], face.n[1] - d * 0.05);
+    if (A.noseAt && t >= A.noseAt && !A.noseFlake) { A.noseFlake = { x: nx + 0.12, y: ny - 0.45, landed: false }; A.noseAt = 0; }
+    const nf = A.noseFlake;
+    if (nf && !nf.landed) { nf.x = approach(nf.x, nx + Math.sin(t * 3) * 0.01, 0.9, dt); nf.y += 0.16 * dt; A.look = approach(A.look, 0, 3, dt); A.lookY = -0.05 * d; if (nf.y >= ny) { nf.landed = true; nf.t = 0; } }
+    else if (nf && nf.landed) {
+      nf.t += dt; A.squeeze = nf.t < 0.55 ? Math.min(1, nf.t * 4) : 0;
+      if (nf.t > 0.55 && !nf.sneezed) { nf.sneezed = true; A.sneeze = 1; startBlink('quick');
+        for (let i = 0; i < 9; i++) A.puffs.push({ x: nx, y: ny, vx: (Math.random() - 0.5) * 0.5, vy: -0.05 - Math.random() * 0.25, r: 0.008 + Math.random() * 0.01, life: 1 }); }
+      if (nf.t > 0.6) A.noseFlake = null;
+    }
+    if (A.sneeze > 0) { A.sneeze -= dt * 1.4; const s = Math.max(0, A.sneeze); sneezeRot = Math.sin((1 - s) * 28) * 0.06 * s; sneezeY = 0.07 * d * s * s; }
+    // blinks
+    if (A.bl) { A.bl.t += dt; if (A.bl.t >= A.bl.dur) A.bl = null; }
+    else if (A.sleep < 0.3) { A.blinkT -= dt; if (A.blinkT <= 0) {
+      const kind = Math.random() < 0.15 ? 'slow' : 'quick'; startBlink(kind);
+      A.blinkT = kind === 'quick' && Math.random() < 0.22 ? 0.12 : 2.2 + Math.random() * 3.8; } }
+    // ears spring back after a twitch, and twitch now and then
+    A.earVL += -A.earL * 160 * dt; A.earVL *= Math.pow(0.02, dt); A.earL = Math.max(-0.3, Math.min(0.3, A.earL + A.earVL * dt));
+    A.earVR += -A.earR * 160 * dt; A.earVR *= Math.pow(0.02, dt); A.earR = Math.max(-0.3, Math.min(0.3, A.earR + A.earVR * dt));
+    if (A.sleep < 0.3 && Math.random() < dt * 0.12) { if (Math.random() < 0.5) A.earVL += face.earL.out * 5; else A.earVR += face.earR.out * 5; }
+    // head: looking, or drooping asleep
+    const droop = A.sleep;
+    A.headBase = approach(A.headBase || 0, A.look * (1 - droop) + 0.04 * droop, 4, dt);
+    A.hyBase = approach(A.hyBase || 0, A.lookY * (1 - droop) + 0.12 * d * droop, 4, dt);
+    A.head = A.headBase + sneezeRot; A.hx = 0; A.hy = A.hyBase + sneezeY;
+  }
+  for (const p of A.puffs) { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= Math.pow(0.2, dt); p.life -= dt * 1.2; }
+  A.puffs = A.puffs.filter(p => p.life > 0);
+  if (A.sleep > 0.8) { A.zT -= dt; if (A.zT <= 0) {
+    const src = face ? warp(face.earR.c) : [pet.width * 0.8, pet.height * 0.1], [zx, zy] = toGlobe(src[0], src[1]);
+    A.zzz.push({ x: zx + 0.04, y: zy + 0.04, life: 0, size: 0.07 + Math.random() * 0.04 }); A.zT = 1.6; } }
+  for (const z of A.zzz) { z.life += dt; z.y -= 0.05 * dt; z.x += 0.06 * dt + Math.sin(z.life * 3) * 0.002; }
+  A.zzz = A.zzz.filter(z => z.life < 1.6);
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now; const t = now / 1000;
+  let moving = 0;
+  for (const f of flakes) {
+    if (f.rest) continue; moving++;
+    f.vy += 0.18 * dt; f.vx *= Math.pow(0.35, dt); f.vy *= Math.pow(0.45, dt); f.vx += Math.sin(t * 0.9 + f.tw) * 0.02 * dt;
+    f.x += f.vx * dt; f.y += f.vy * dt;
+    const d = Math.hypot(f.x, f.y);
+    if (d > 0.96) { f.x *= 0.96 / d; f.y *= 0.96 / d; f.vx *= -0.3; f.vy *= -0.3; if (f.y > 0.2 && f.vy <= 0.05) { f.rest = true; f.vx = f.vy = 0; continue; } }
+    if (f.y >= groundAt(f.x) - 0.005 && f.vy > 0) { f.y = groundAt(f.x) - Math.random() * 0.015; f.rest = true; f.vx = f.vy = 0; }
+  }
+  behave(dt, t, moving / FLAKES > 0.06);
+  swayV += -sway * 30 * dt; swayV *= Math.pow(0.08, dt); sway += swayV * dt * 10; globeEl.style.transform = `rotate(${sway}rad)`;
+  g.clearRect(0, 0, W, H); base();
+  g.save(); g.beginPath(); g.arc(cx, cy, R, 0, 7); g.clip();
+  scene(); snow(false, t); ground(); drawPet(); snow(true, t); message();
+  g.restore(); glass();
+  requestAnimationFrame(frame);
+}
+// ---------------------------------------------------------------- share a link (no account needed), and opening a shared globe
+const CFG = window.ART_ALIVE || {}, SB = (CFG.supabaseUrl || '').replace(/\/$/, ''), FN = SB ? SB + '/functions/v1/petglobe' : '';
+const $ = id => document.getElementById(id);
+const makeBtn = $('makeLink'), linkBox = $('linkBox'), linkOut = $('linkOut'), shareSay = $('shareSay'), acctEl = $('acct'), acctV = $('acctV');
+let petId = 0, made = null;
+const sigNow = () => JSON.stringify([petId, nameIn.value.trim(), msgIn.value.trim(), face ? taps : null]);
+function linkState() {
+  if (!pet || document.body.classList.contains('viewing')) { makeBtn.disabled = !pet; return; }
+  makeBtn.disabled = false;
+  if (made && made.sig !== sigNow()) {
+    if (makeBtn.hidden) { makeBtn.hidden = false; makeBtn.textContent = 'Get an updated link'; shareSay.className = 'status'; shareSay.textContent = 'You’ve changed it since your link was made. Get an updated link to share the new version.'; }
+  } else if (made) makeBtn.hidden = true;
+  else if (shareSay.textContent.startsWith('Add a photo')) shareSay.textContent = 'Ready when you are. Anyone can open the link, no app or account needed.';
+}
+nameIn.addEventListener('input', linkState); msgIn.addEventListener('input', linkState); setInterval(linkState, 700);
+
+// the maker keeps a private "claim" for each globe, so they can save it to an account later
+const CLAIMS = 'aa-petglobe-claims';
+function getClaim(code) { try { return (JSON.parse(localStorage.getItem(CLAIMS) || '{}'))[code] || ''; } catch (e) { return ''; } }
+function saveClaim(code, claim) { try { const m = JSON.parse(localStorage.getItem(CLAIMS) || '{}'); m[code] = claim; localStorage.setItem(CLAIMS, JSON.stringify(m)); } catch (e) {} }
+
+async function helper(body) {
+  if (!FN || !CFG.supabaseKey) throw new Error('Sharing isn’t set up yet.');
+  const h = { 'Content-Type': 'application/json', apikey: CFG.supabaseKey };
+  try { if (window.AAAccount && AAAccount.maybeSignedIn()) { const cl = await AAAccount.load(), { data } = await cl.auth.getSession(); if (data && data.session) h['x-user-token'] = data.session.access_token; } } catch (e) {}
+  let r; try { r = await fetch(FN, { method: 'POST', headers: h, body: JSON.stringify(body) }); } catch (e) { throw new Error('Couldn’t reach Art Alive. Check your connection and try again.'); }
+  let o = {}; try { o = await r.json(); } catch (e) {}
+  if (!r.ok) throw new Error(o.error || 'Something went wrong. Please try again.'); return o;
+}
+// the cutout as a small picture file (WebP where the browser can make one, PNG otherwise)
+async function encodePet() {
+  let c = pet;
+  for (let i = 0; i < 4; i++) {
+    let blob = await new Promise(ok => c.toBlob(ok, 'image/webp', 0.86)), type = 'image/webp';
+    if (!blob || blob.type !== 'image/webp') { blob = await new Promise(ok => c.toBlob(ok, 'image/png')); type = 'image/png'; }
+    if (blob && blob.size <= 850 * 1024) {
+      const b64 = await new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1]); fr.readAsDataURL(blob); });
+      return { type, b64 };
+    }
+    const n = document.createElement('canvas'); n.width = Math.round(c.width * 0.75); n.height = Math.round(c.height * 0.75);
+    n.getContext('2d').drawImage(c, 0, 0, n.width, n.height); c = n;
+  }
+  throw new Error('That picture is too big to share. Please try another photo.');
+}
+const shareTitle = () => nameIn.value.trim() ? nameIn.value.trim() + '’s snow globe' : 'A snow globe for you';
+makeBtn.addEventListener('click', async () => {
+  if (!pet) return;
+  const label = makeBtn.textContent; makeBtn.disabled = true; makeBtn.textContent = 'Making your link…';
+  shareSay.className = 'status'; shareSay.textContent = 'Saving your snow globe…';
+  try {
+    const sig = sigNow(), img = await encodePet();
+    const o = await helper({ action: 'create', image: img.b64, type: img.type, name: nameIn.value.trim(), message: msgIn.value.trim(),
+      face: face ? { w: pet.width, h: pet.height, taps } : null });
+    made = { code: o.code, sig }; saveClaim(o.code, o.claim);
+    linkOut.value = location.origin + location.pathname + '?g=' + o.code;
+    linkBox.hidden = false; makeBtn.hidden = true;
+    shareSay.className = 'status ok'; shareSay.textContent = 'Your link is ready! Send it to anyone. They just open it, no app or account needed.';
+    showAcct(acctEl, o.code, o.kept);
+    $('shareLink').focus();
+  } catch (e) { shareSay.className = 'status err'; shareSay.textContent = e.message; makeBtn.textContent = label; }
+  finally { makeBtn.disabled = false; }
+});
+$('shareLink').addEventListener('click', async () => {
+  const url = linkOut.value; if (!url) return;
+  if (window.AAShareLink) AAShareLink.share({ url, title: shareTitle(), text: 'I made you a snow globe. Give it a shake!' });
+  else { try { await navigator.clipboard.writeText(url); shareSay.textContent = 'Link copied!'; } catch (e) { linkOut.select(); } }
+});
+linkOut.addEventListener('focus', () => linkOut.select());
+
+// the optional account: clearly second to the link
+const KEPT = '<p class="small ok">Saved to your account. This link won’t expire.</p>';
+function showAcct(el, code, kept) {
+  el.hidden = false;
+  if (kept) { el.innerHTML = KEPT; return; }
+  el.innerHTML = '<button class="textlink" type="button">Optional: save it to a free account, so you can change it later and keep it for good</button>'
+    + '<form hidden><label for="acctEmail' + el.id + '">Your email</label><input id="acctEmail' + el.id + '" type="email" required autocomplete="email" placeholder="you@example.com">'
+    + '<button class="btn ghost" type="submit">Email me a sign-in link</button></form>'
+    + '<p class="small">Without an account, links last a year.</p><p class="small" role="status"></p>';
+  const open = el.querySelector('.textlink'), form = el.querySelector('form'), st = el.querySelector('[role=status]');
+  open.onclick = async () => {
+    try { if (window.AAAccount && AAAccount.maybeSignedIn() && await AAAccount.user()) { await claimNow(code, el); return; } } catch (e) {}
+    form.hidden = false; open.hidden = true; form.querySelector('input').focus();
+  };
+  form.onsubmit = async ev => {
+    ev.preventDefault(); st.className = 'small'; st.textContent = 'Sending…';
+    try { await AAAccount.signIn(form.querySelector('input').value.trim(), location.pathname + '?g=' + code + '&keep=1');
+      form.hidden = true; st.className = 'small ok'; st.textContent = 'Check your email and tap the sign-in link. Your snow globe will be saved to your account.'; }
+    catch (e) { st.className = 'small err'; st.textContent = (e && e.message) || 'Couldn’t send the email. Please try again.'; }
+  };
+}
+async function claimNow(code, el) {
+  const st = el.querySelector('[role=status]'); if (st) { st.className = 'small'; st.textContent = 'Saving to your account…'; }
+  try { await helper({ action: 'claim', code, claim: getClaim(code) }); el.innerHTML = KEPT; }
+  catch (e) { if (st) { st.className = 'small err'; st.textContent = e.message; } }
+}
+
+// opening a shared globe: artalivestudio.com/petglobe/?g=abcd2345
+const params = new URLSearchParams(location.search), viewCode = (params.get('g') || '').toLowerCase();
+async function openShared(code) {
+  document.body.classList.add('viewing');
+  const title = $('title'), lede = $('lede');
+  title.textContent = 'A snow globe for you'; lede.textContent = 'Someone made this for you. Give it a shake.';
+  try {
+    const r = await fetch(SB + '/rest/v1/rpc/petglobe_get', { method: 'POST', headers: { apikey: CFG.supabaseKey, 'Content-Type': 'application/json' }, body: JSON.stringify({ c: code }) });
+    const rows = r.ok ? await r.json() : [], row = Array.isArray(rows) ? rows[0] : rows;
+    if (!row) { lede.textContent = 'This snow globe isn’t here anymore. Links last a year unless they’re saved to an account.'; $('shakeV').hidden = true; $('report').hidden = true; return; }
+    nameIn.value = row.name || ''; msgIn.value = row.message || '';
+    if (row.name) title.textContent = row.name + '’s snow globe';
+    const im = new Image(); im.crossOrigin = 'anonymous';
+    await new Promise((ok, bad) => { im.onload = ok; im.onerror = bad; im.src = SB + '/storage/v1/object/public/petglobes/' + encodeURIComponent(row.img); });
+    const c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight; c.getContext('2d').drawImage(im, 0, 0);
+    pet = c; petSettings(); petTexture();
+    if (row.face && Array.isArray(row.face.taps) && row.face.w) { const k = c.width / row.face.w; taps = row.face.taps.map(([x, y]) => [x * k, y * k]); face = makeFace(taps); }
+    shake(1); setTimeout(() => shake(-1), 200);
+    // the maker, back from signing in (or opening their own link): offer to keep it, or keep it now
+    if (getClaim(code)) {
+      showAcct(acctV, code, false);
+      if (params.get('keep') && window.AAAccount && AAAccount.maybeSignedIn()) claimNow(code, acctV);
+    }
+  } catch (e) { console.error(e); lede.textContent = 'We couldn’t open this snow globe. Check your connection and try again.'; }
+}
+if (/^[a-z0-9]{8}$/.test(viewCode)) openShared(viewCode);
+$('shakeV').addEventListener('click', () => { enableMotion(); shake(1); setTimeout(() => shake(-1), 180); setTimeout(() => shake(1), 360); });
+let reportArmed = false;
+$('report').addEventListener('click', async () => {
+  const b = $('report');
+  if (!reportArmed) { reportArmed = true; b.textContent = 'Tap again to report this snow globe as inappropriate'; return; }
+  b.disabled = true; b.textContent = 'Sending…';
+  try { await helper({ action: 'report', code: viewCode }); b.textContent = 'Thanks for letting us know.'; } catch (e) { b.disabled = false; b.textContent = e.message; }
+});
+
+// shaking the phone stirs the snow (iPhones ask permission the first time something is tapped)
+let motionOn = false, lastShake = 0, lastA = null;
+async function enableMotion() {
+  if (motionOn || !('DeviceMotionEvent' in window) || !matchMedia('(pointer:coarse)').matches) return;
+  try { if (typeof DeviceMotionEvent.requestPermission === 'function' && (await DeviceMotionEvent.requestPermission()) !== 'granted') return; } catch (e) { return; }
+  motionOn = true;
+  addEventListener('devicemotion', e => {
+    const a = e.accelerationIncludingGravity || e.acceleration; if (!a || a.x == null) return;
+    if (lastA) {
+      const d = Math.abs(a.x - lastA.x) + Math.abs(a.y - lastA.y) + Math.abs(a.z - lastA.z), now = performance.now();
+      if (d > 22 && now - lastShake > 300) { lastShake = now; shake(a.x - lastA.x > 0 ? 1 : -1); }
+    }
+    lastA = { x: a.x, y: a.y, z: a.z };
+  });
+}
+if (typeof DeviceMotionEvent === 'undefined' || typeof DeviceMotionEvent.requestPermission !== 'function') enableMotion();   // Android: no question needed
+document.getElementById('shake').addEventListener('click', enableMotion);
+globeEl.addEventListener('pointerdown', enableMotion);
+window.__share = { helperUrl: FN };
+
+addEventListener('resize', size); size();
+document.fonts && document.fonts.load('20px Marcellus').catch(() => {});
+setTimeout(() => stir(0.6), 400);
+requestAnimationFrame(frame);
+window.__A = A; window.__petSize = () => pet && [pet.width, pet.height];
+})();
+</script>
+</body>
+</html>

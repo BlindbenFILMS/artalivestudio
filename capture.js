@@ -169,7 +169,7 @@ function tracker(opts) {
   opts = opts || {};
   let TW = opts.width || 320; const findRect = opts.detect || detect; let cost = 0;
   const cv = document.createElement('canvas'), cx = cv.getContext('2d', { willReadFrequently: true });
-  let disagree = 0, w = 0, h = 0, prevPyr = null, pts = [], quad = null, sm = null, lastT = 0, frame = 0, lostFor = 0, lastDetectF = -99, mode = 'none';
+  let disagree = 0, inl = 0, w = 0, h = 0, prevPyr = null, pts = [], quad = null, sm = null, lastT = 0, frame = 0, lostFor = 0, lastDetectF = -99, mode = 'none';
   const LEVELS = 3, WIN = 4, ITERS = 10;
   function gray(src, sw, sh) {
     if (!sw || !sh) return null;
@@ -231,7 +231,7 @@ function tracker(opts) {
     return Array.from({ length: 8 }, (_, i) => M[i][8] / M[i][i]).concat([1]);
   }
   function seed(g, Q) { // good corners (Shi-Tomasi) spread over the inside of the rectangle
-    const cand = [], E = homography(unit, Q), grow = [[-.15, -.15], [1.15, -.15], [1.15, 1.15], [-.15, 1.15]].map(([u, v]) => apply(E, u, v));
+    const cand = [], E = homography(unit, Q), GR = opts.grow != null ? opts.grow : .04, grow = [[-GR, -GR], [1 + GR, -GR], [1 + GR, 1 + GR], [-GR, 1 + GR]].map(([u, v]) => apply(E, u, v));   // s774 was 15 % outside: the table / wall behind moves differently and dragged the art off
     const xs = grow.map(p => p[0]), ys = grow.map(p => p[1]);
     const x0 = Math.max(WIN + 2, Math.floor(Math.min(...xs))), x1 = Math.min(w - WIN - 3, Math.ceil(Math.max(...xs))), y0 = Math.max(WIN + 2, Math.floor(Math.min(...ys))), y1 = Math.min(h - WIN - 3, Math.ceil(Math.max(...ys)));
     const L0 = prevPyr[0];
@@ -248,8 +248,8 @@ function tracker(opts) {
     let inner = 0;
     for (const [, x, y] of cand) { const key = Math.floor(x / cell) + ',' + Math.floor(y / cell); if (taken.has(key)) continue;
       const uv = apply(Hi, x, y), inside = uv[0] > .12 && uv[0] < .88 && uv[1] > .12 && uv[1] < .88;
-      if (inside && inner >= 30) continue; // keep most points on the edges and around the shape
-      taken.add(key); if (inside) inner++; out.push({ x, y, uv }); if (out.length >= 70) break; }
+      if (inside && inner >= 45) continue; // s774 points on the edges + plenty inside the shape (a bill or a print is full of texture)
+      taken.add(key); if (inside) inner++; out.push({ x, y, uv }); if (out.length >= 80) break; }
     return out;
   }
   /* picture matching: when the tracker is given the picture (opts.target: an image or canvas, or a function that returns one),
@@ -301,7 +301,7 @@ function tracker(opts) {
   }
   // smoothing that stays still when you hold still and keeps up when you move (one-euro filter)
   function euro(prev, val, dt, dprev) {
-    const mc = opts.minCutoff || 1.2, beta = opts.beta != null ? opts.beta : .08, dc = 1;
+    const mc = opts.minCutoff || 1.2, beta = opts.beta != null ? opts.beta : .3, dc = 1;   // s774 beta .08 → .3: still steady when you hold still, keeps up when you move
     const al = c => 1 / (1 + 1 / (2 * Math.PI * c * dt));
     const d = (val - prev) / dt, ad = al(dc), ds = dprev + ad * (d - dprev);
     const a = al(mc + beta * Math.abs(ds)); return [prev + a * (val - prev), ds];
@@ -327,12 +327,14 @@ function tracker(opts) {
         if (bestIn && bestIn.length >= Math.max(8, keep.length * .5)) {
           const H = fitH(bestIn.map(k => k.uv), bestIn.map(k => [k.x, k.y])) || best;
           const Q = unit.map(([u, v]) => apply(H, u, v));
-          if (Q.every(p => p.every(Number.isFinite)) && convex(Q)) { tracked = Q; pts = bestIn; mode = 'track'; }
+          if (Q.every(p => p.every(Number.isFinite)) && convex(Q)) { tracked = Q; pts = bestIn; inl = bestIn.length; mode = 'track'; }
         }
       }
     }
     // 2. look for the rectangle: always when lost, and every few frames to correct drift and refresh points
-    if (!tracked || frame - lastDetectF > (pts.length < 25 || disagree ? 3 : 10)) {
+    const healthy = !!tracked && inl >= 24;   // s774 a strong track (many points agree) is trusted over the coarse rectangle finder
+    if (!tracked) inl = 0;
+    if (!tracked || frame - lastDetectF > (pts.length < 25 || disagree ? 3 : healthy ? 15 : 10)) {
       lastDetectF = frame;
       const r = findRect(src, sw, sh);
       if (r) {
@@ -340,10 +342,10 @@ function tracker(opts) {
         if (D) {
         if (!tracked) { tracked = D; mode = 'find'; }
         else { const off = D.reduce((s, p, i) => s + Math.hypot(p[0] - tracked[i][0], p[1] - tracked[i][1]), 0) / 4;
-          if (off < Math.max(4, w * .02)) { tracked = tracked.map((p, i) => [p[0] + (D[i][0] - p[0]) * .25, p[1] + (D[i][1] - p[1]) * .25]); disagree = 0; }
+          if (off < Math.max(4, w * .02)) { const k = healthy ? .08 : .25; tracked = tracked.map((p, i) => [p[0] + (D[i][0] - p[0]) * k, p[1] + (D[i][1] - p[1]) * k]); disagree = 0; }
           else if (D.c != null && TS.length && bestScore(pyr[1], tracked) > D.c + .02) disagree = 0;   // what we're following matches the picture better: stay on it
-          else if (++disagree >= 2) { tracked = D; disagree = 0; mode = 'find'; } }
-        prevPyr = pyr; pts = seed(g, tracked);
+          else if (++disagree >= (healthy ? 6 : 2)) { tracked = D; disagree = 0; mode = 'find'; } }   // s774 was 2 always: the finder hopping between a bill's paper edge and its printed border made the art jump
+        prevPyr = pyr; if (!healthy || mode === 'find' || pts.length < 30) pts = seed(g, tracked);   // s774 keep the good points while the track is strong
       } }
     }
     prevPyr = pyr;
