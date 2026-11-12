@@ -115,7 +115,7 @@ export function createGame({ stage, globe, figure, backdrop, say = () => {}, cue
       globe.bell(SCALE[k % SCALE.length], 0, .13); globe.bell(SCALE[k % SCALE.length] * 2, .07, .06); try { navigator.vibrate && navigator.vibrate(25); } catch (e) {}
       try { figure.tap(); } catch (e) {} G.cheerT = t; G.caught++; G.level++; G.i++; G.missRow = 0; G.nextAt = t + .8; say(f.ch + '!');
       if (G.letter === f || (G.letter && G.letter.ch !== need())) G.letter = null;   // (another flake with the old letter is just a wrong letter now)
-      if (G.i >= G.letters.length) G.nextAt = t + .9;
+      if (G.i >= G.letters.length) { G.nextAt = t + .9; G.sunDue = 0; }   // the word is whole: no sunshine now, not even a ray that was just about to come
       else if (G.sunAfter.length && G.i >= G.sunAfter[0]) { G.sunAfter.shift(); G.sunDue = t + .35; }   // …and now and then, sunshine
     } else if (f.kind !== 'blank') {   // a wrong letter: a "nope", and it doesn't count
       pop(f.x, f.y, '#9fb0d6', 10); globe.bell(207.65, 0, .07); globe.bell(155.56, .1, .07); G.nopes++; G.nopeT = t;
