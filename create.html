@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Create your own · Art Alive</title>
+<meta name="description" content="Make a picture come alive, turn it into a game, send a Magic Postcard or shake up a snow globe. Free to start, no app, all in your browser.">
+<meta name="theme-color" content="#15191f">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Art Alive">
+<meta property="og:title" content="Create your own · Art Alive">
+<meta property="og:description" content="Make a picture come alive, turn it into a game, send a Magic Postcard or shake up a snow globe. Free to start, no app.">
+<meta property="og:url" content="https://artalivestudio.com/create.html">
+<meta property="og:image" content="https://artalivestudio.com/share-card.jpg?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Art Alive: point your phone, watch art come alive. A phone shows a painting moving.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://artalivestudio.com/share-card.jpg?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="site.css">
+<style>
+/* the four things to make: a picture, what it is in one line, what you need, and one clear button each */
+.mk-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+@media (max-width:1120px){.mk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.mk-grid{grid-template-columns:minmax(0,1fr)}}
+.mk-card{display:flex;flex-direction:column;background:var(--wall);border:1px solid var(--line);border-radius:18px;overflow:hidden;border-top:4px solid var(--c,var(--orange));min-width:0}
+.mk-card:nth-child(1){--c:var(--orange)}.mk-card:nth-child(2){--c:var(--blue)}.mk-card:nth-child(3){--c:var(--gold)}.mk-card:nth-child(4){--c:var(--red)}
+.mk-card .im{display:block;aspect-ratio:16/10;overflow:hidden;background:#0b0d10}
+.mk-card .im img,.mk-card .im video{width:100%;height:100%;object-fit:cover;display:block}
+.mk-card .tx{display:flex;flex-direction:column;gap:10px;padding:18px 20px 20px;flex:1}
+.mk-card .n{font:800 13px/1 var(--display);font-stretch:112%;letter-spacing:.16em;text-transform:uppercase;color:var(--c)}
+.mk-card h2{margin:0;font:900 clamp(22px,2.2vw,26px)/1.05 var(--display);font-stretch:118%;text-transform:uppercase;text-wrap:balance}
+.mk-card p{margin:0;color:var(--muted)}
+.mk-card ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;color:var(--cream);font-size:16px}
+.mk-card li{display:flex;gap:10px;align-items:baseline}
+.mk-card li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--c);transform:translateY(-1px)}
+.mk-card .acts{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-top:6px}
+.mk-card .acts .btn{min-height:54px;width:100%;padding:0 14px;font-size:15px;white-space:nowrap}
+.mk-card .acts a.more{color:var(--cream);font-weight:700;font-size:16px;line-height:1.35;min-height:2.7em}
+@media (max-width:640px){.mk-card .acts a.more{min-height:0}}
+.mk-how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;list-style:none;margin:0;padding:0;counter-reset:s}
+.mk-how li{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;background:var(--wall);border:1px solid var(--line);counter-increment:s;min-width:0}
+.mk-how li::before{content:counter(s);flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;font:900 18px/1 var(--display);color:#14100c;background:var(--c)}
+.mk-how li:nth-child(1){--c:var(--orange)}.mk-how li:nth-child(2){--c:var(--blue)}.mk-how li:nth-child(3){--c:var(--gold)}
+.mk-how b{display:block;font:800 16px/1.2 var(--display);letter-spacing:.02em}
+.mk-how span{color:var(--muted);font-size:15px}
+@media (max-width:760px){.mk-how{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="./" aria-label="Art Alive home"><img src="art-alive-mark.png" alt=""><img class="wm" src="art-alive-wordmark.png" alt="Art Alive"></a>
+    <div class="top-act"><a class="btn small acct-btn" data-acct href="login.html?new=1" aria-label="Create a free account" style="color:#14100c;text-decoration:none">Create account</a><button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button></div>
+    <nav id="nav" aria-label="Main">
+      <ul class="util"><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to</a></li><li><a href="plans.html">Plans</a></li><li><a href="about.html">About</a></li></ul>
+      <ul class="aud"><li><a href="for-creators.html">For Creators</a></li><li><a href="for-galleries.html">For Galleries</a></li><li><a href="for-businesses.html">For Businesses</a></li><li><a href="for-everyone.html">For Everyone</a></li><li><a href="games/index.html">Game Maker</a></li><li><a class="studio" href="studio/index.html">Creator Studio</a></li></ul>
+    </nav>
+  </header>
+  <main class="wrap" id="main">
+    <section class="page-head"><span class="eyebrow">Create your own</span><h1>What would you like to <span class="alive">make?</span></h1><div class="rule" aria-hidden="true"></div>
+      <p class="lede">Start with any picture: a painting, a drawing, a family photo. Everything is made right here in your browser. <b>Free to start, no app to download.</b></p></section>
+
+    <section aria-label="Things you can make">
+      <div class="mk-grid">
+        <article class="mk-card">
+          <a class="im" href="studio/index.html" tabindex="-1" aria-hidden="true"><img src="studio-shot.jpg" alt="" loading="lazy"></a>
+          <div class="tx"><span class="n">Living picture</span><h2>Make a picture come alive</h2>
+            <p>Your picture moves, glows and speaks. Print its QR code beside it, and people watch it come alive on the real thing through their phone.</p>
+            <ul><li>Tap a recipe like Windy day or Starry night</li><li>Add your own voice and sounds</li><li>Ready in a few minutes</li></ul>
+            <div class="acts"><a class="btn" href="studio/index.html">Open the Studio</a><a class="more" href="how-to.html">See how, step by step</a></div></div>
+        </article>
+        <article class="mk-card">
+          <a class="im" href="make/" tabindex="-1" aria-hidden="true"><img src="make/img/puzzle.jpg" alt="" loading="lazy"></a>
+          <div class="tx"><span class="n">Game</span><h2>Turn a picture into a game</h2>
+            <p>A slide puzzle, memory match, flashlight hunt, Simon Says and more, made from your picture. Every game can be played by ear.</p>
+            <ul><li>Pick a game, add your picture, share it</li><li>Nine games ready to go</li><li>About 1 minute</li></ul>
+            <div class="acts"><a class="btn blue" href="make/">Make a game</a><a class="more" href="games/index.html">Or build one by hand in the Game Maker</a></div></div>
+        </article>
+        <article class="mk-card">
+          <a class="im" href="magicpostcard/#make" tabindex="-1" aria-hidden="true"><img src="magicpostcard/samples/asbury-park-share.jpg" alt="" loading="lazy"></a>
+          <div class="tx"><span class="n">Magic Postcard</span><h2>Send a postcard that comes alive</h2>
+            <p>A real postcard in the mail. They scan it, point their phone at it, and the picture starts to move, with your video message playing under it.</p>
+            <ul><li>Pick a place from all 50 states, or use your own photo</li><li>Record a hello</li><li>We print and mail it, or you print it yourself</li></ul>
+            <div class="acts"><a class="btn" href="magicpostcard/#make">Make a postcard</a><a class="more" href="magicpostcard/">See one first</a></div></div>
+        </article>
+        <article class="mk-card">
+          <a class="im" href="snowglobe/" tabindex="-1" aria-hidden="true"><img src="play/holiday-snowglobe-600.jpg" alt="" loading="lazy"></a>
+          <div class="tx"><span class="n">Snow globe</span><h2>Shake up a snow globe</h2>
+            <p>Put a photo or a video inside a snow globe with your own words on it. They shake their phone and the snow flies.</p>
+            <ul><li>A photo, or a video up to a minute</li><li>Your words on the glass, a name on the base</li><li>Pets blink, watch the snow and sneeze</li></ul>
+            <div class="acts"><a class="btn" href="snowglobe/">Make a snow globe</a><a class="more" href="petglobe/">Make one of my pet (no account needed)</a></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="howH" style="display:flex;flex-direction:column;gap:18px">
+      <span class="eyebrow">How it works</span><h2 id="howH" style="margin:0">Three steps, whatever you make</h2>
+      <ol class="mk-how">
+        <li><div><b>Add your picture</b><span>Take a photo or upload one. It stays on your device until you save.</span></div></li>
+        <li><div><b>Make it yours</b><span>Tap what you like. You see it change as you go, and you can undo anything.</span></div></li>
+        <li><div><b>Share it</b><span>Save to a free account for a link and a QR code. A free account publishes 3 pieces.</span></div></li>
+      </ol>
+      <p class="lede" style="max-width:60ch">Already made something? It is waiting in <a href="projects.html" style="color:var(--cream)">My projects</a>.</p>
+    </section>
+  </main>
+  <footer>
+    <div class="row"><img src="art-alive-mark.png" alt=""><ul class="foot-links"><li><a href="for-creators.html">For Creators</a></li><li><a href="for-galleries.html">For Galleries</a></li><li><a href="for-businesses.html">For Businesses</a></li><li><a href="for-everyone.html">For Everyone</a></li><li><a href="studio/index.html">Creator Studio</a></li><li><a href="games/index.html">Game Maker</a></li><li><a href="magicpostcard/">Magic Postcards</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="how-to.html">How to make one</a></li><li><a href="plans.html">Plans and pricing</a></li><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="presskit.html">Press kit</a></li><li><a href="privacy.html">Privacy</a></li></ul></div>
+    <span>Art Alive is made by the <a href="https://blindcanvasproject.com/" target="_blank" rel="noopener">Blind Canvas Project</a> and Able Art Alliance.</span>
+  </footer>
+</div>
+<script src="site-config.js"></script><script src="site.js"></script><script src="account.js"></script>
+<script>
+(function(){const b=document.querySelector('.menu-btn'),n=document.getElementById('nav');if(!b)return;
+b.addEventListener('click',()=>{const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'Close':'Menu';});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&n.classList.contains('open')){n.classList.remove('open');b.setAttribute('aria-expanded','false');b.textContent='Menu';b.focus();}});})();
+</script>
+</body>
+</html>

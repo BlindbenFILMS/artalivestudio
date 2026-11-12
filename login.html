@@ -45,6 +45,7 @@
       <form id="authForm" novalidate>
         <span class="eyebrow" id="lgEy">Create account</span>
         <h1 id="lgH">Create your free account</h1>
+        <p class="status ok" id="lgWait" hidden style="font-size:16px;margin:0">Your work is safe. It is waiting on this phone or computer, and you’ll go straight back to it.</p>
         <div id="lgForm" style="display:flex;flex-direction:column;gap:16px">
           <p class="fine" style="font-size:16px">Type your email and we’ll send you a link to start. No password to remember. Then save your creations, publish them with a QR code, and put up to 50 under one QR code.</p>
           <div class="field"><label for="em">Email</label><input id="em" name="email" type="email" autocomplete="email" inputmode="email" required></div>
@@ -52,7 +53,12 @@
           <p class="fine"><b>Already have an account?</b> Type the same email and we will email you a link to log back in. Handy if you cleared your cookies or are on a new device.</p>
         </div>
         <div id="lgSent" class="done" hidden>
-          <p class="status ok" style="font-size:17px">Check your email. We sent a link to <b id="lgTo"></b>. Open it on this phone or computer to finish.</p>
+          <p class="status ok" style="font-size:17px">Check your email. We sent a link to <b id="lgTo"></b>. Open it on this phone or computer, in this same browser, to finish.</p>
+          <p class="fine" id="lgSame" hidden style="font-size:16px"><b>Your work is waiting in this browser.</b> If your email app opens the link somewhere else, press and hold the link, copy it, and paste it into this browser’s address bar.</p>
+          <div id="lgCodeBox" style="display:none;flex-direction:column;gap:10px">
+            <div class="field"><label for="lgCode">Or type the code from the email here</label><input id="lgCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" pattern="[0-9]*" style="font-size:22px;letter-spacing:.2em"></div>
+            <button class="btn" type="button" id="lgCodeBtn">Finish</button>
+          </div>
           <p class="fine">Nothing there after a minute? Check your spam folder, or <button type="button" class="link" id="lgAgain" style="background:none;border:0;padding:0;color:var(--cream);text-decoration:underline;font:inherit;cursor:pointer">try again</button>.</p>
         </div>
         <div id="lgIn" class="done" hidden>
@@ -79,13 +85,24 @@ addEventListener('keydown',e=>{if(e.key==='Escape'&&n.classList.contains('open')
 </script><script>
 (function(){
 const $=id=>document.getElementById(id), st=$('status'), next=new URLSearchParams(location.search).get('next')||'';
-function show(w){$('lgForm').hidden=w!=='form';$('lgSent').hidden=w!=='sent';$('lgIn').hidden=w!=='in';}
+const mid=/^\/(studio|games|make|magicpostcard|snowglobe)\//.test(next), codes=!!(window.ART_ALIVE||{}).emailCode;   // codes: the sign-in email also carries a code to type (see the README, "Sign-in codes")
+function show(w){$('lgForm').hidden=w!=='form';$('lgSent').hidden=w!=='sent';$('lgIn').hidden=w!=='in';
+  if(w==='sent'){$('lgSame').hidden=!mid||codes;$('lgCodeBox').style.display=codes?'flex':'none';if(codes)$('lgCode').focus();}}
+let sentTo='';
+// the code from the email: sign in right here, in this browser, and go straight back to the work
+$('lgCodeBtn').onclick=async()=>{const code=$('lgCode').value.replace(/\D/g,'');
+  if(code.length<6){st.className='status bad';st.textContent='Type the whole code from the email (6 numbers).';$('lgCode').focus();return;}
+  $('lgCodeBtn').disabled=true;st.className='status';st.textContent='Checking…';
+  try{await AAAccount.verifyCode(sentTo,code);st.className='status ok';st.textContent=mid?'You’re in. Going back to your work…':'You’re in.';location.replace(next&&/^\/[^\/]/.test(next)?next:'projects.html');}
+  catch(er){st.className='status bad';st.textContent='That code didn’t work. Check the numbers, or press try again for a new email.';$('lgCodeBtn').disabled=false;$('lgCode').focus();}};
+$('lgCode').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('lgCodeBtn').click();}});
+if(/^\/(studio|games|make|magicpostcard|snowglobe)\//.test(next))$('lgWait').hidden=false;   // they came here in the middle of making something
 if(!AAAccount.configured){st.textContent='Accounts are being set up. Please check back soon.';$('lgBtn').disabled=true;return;}
 AAAccount.user().then(u=>{if(u&&next&&/^\/[^\/]/.test(next)){location.replace(next);return;}if(u){$('lgMe').textContent=u.email;$('lgH').textContent='Welcome back';show('in');}}).catch(()=>{});
 $('authForm').addEventListener('submit',async e=>{e.preventDefault();const em=$('em').value.trim();
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){st.className='status bad';st.textContent='Please type a full email address, like name@example.com.';$('em').focus();return;}
   $('lgBtn').disabled=true;st.className='status';st.textContent='Sending…';
-  try{await AAAccount.signIn(em,next);$('lgTo').textContent=em;st.textContent='';show('sent');if(window.aaCount)aaCount('login-link-sent');}
+  try{await AAAccount.signIn(em,next);$('lgTo').textContent=em;sentTo=em;st.textContent='';show('sent');if(window.aaCount)aaCount('login-link-sent');}
   catch(er){st.className='status bad';st.textContent=/rate|security purposes|seconds/i.test(er.message||'')?'Too many tries in a row. Wait a minute, then try again.':/signups? not allowed|not found/i.test(er.message||'')?'Accounts are invite-only right now. Send us a message on the contact page and we’ll invite you.':(er.message||'Something went wrong. Please try again.');}
   finally{$('lgBtn').disabled=false;}});
 $('lgAgain').onclick=()=>{show('form');$('em').focus();};

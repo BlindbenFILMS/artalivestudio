@@ -152,6 +152,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:14.5px;color:var(--soft)}
 .steps li.now{color:var(--text)} .steps li.now b{color:var(--orange)} .steps li.done{opacity:.6;text-decoration:line-through}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.namerow{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:8px}.namerow .field{min-width:0}.namerow input{min-width:0;width:100%;box-sizing:border-box;min-height:46px}
 .tour{position:fixed;z-index:50;max-width:min(320px,calc(100vw - 32px));background:var(--text);color:var(--ink);padding:14px 14px 12px;box-shadow:6px 6px 0 #000;border:2px solid #000}
 .tour p{margin:0 0 10px;font-size:15px;line-height:1.45}
 .tour .tk{font:800 11px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:6px}
@@ -196,6 +197,20 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   .lede{display:none}
   .transport .act{font-size:10.5px}
   .recbox{display:none}
+}
+/* on a phone, every word sits inside its box: the row under the painting shares its width by how long each word is, and
+   the brushes use slightly smaller letters (three in a row on the narrowest phones) */
+@media (max-width:480px){
+  .transport{display:flex}
+  .transport .act{flex:1 1 auto;padding:0 5px;letter-spacing:.02em}
+  .tool{padding:0 2px;font-size:11px;letter-spacing:.02em}
+  .tab{font-size:11px;letter-spacing:.02em}
+}
+@media (max-width:350px){.transport{gap:4px}.transport .act{padding:0 3px;letter-spacing:0;font-size:10px}}   /* the narrowest phones: the five buttons under the painting still fit across */
+@media (max-width:372px){
+  .tools,.paintings{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tool{font-size:12px;padding:0 8px}
+  .thumb.add{padding:0 8px;font-size:11.5px}
 }
 @media (prefers-reduced-motion:reduce){.tour,.tourring{transition:none}}
 </style>
@@ -509,6 +524,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
       <div class="group" id="projectGroup">
         <div class="ghead"><span class="label">Project</span><span class="saved" id="savedState">Not saved yet</span></div>
+        <div class="row2 namerow hide" id="nameRow"><div class="field"><label for="projName">Name of your piece</label><input id="projName" type="text" maxlength="80" autocomplete="off"></div><div class="field"><label for="projBy">By (optional)</label><input id="projBy" type="text" maxlength="60" autocomplete="off" placeholder="Your name"></div></div>
         <p class="hint">Your work saves itself in this browser. Press <b>Save to my account</b> to keep it in My projects and open it on any device.</p>
         <div class="row2"><button class="act primary" id="cloudSave" type="button">Save to my account</button><button class="act" id="myProj" type="button">My projects</button></div>
         <div class="row2"><button class="act" id="copyProj" type="button">Copy project</button><button class="act" id="loadProj" type="button">Load pasted project</button></div>
@@ -1512,16 +1528,27 @@ $('stage').addEventListener('blur', () => { cursor = null; silence(); });
 if (window.AACapture) $('trigRec').appendChild(AACapture.recordButton('Record audio caption', url => { pendingAudio = url; $('trigEffect').value = 'audio'; live('Recording ready: tap a spot with the Trigger tool'); }));
 
 /* painting picker */
-function hideStart() { const sc = document.getElementById('startCard'); if (sc && !sc.classList.contains('hide')) { sc.classList.add('hide'); if (window.__aaTourWait) { window.__aaTourWait = false; setTimeout(() => tour(0), 1200); } } }
+// (own: they have just added their own picture, so the first-time tour skips its "pick a painting" step)
+function hideStart(own) { const sc = document.getElementById('startCard'); if (sc && !sc.classList.contains('hide')) { sc.classList.add('hide'); if (window.__aaTourWait) { window.__aaTourWait = false; tourFrom = own ? 1 : 0; setTimeout(() => tour(tourFrom), 1200); } } }
 function choose(p, btn, keep) {
-  if (!window.__aaBoot) hideStart();
+  if (!window.__aaBoot) hideStart(!p.flow);
   painting = p;
   for (const b of $('paintings').querySelectorAll('.thumb')) b.setAttribute('aria-pressed', b === btn);
   $('capTitle').textContent = p.title; $('capArtist').textContent = p.artist;
-  setImage(p.src, () => { clearExtras(); SEL.fill(0); countSel(); if (!$('exSignText').dataset.edited) $('exSignText').value = p.artist + ' · Blind Canvas Project'; undoStack.length = 0; redoStack.length = 0; undoButtons();
+  $('nameRow').classList.toggle('hide', p.id !== 'own'); $('projName').value = p.title; $('projBy').value = p.artist === 'Your image' ? '' : p.artist;   // their own piece can be named
+  if (p.id === 'own' && p.artist !== 'Your image') myBy = p.artist;
+  setImage(p.src, () => { clearExtras(); SEL.fill(0); countSel(); if (!$('exSignText').dataset.edited) $('exSignText').value = signFor(p); undoStack.length = 0; redoStack.length = 0; undoButtons();
     if (keep) keep(); else if (p.flow) { loadExample(p); $('capState').textContent = 'Example loaded'; } else { autoSuggest(true); $('capState').textContent = 'Layers suggested: try a recipe, or edit them'; } });
   live(p.title + ' loaded');
 }
+// the signature on exports: the artist and the Blind Canvas Project for our examples; their own name (or just "Made with Art Alive") on their own picture
+const signFor = p => p.id === 'own' ? (p.artist && p.artist !== 'Your image' ? p.artist + ' · Art Alive' : 'Made with Art Alive') : p.artist + ' · Blind Canvas Project';
+// a name a camera gave the file ("IMG_4032", "PXL_20261112_031522") is no name for a piece of art
+const camName = t => /^(img|dsc[nf]?|pxl|mvimg|image|photo|pic|picture|untitled|download|scan|capture)[\s\d()]*$/i.test(t) || (/^(img|dsc[nf]?|pxl|mvimg|screenshot|screen shot|whatsapp|signal|received|fb img)\b/i.test(t) && /\d{3,}/.test(t)) || t.replace(/\D/g, '').length > t.length * .5;
+$('projName').oninput = () => { if (!painting || painting.id !== 'own') return; painting.title = $('projName').value.trim() || 'My picture'; $('capTitle').textContent = painting.title; clearTimeout(saveTimer); saveTimer = setTimeout(saveDraft, 1200); };
+let myBy = '';   // the name they typed: it goes with them to the next picture they add
+$('projBy').oninput = () => { if (!painting || painting.id !== 'own') return; myBy = $('projBy').value.trim(); painting.artist = myBy || 'Your image'; $('capArtist').textContent = painting.artist;
+  if (!$('exSignText').dataset.edited) $('exSignText').value = signFor(painting); clearTimeout(saveTimer); saveTimer = setTimeout(saveDraft, 1200); };
 for (const p of PAINTINGS) { p.src = IMGS[p.id];
   const b = document.createElement('button'); b.type = 'button'; b.className = 'thumb'; b.dataset.id = p.id; b.style.backgroundImage = `url(${p.src})`;
   b.setAttribute('aria-label', `${p.title} by ${p.artist}`); b.setAttribute('aria-pressed', 'false'); b.onclick = () => choose(p, b); $('paintings').appendChild(b); }
@@ -1529,11 +1556,12 @@ const add = document.createElement('button'); add.type = 'button'; add.className
 add.textContent = 'Upload image'; add.setAttribute('aria-label', 'Upload your own image'); add.onclick = () => $('fileIn').click(); $('paintings').appendChild(add);
 const camT = document.createElement('button'); camT.type = 'button'; camT.className = 'thumb add cam'; camT.textContent = 'Take photo'; camT.setAttribute('aria-pressed', 'false');
 camT.setAttribute('aria-label', 'Take a photo of your art with the camera. Art Alive helps you line it up and straightens it.');
-camT.onclick = () => { if (!window.AACapture) return; AACapture.open({ onDone: url => shrinkImage(url, src => { ownImage = src; choose({ id: 'own', title: 'My photo', artist: 'Your image', src }, camT); live('Your photo is in, straightened and ready to animate'); }) }); };
+camT.onclick = () => { if (!window.AACapture) return; AACapture.open({ onDone: url => shrinkImage(url, src => { ownImage = src; choose({ id: 'own', title: 'My photo', artist: myBy || 'Your image', src }, camT); live('Your photo is in, straightened and ready to animate'); }) }); };
 $('paintings').appendChild(camT); $('paintings').prepend(add); add.after(camT);
 let ownImage = null;
 $('fileIn').onchange = () => { const f = $('fileIn').files[0]; if (!f) return; const rd = new FileReader();
-  const use = url => shrinkImage(url, src => { ownImage = src; choose({ id: 'own', title: f.name.replace(/\.[^.]+$/, ''), artist: 'Your image', src }, add); });
+  const nm = f.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim().slice(0, 80);
+  const use = url => shrinkImage(url, src => { ownImage = src; choose({ id: 'own', title: nm && !camName(nm) ? nm : 'My picture', artist: myBy || 'Your image', src }, add); });
   rd.onload = () => { if (window.AACapture) AACapture.crop(rd.result, { onDone: use }); else use(rd.result); }; rd.readAsDataURL(f); $('fileIn').value = ''; };
 function shrinkImage(src, done) { const im = new Image(); im.onload = () => { const s = Math.min(1, 1100 / Math.max(im.width, im.height)), c = document.createElement('canvas');
   c.width = Math.round(im.width * s); c.height = Math.round(im.height * s); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); done(c.toDataURL('image/jpeg', .86)); }; im.src = src; }
@@ -1582,11 +1610,11 @@ const TOUR = [
   ['modeTry', 'Step 4 of 5', 'Press See it: tap, drag a finger to hear the colours, and listen, just like a visitor.'],
   ['aaSave', 'Step 5 of 5', 'Press Save to my account to keep it. Press Publish for a link and QR code: visitors scan it and point their phone at your picture. Put up to 50 pieces behind one QR code with a collection in My projects.'],
 ];
-let tourEl = null, ringEl = null, tourI = 0;
+let tourEl = null, ringEl = null, tourI = 0, tourFrom = 0;   // tourFrom: the step the tour began at (1 when they brought their own picture)
 function tour(i) {
   endTour(); if (i >= TOUR.length) { store.set('lps-toured', '1'); return; } tourI = i;
   if (i === 1) setStudio(false); if (i === 2) setStudio(true);
-  const [id, k, text] = TOUR[i], t = $(id); if (!t) { tour(i + 1); return; } t.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+  const [id, , text] = TOUR[i], t = $(id), k = 'Step ' + (i - tourFrom + 1) + ' of ' + (TOUR.length - tourFrom); if (!t) { tour(i + 1); return; } t.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
   setTimeout(() => {
     const r = t.getBoundingClientRect();
     ringEl = document.createElement('div'); ringEl.className = 'tourring'; Object.assign(ringEl.style, { left: r.left - 6 + 'px', top: r.top - 6 + 'px', width: r.width + 12 + 'px', height: r.height + 12 + 'px' });
@@ -1610,7 +1638,7 @@ function placeTour() {
   x = clamp(x, 16, innerWidth - bw - 16); Object.assign(tourEl.style, { left: x + 'px', top: y + 'px' });
 }
 addEventListener('scroll', placeTour, { passive: true }); addEventListener('resize', placeTour);
-$('tourBtn').onclick = () => tour(0);
+$('tourBtn').onclick = () => { tourFrom = 0; tour(0); };
 
 /* record */
 let rec = null, recCanvas = null;
@@ -2066,11 +2094,11 @@ function exDims(gif) {
 function drawTitleCard(g, w, h, a) {
   if (a <= 0) return; g.save(); g.globalAlpha = a; g.fillStyle = 'rgba(13,13,15,.9)'; g.fillRect(0, 0, w, h);
   const m = Math.min(w, h), title = (painting ? painting.title : '').toUpperCase(); g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.fillStyle = '#ec3013'; g.font = `800 ${Math.round(m * .03)}px Archivo, Arial, sans-serif`; g.fillText('BLIND CANVAS PROJECT', w / 2, h * .5 - m * .16);
+  g.fillStyle = '#ec3013'; g.font = `800 ${Math.round(m * .03)}px Archivo, Arial, sans-serif`; g.fillText(painting && painting.id === 'own' ? 'ART ALIVE' : 'BLIND CANVAS PROJECT', w / 2, h * .5 - m * .16);
   let fs = m * .085; g.font = `900 ${Math.round(fs)}px Archivo, 'Arial Black', Arial, sans-serif`; while (g.measureText(title).width > w * .86 && fs > 10) { fs *= .92; g.font = `900 ${Math.round(fs)}px Archivo, 'Arial Black', Arial, sans-serif`; }
   g.fillStyle = '#f3f2ef'; g.fillText(title, w / 2, h * .5 - m * .04);
   g.fillStyle = '#ec3013'; g.fillRect(w / 2 - m * .2, h * .5 + m * .04, m * .4, Math.max(3, m * .008));
-  g.fillStyle = '#b4b2ad'; g.font = `700 ${Math.round(m * .042)}px 'Atkinson Hyperlegible', Verdana, sans-serif`; g.fillText(painting ? painting.artist : '', w / 2, h * .5 + m * .12);
+  g.fillStyle = '#b4b2ad'; g.font = `700 ${Math.round(m * .042)}px 'Atkinson Hyperlegible', Verdana, sans-serif`; g.fillText(painting && painting.artist !== 'Your image' ? painting.artist : '', w / 2, h * .5 + m * .12);
   g.restore();
 }
 function startExport(kind) {

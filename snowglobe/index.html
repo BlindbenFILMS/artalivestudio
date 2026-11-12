@@ -376,7 +376,7 @@
       note('mkMsg', 'Making its link and QR code…');
       const code = await A.publishProject(id);
       note('mkMsg', 'Your snow globe is ready!', 'ok');
-      await A.shareDialog(code, msg + ' snow globe', false, new URL('play.html?c=' + code, location.href).href);   // its own link shows the snow globe card in texts
+      await A.shareDialog(code, msg + ' snow globe', false, new URL('play.html?c=' + code, location.href).href, 'snowglobe');   // its own link shows the snow globe card in texts
     } catch (e) {
       const t = (e && (e.message || e.details)) || '';
       if (/kind_check|projects_kind/i.test(t)) note('mkMsg', 'Snow globes are almost ready to share. Please try again soon.', 'bad');
@@ -398,6 +398,9 @@
       if (S.mode === 'video' && o.start != null) await choose(o.start, null);
       go('s5'); note('mkMsg', 'Welcome! Your snow globe is back. Press Make my snow globe to finish.', 'ok'); $('make').focus();
     }
+    // back from signing in, but the snow globe isn't here: it is in another tab, or the email link opened in a different browser
+    else if (A && A.maybeSignedIn && A.maybeSignedIn()) note('fMsg', 'You’re signed in. The snow globe you were making isn’t in this tab, though. Look for it in your other tab, or in the browser you made it in (the email link may have opened a different one). Or add your photo or video again here.', 'bad');
+    history.replaceState(null, '', location.pathname);   // (so a refresh later is a plain visit)
   }
 })();
 </script>

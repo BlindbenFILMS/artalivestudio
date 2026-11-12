@@ -93,14 +93,22 @@
   .mg-pvcol{position:sticky;top:0;z-index:6;background:var(--room);padding:6px 0 8px;align-self:stretch;width:100%}
   .mg-pv .aag-stage{max-height:min(38vh,380px);max-width:calc(min(38vh,380px) * var(--aag-ar-n,1))}
   .mg-pv .aag-act{width:64px;height:64px;font-size:13px!important}
-  .mg-pv .aag-wx button{min-height:46px}.mg-pv .aag-wx button span{font-size:19px}
+  .mg-pv .aag-wx button{min-height:46px;font-size:10.5px;letter-spacing:0}.mg-pv .aag-wx button span{font-size:19px}
   .mg-pvnote{display:none}
-  .mg-prog ol{flex-wrap:nowrap;gap:4px}.mg-prog li{flex:1 1 auto;min-width:0}
-  .mg-prog button{width:100%;justify-content:center;padding:0 6px;gap:4px;font-size:10.5px;letter-spacing:.02em}
-  .mg-prog button b{width:16px;height:16px;font-size:10px;flex:none}
+  .mg-prog ol{flex-wrap:nowrap;gap:6px}.mg-prog li{flex:1 1 auto;min-width:0}
+  .mg-prog button{width:100%;justify-content:center;padding:0 8px;gap:6px;min-height:40px;font-size:12px;letter-spacing:.03em;white-space:nowrap}
+  .mg-prog button b{width:22px;height:22px;font-size:12px;flex:none}
   .mg-crop{width:min(100%,280px)}
+  /* Back and Next stay in reach at the bottom of the screen, however long the step is */
+  .mg-nav{position:sticky;bottom:0;z-index:7;background:var(--room);padding:10px 0 calc(10px + env(safe-area-inset-bottom));box-shadow:0 -12px 14px -10px rgba(0,0,0,.7)}
 }
-@media (max-width:360px){.mg-prog button b{display:none}}
+/* on a phone: the step you are on shows its name in letters big enough to read; the other steps are numbered dots */
+@media (max-width:560px){
+  .mg-prog li{flex:0 0 auto}.mg-prog li.cur{flex:1 1 auto}
+  .mg-prog button span{display:none}.mg-prog button[aria-current=step] span{display:inline}
+  .mg-prog button{font-size:14px;padding:0 9px;min-width:40px}.mg-prog button[aria-current=step]{justify-content:flex-start;padding:0 12px}
+}
+@media (max-width:350px){.mg-prog ol{gap:4px}.mg-prog button{font-size:12.5px;padding:0 6px;min-width:36px}.mg-prog button[aria-current=step]{padding:0 8px}}
 </style>
 </head>
 <body>
@@ -212,7 +220,7 @@
   function go(id, quiet) {
     const k = ORDER.indexOf(id); cur = id;
     for (const s of ORDER) $(s).hidden = s !== id;
-    $('dots').innerHTML = ORDER.map((s, i) => '<li><button type="button" data-s="' + s + '"' + (s === id ? ' aria-current="step"' : '') + (i < k ? ' class="done"' : '') + (i > 0 && !S.has ? ' disabled' : '') + '><b>' + (i + 1) + '</b>' + NAMES[s] + '</button></li>').join('');
+    $('dots').innerHTML = ORDER.map((s, i) => '<li' + (s === id ? ' class="cur"' : '') + '><button type="button" data-s="' + s + '" aria-label="Step ' + (i + 1) + ' of 5: ' + NAMES[s] + (i < k ? ' (done)' : '') + '"' + (s === id ? ' aria-current="step"' : '') + (i < k ? ' class="done"' : '') + (i > 0 && !S.has ? ' disabled' : '') + '><b>' + (i + 1) + '</b><span>' + NAMES[s] + '</span></button></li>').join('');
     $('dots').querySelectorAll('button').forEach(b => b.onclick = () => go(b.dataset.s));
     $('back').hidden = k === 0; $('next').hidden = k === ORDER.length - 1; $('next').disabled = !S.has;
     $('next').textContent = k === ORDER.length - 2 ? 'Next: finish' : 'Next';
@@ -371,7 +379,7 @@
       note('mkMsg', 'Making its link and QR code…');
       const code = await A.publishProject(id);
       note('mkMsg', 'Your game is ready!', 'ok');
-      await A.shareDialog(code, title);
+      await A.shareDialog(code, title, false, undefined, 'game');
     } catch (e) {
       const t = (e && (e.message || e.details)) || '';
       if (e && e.code === 'limit') note('mkMsg', e.message, 'bad'); else note('mkMsg', 'Something went wrong: ' + (t || 'check your connection and try again.'), 'bad');
@@ -393,6 +401,8 @@
       if (o.file) { S.cx = o.cx; S.cy = o.cy; S.zoom = o.zoom || 1; $('zoom').value = S.zoom; await take(o.file, true); }
       go('s5'); note('mkMsg', 'Welcome! Your game is back. Press Make my game to finish.', 'ok'); $('make').focus();
     }
+    // back from signing in, but the game isn't here: it is in another tab, or the email link opened in a different browser
+    else if (A && A.maybeSignedIn && A.maybeSignedIn()) note('fMsg', 'You’re signed in. The game you were making isn’t in this tab, though. Look for it in your other tab, or in the browser you made it in (the email link may have opened a different one). Or add your picture again here.', 'bad');
   }
   // opening a game made here before (from My Projects)
   const pidQ = qs.get('project');

@@ -44,7 +44,7 @@
   <main class="wrap" id="main">
     <section class="pj-head">
       <div><span class="eyebrow">Your account</span><h1>My projects</h1><p class="pj-who" id="pjWho"></p><p class="pj-who" id="pjPlan"></p></div>
-      <div class="pj-new"><a class="btn small" href="studio/index.html">New animation</a><a class="btn small ghost" href="games/index.html">New game</a></div>
+      <div class="pj-new"><a class="btn small" href="studio/index.html">New animation</a><a class="btn small ghost" href="games/index.html">New game</a><a class="btn small ghost" href="create.html">More to make</a></div>
     </section>
     <p class="status" id="pjStatus" role="status" aria-live="polite"></p>
     <section id="pjBody" hidden aria-label="Your projects" style="display:flex;flex-direction:column;gap:18px">
@@ -54,7 +54,7 @@
       <ul class="pj-folders" id="pjFolders" aria-label="Folders"></ul>
       <ul class="pj-grid" id="pjGrid"></ul>
       <div class="pj-empty" id="pjEmpty" hidden><h2 style="margin:0">Nothing here yet</h2><p>Make an animation or a game, then press <b>Save to my account</b>. It will show up here, ready to open on any device.</p>
-        <div class="pj-new"><a class="btn small" href="studio/index.html">New animation</a><a class="btn small ghost" href="games/index.html">New game</a></div></div>
+        <div class="pj-new"><a class="btn small" href="studio/index.html">New animation</a><a class="btn small ghost" href="games/index.html">New game</a><a class="btn small ghost" href="create.html">More to make</a></div></div>
       <p><button class="btn small ghost" type="button" id="pjOut">Log out</button></p>
     </section>
     <section class="pj-empty" id="pjLogin" hidden><h2 style="margin:0">Log in to see your projects</h2><p>Your saved animations and games live in your account, so you can open them on any phone or computer.</p><a class="btn small" href="login.html">Log in</a></section>
@@ -107,8 +107,8 @@ async function act(a,p,btn){
   try{
     if(a==='rename'){const t=await ask({title:'Rename',label:'New name',input:p.title,ok:'Rename'});if(!t||t===p.title)return btn.focus();await AAAccount.updateProject(p.id,{title:t});p.title=t;draw();say('Renamed to '+t,'ok');}
     if(a==='move'){const f=await ask({title:'Put in a folder',text:'Type a folder name, pick one you already have, or leave it empty to take it out of its folder.',label:'Folder',input:p.folder||'',ok:'Save'});if(f===null)return btn.focus();await AAAccount.updateProject(p.id,{folder:f});p.folder=f;draw();say(f?p.title+' is now in '+f:p.title+' is out of its folder','ok');}
-    if(a==='pub'){say('Publishing…');const code=await AAAccount.publishProject(p.id);p.pub={code,live:true,views:(p.pub&&p.pub.views)||0};draw();say(p.title+' is live.','ok');await AAAccount.shareDialog(code,p.title,false,p.kind==='snowglobe'?new URL('snowglobe/play.html?c='+encodeURIComponent(code),location.href).href:undefined);}
-    if(a==='share'){await AAAccount.shareDialog(p.pub.code,p.title,false,p.kind==='snowglobe'?new URL('snowglobe/play.html?c='+encodeURIComponent(p.pub.code),location.href).href:undefined);}
+    if(a==='pub'){say('Publishing…');const code=await AAAccount.publishProject(p.id);p.pub={code,live:true,views:(p.pub&&p.pub.views)||0};draw();say(p.title+' is live.','ok');await AAAccount.shareDialog(code,p.title,false,p.kind==='snowglobe'?new URL('snowglobe/play.html?c='+encodeURIComponent(code),location.href).href:undefined,p.kind);}
+    if(a==='share'){await AAAccount.shareDialog(p.pub.code,p.title,false,p.kind==='snowglobe'?new URL('snowglobe/play.html?c='+encodeURIComponent(p.pub.code),location.href).href:undefined,p.kind);}
     if(a==='unpub'){const y=await ask({title:'Unpublish '+p.title+'?',text:'People who scan its QR code will see that it isn’t available. Your project stays in your account, and if you publish it again it keeps the same link and QR code.',ok:'Unpublish'});if(!y)return btn.focus();await AAAccount.unpublishProject(p.id);p.pub.live=false;draw();say(p.title+' is no longer public.','ok');}
     if(a==='copy'){say('Making a copy…');await AAAccount.duplicateProject(p.id);await refresh();say('Copied. The copy is at the top.','ok');}
     if(a==='del'){const y=await ask({title:'Delete '+p.title+'?',text:'This removes the project and its pictures and recordings from your account. It can’t be undone.',ok:'Delete'});if(!y)return btn.focus();say('Deleting…');await AAAccount.deleteProject(p.id);all=all.filter(x=>x.id!==p.id);draw();say(p.title+' was deleted.','ok');}

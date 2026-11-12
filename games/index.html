@@ -249,6 +249,9 @@ addEventListener('keydown',e=>{if(e.key==='Escape'&&n.classList.contains('open')
   #playRoot .aag-stage{max-height:64vh;max-width:calc(64vh * var(--aag-ar-n,1))}
 }
 @media (max-width:520px){.gm-types{grid-template-columns:1fr}.gm-fields.two{grid-template-columns:1fr}}
+/* narrow phones: the six step names stay inside their boxes */
+@media (max-width:384px){.gm-steps{gap:3px}.gm-steps button{font-size:10.5px;letter-spacing:0;border-width:1.5px}}
+@media (max-width:340px){.gm-steps{gap:2px}.gm-steps button{font-size:9.5px}}
 #build{display:flex;flex-direction:column;gap:12px}
 #build .gm-sub{margin:4px 0 0}
 #marbleBox,#itemBox{display:flex;flex-direction:column;gap:14px}
@@ -1285,6 +1288,7 @@ const css = `
 .aacap-intro b{color:#f5a623}
 .aacap-head{position:absolute;left:12px;right:12px;top:10px;margin:0 auto;max-width:560px;text-align:center;padding:10px 14px;border-radius:12px;background:rgba(10,12,16,.82);font-weight:700;font-size:17px;z-index:2}
 .aacap-head b{color:#ff7a2a}
+.aacap-msg{max-width:520px;margin:0 22px;text-align:center;font-size:20px;line-height:1.5;font-weight:700}
 .aa-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}`;
 const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -1680,25 +1684,40 @@ function crop(src, opts) {
     const P = panel('Crop your image');
     cropIn(P, ph, r ? r.c : null, opts, null, null);
   };
-  im.onerror = () => opts.onDone && opts.onDone(src);
+  // not a picture this browser can open (a HEIC photo on some phones and computers, a PDF, a damaged file): say so,
+  // instead of quietly doing nothing
+  im.onerror = () => {
+    const P = panel('That picture didn’t open');
+    P.view.innerHTML = '<p class="aacap-msg">This browser couldn’t open that file as a picture.<br>Try a JPG or PNG, or take a new photo.</p>';
+    P.bar.innerHTML = '<button type="button" class="go ok">OK</button>'; P.q('.x').textContent = 'Close';
+    P.q('.ok').onclick = () => P.close(); P.q('.ok').focus();
+    speak('That picture didn’t open. Try a J P G or a P N G, or take a new photo.', true);
+  };
   im.src = src;
 }
 function cropIn(P, ph, Qin, opts, again, againLabel) {
   const W0 = ph.width, H0 = ph.height, found = !!Qin;
   const FULL = () => [[0, 0], [1, 0], [1, 1], [0, 1]];
-  let Q = Qin ? Qin.map(p => p.slice()) : [[.08, .08], [.92, .08], [.92, .92], [.08, .92]];
-  P.title('Crop to your rectangle');
+  // An uploaded picture with no frame found in it starts with the WHOLE picture chosen, so the big button never trims its
+  // edges by surprise. A photo just taken starts with the corners pulled in, ready to drag onto the art.
+  const whole0 = !found && !again;
+  let Q = Qin ? Qin.map(p => p.slice()) : whole0 ? FULL() : [[.08, .08], [.92, .08], [.92, .92], [.08, .92]];
+  P.title(whole0 ? 'Your picture' : 'Crop to your rectangle');
   P.view.innerHTML = ''; ph.className = 'aacap-ph'; P.view.appendChild(ph);
   const ov = document.createElement('canvas'); ov.className = 'aacap-ov'; P.view.appendChild(ov);
   const head = document.createElement('p'); head.className = 'aacap-head';
-  head.innerHTML = '<b>Crop:</b> drag the 4 orange corners onto the corners of your square or rectangle, as close to its edges as you can.'; P.view.appendChild(head);
+  head.innerHTML = whole0 ? '<b>Ready to use.</b> The whole picture is chosen. To crop it, drag the 4 orange corners in.'
+    : '<b>Crop:</b> drag the 4 orange corners onto the corners of your square or rectangle, as close to its edges as you can.'; P.view.appendChild(head);
   const tip = document.createElement('p'); tip.className = 'aacap-tip good'; tip.setAttribute('aria-live', 'polite');
-  tip.textContent = found ? 'We found the edges. Check the corners, then press Crop and straighten.' : 'Drag each corner onto a corner of your rectangle.'; P.view.appendChild(tip);
-  speak(found ? 'Found the edges. Check the four corners, then press Crop and straighten.' : 'Drag the four corners onto the corners of your rectangle.', true);
+  tip.textContent = found ? 'We found the edges. Check the corners, then press Crop and straighten.' : whole0 ? 'Press Use this picture, or drag a corner in to crop it.' : 'Drag each corner onto a corner of your rectangle.'; P.view.appendChild(tip);
+  speak(found ? 'Found the edges. Check the four corners, then press Crop and straighten.' : whole0 ? 'Your whole picture is chosen. Press Use this picture, or drag a corner in to crop it.' : 'Drag the four corners onto the corners of your rectangle.', true);
   P.bar.innerHTML = `${again ? `<button type="button" class="again">${againLabel}</button>` : ''}
     <button type="button" class="find">Find edges for me</button>
     <button type="button" class="whole">Use without cropping</button>
     <button type="button" class="go use">Crop and straighten</button>`;
+  // which button leads: "Use this picture" while the whole picture is chosen, "Crop and straighten" once a corner has moved
+  const lead = w => { const a = P.q('.whole'), b = P.q('.use'); a.classList.toggle('go', w); b.classList.toggle('go', !w); a.textContent = w ? 'Use this picture' : 'Use without cropping'; };
+  if (whole0) lead(true);
   const bx = () => { const r = P.view.getBoundingClientRect(), pr = ph.getBoundingClientRect(); return { x: pr.left - r.left, y: pr.top - r.top, w: pr.width, h: pr.height, rw: r.width, rh: r.height }; };
   let drag = -1, ptr = null;
   const NAMES = ['Top left', 'Top right', 'Bottom right', 'Bottom left'];
@@ -1727,12 +1746,12 @@ function cropIn(P, ph, Qin, opts, again, againLabel) {
   ov.addEventListener('pointerdown', e => { const p = pt(e), b = bx(); let bd = 64; drag = -1; Q.forEach((c2, i) => { const d2 = Math.hypot((c2[0] - p[0]) * b.w, (c2[1] - p[1]) * b.h); if (d2 < bd) { bd = d2; drag = i; } });
     if (drag >= 0) { ptr = { id: e.pointerId, off: [Q[drag][0] - p[0], Q[drag][1] - p[1]] }; ov.setPointerCapture(e.pointerId); beep(660, .04, .05); draw(); } });
   ov.addEventListener('pointermove', e => { if (drag < 0 || !ptr || e.pointerId !== ptr.id) return; const p = pt(e); Q[drag] = [clamp(p[0] + ptr.off[0], 0, 1), clamp(p[1] + ptr.off[1], 0, 1)]; draw(); });
-  const up = () => { if (drag >= 0) { beep(880, .05, .06); tip.textContent = NAMES[drag] + ' corner set.'; } drag = -1; ptr = null; draw(); };
+  const up = () => { if (drag >= 0) { beep(880, .05, .06); tip.textContent = NAMES[drag] + ' corner set.'; lead(false); } drag = -1; ptr = null; draw(); };
   ov.addEventListener('pointerup', up); ov.addEventListener('pointercancel', up);
   // keyboard: Tab to a corner and use the arrow keys (Shift for bigger steps)
   const kb = document.createElement('div'); kb.className = 'aa-sr';
   NAMES.forEach((n, i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = n + ' crop corner. Arrow keys move it, Shift for bigger steps.';
-    b.onkeydown = e => { const s = e.shiftKey ? .02 : .004, m = { ArrowLeft: [-s, 0], ArrowRight: [s, 0], ArrowUp: [0, -s], ArrowDown: [0, s] }[e.key]; if (!m) return; e.preventDefault(); Q[i] = [clamp(Q[i][0] + m[0], 0, 1), clamp(Q[i][1] + m[1], 0, 1)]; draw(); };
+    b.onkeydown = e => { const s = e.shiftKey ? .02 : .004, m = { ArrowLeft: [-s, 0], ArrowRight: [s, 0], ArrowUp: [0, -s], ArrowDown: [0, s] }[e.key]; if (!m) return; e.preventDefault(); Q[i] = [clamp(Q[i][0] + m[0], 0, 1), clamp(Q[i][1] + m[1], 0, 1)]; lead(false); draw(); };
     b.onfocus = () => { drag = i; draw(); }; b.onblur = () => { drag = -1; draw(); };
     kb.appendChild(b); });
   P.bar.prepend(kb);
@@ -1740,10 +1759,10 @@ function cropIn(P, ph, Qin, opts, again, againLabel) {
   if (ph.complete === false) ph.onload = draw; requestAnimationFrame(draw); setTimeout(draw, 120);
   const finish = url => { const cb = opts.onDone; P.close(); cb && cb(url); };
   if (again) P.q('.again').onclick = () => again();
-  P.q('.find').onclick = () => { prevC = null; const r = detect(ph, W0, H0); if (r) { Q = r.c.map(p => p.slice()); tip.textContent = 'Found the edges. Check the corners.'; speak('Found the edges.', true); buzz(30); } else { Q = [[.08, .08], [.92, .08], [.92, .92], [.08, .92]]; tip.textContent = 'Couldn’t find clear edges. Drag the corners yourself.'; speak('Couldn’t find clear edges. Drag the corners yourself.', true); } draw(); };
+  P.q('.find').onclick = () => { prevC = null; lead(false); const r = detect(ph, W0, H0); if (r) { Q = r.c.map(p => p.slice()); tip.textContent = 'Found the edges. Check the corners.'; speak('Found the edges.', true); buzz(30); } else { Q = [[.08, .08], [.92, .08], [.92, .92], [.08, .92]]; tip.textContent = 'Couldn’t find clear edges. Drag the corners yourself.'; speak('Couldn’t find clear edges. Drag the corners yourself.', true); } draw(); };
   P.q('.whole').onclick = () => { const k = Math.min(1, 1400 / Math.max(W0, H0)), c = document.createElement('canvas'); c.width = Math.round(W0 * k); c.height = Math.round(H0 * k); c.getContext('2d').drawImage(ph, 0, 0, c.width, c.height); finish(c.toDataURL('image/jpeg', .9)); };
   P.q('.use').onclick = () => { P.q('.use').textContent = 'Straightening…'; setTimeout(() => finish(straighten(ph, W0, H0, Q, 1400)), 30); };
-  P.q('.use').focus();
+  P.q(whole0 ? '.whole' : '.use').focus();
 }
 
 /* ── record from the microphone ── */
@@ -2096,7 +2115,10 @@ function go(step, focus) {
   if (step === 'voice') renderLines();
   help();
   if (focus) { const h = $(`.gm-panel[data-step="${step}"] h2`); h.tabIndex = -1; h.focus({ preventScroll: true }); }
-  const top = $('.gm-steps').getBoundingClientRect().top; if (top < 0 || top > innerHeight * .6) $('.gm-steps').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Start every step at its top: the picture, then the step's panel. (The row of steps sticks to the top of the screen, so
+  // after pressing Next at the bottom of a long step, the next one used to open scrolled down to its last lines.)
+  const st = $('.gm-steps'), want = $('.gm-body').getBoundingClientRect().top + scrollY - st.offsetHeight - 6;
+  if (Math.abs(scrollY - want) > 40 && (scrollY > want || st.getBoundingClientRect().top > innerHeight * .6)) scrollTo({ top: Math.max(0, want), behavior: 'smooth' });
 }
 $$('.gm-steps button').forEach(b => b.addEventListener('click', () => go(b.dataset.go, true)));
 $$('[data-next]').forEach(b => b.addEventListener('click', () => go(ORDER[ORDER.indexOf(cur) + 1], true)));
@@ -2128,12 +2150,17 @@ SAMPLES.forEach((s, i) => {
   b.onclick = () => { A.ac(); setImage(s.src, () => { G.title = s.title; G.artist = 'Blind Canvas Project'; $('#tIn').value = G.title; $('#aIn').value = G.artist; fresh(); say(s.title + ' loaded.'); }); };
   sampleBox.appendChild(b);
 });
+let ownPic = false;   // their own picture is in (or a saved game is open): from then on, unsaved work is kept on this device
+// a name a camera gave the file ("IMG_4032", "PXL_20261112_031522") is no name for a game: those start as "My art"
+const camName = t => /^(img|dsc[nf]?|pxl|mvimg|image|photo|pic|picture|untitled|download|scan|capture)[\s\d()]*$/i.test(t) || (/^(img|dsc[nf]?|pxl|mvimg|screenshot|screen shot|whatsapp|signal|received|fb img)\b/i.test(t) && /\d{3,}/.test(t)) || t.replace(/\D/g, '').length > t.length * .5;
 $('#fileIn').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return;
-  const r = new FileReader(); r.onload = () => (window.AACapture ? cb => AACapture.crop(r.result, { onDone: cb }) : cb => cb(r.result))(url => setImage(url, () => { G.title = f.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').slice(0, 60); $('#tIn').value = G.title; fresh(); say('Your picture is in.'); })); r.readAsDataURL(f);
+  const r = new FileReader(); r.onload = () => (window.AACapture ? cb => AACapture.crop(r.result, { onDone: cb }) : cb => cb(r.result))(url => setImage(url, () => { const t = f.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim().slice(0, 60); G.title = t && !camName(t) ? t : 'My art'; $('#tIn').value = G.title;
+    if (G.artist === 'Blind Canvas Project') { G.artist = ''; $('#aIn').value = ''; }   // the example's artist doesn't follow their own picture
+    ownPic = true; fresh(); say('Your picture is in.'); })); r.readAsDataURL(f);
   e.target.value = '';
 });
-$('#camBtn').onclick = () => { if (!window.AACapture) return; AACapture.open({ onDone: url => setImage(url, () => { G.title = 'My art'; G.artist = ''; $('#tIn').value = G.title; $('#aIn').value = ''; fresh(); say('Your photo is in, straightened and ready.'); }) }); };
+$('#camBtn').onclick = () => { if (!window.AACapture) return; AACapture.open({ onDone: url => setImage(url, () => { G.title = 'My art'; G.artist = ''; $('#tIn').value = G.title; $('#aIn').value = ''; ownPic = true; fresh(); say('Your photo is in, straightened and ready.'); }) }); };
 $('#tIn').addEventListener('input', e => { G.title = e.target.value; refreshSuggestions(); });
 $('#aIn').addEventListener('input', e => { G.artist = e.target.value; refreshSuggestions(); });
 function fresh() {
@@ -2341,7 +2368,7 @@ $('#dlGame').onclick = () => offerSave(new Blob([gameHTML()], { type: 'text/html
 $('#dlProj').onclick = () => offerSave(new Blob([JSON.stringify(G)], { type: 'application/json' }), slug(G.title) + '.artalive.json');
 let opened = false;
 function openGame(d, done) { if (d && d.type && !TYPES.some(g => g.id === d.type)) { location.replace('../make/game.html?g=' + encodeURIComponent(d.tpl || d.type) + '&project=' + encodeURIComponent(new URLSearchParams(location.search).get('project') || '')); return; }   // made from a template the Game Maker doesn't edit
-  opened = true; G = Object.assign(G, d); Object.keys(edited).forEach(k => delete edited[k]); LINES.forEach(([k]) => { edited[k] = true; });
+  opened = true; ownPic = true; G = Object.assign(G, d); Object.keys(edited).forEach(k => delete edited[k]); LINES.forEach(([k]) => { edited[k] = true; });
   setImage(G.img, () => { $('#tIn').value = G.title || ''; $('#aIn').value = G.artist || ''; setType(G.type); go('play', true); $('#saveMsg').textContent = 'Opened ' + (G.title || 'your game') + '.'; if (done) done(); }); }
 $('#projIn').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return; e.target.value = '';
@@ -2360,10 +2387,13 @@ setImage(SAMPLES[0].src, () => { if (opened) return; G.title = SAMPLES[0].title;
 window.AAMaker = { get G() { return G; }, go, setType, gameHTML, openGame };
 
 /* ── saving to the creator's account (account.js) ── */
-if (window.AAAccount) AAAccount.saveBar({ kind: 'game', buttons: [$('#cloudSave')],
+if (window.AAAccount) AAAccount.saveBar({ kind: 'game', buttons: [$('#cloudSave')], draft: () => ownPic,
   onStatus: t => { if (t) { $('#saveMsg').textContent = t; say(t); } },
   get: () => ({ title: G.title || 'My game', data: G, thumbSrc: G.img }),
-  open: (p, done) => openGame(Object.assign(p.data, { title: p.title }), done) });
+  open: (p, done) => {
+    const t = p.data && p.data.type;
+    if (p.id && ['flashlight', 'simon', 'weather'].includes(t)) { location.replace('../make/game.html?g=' + t + '&project=' + encodeURIComponent(p.id)); return; }   // made in "Make your own game": it opens there
+    openGame(Object.assign(p.data, { title: p.title }), done); } });
 })();
 </script>
 </body>

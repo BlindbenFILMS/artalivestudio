@@ -125,6 +125,10 @@
 @media (max-width:900px){.mp-hero,.mk-grid{grid-template-columns:minmax(0,1fr)}.mk-prev{position:static;order:-1}.mk-end{margin-top:6px}.mp-how{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:480px){.mp-how{grid-template-columns:minmax(0,1fr)}.row2{grid-template-columns:minmax(0,1fr)}.row3{grid-template-columns:repeat(2,minmax(0,1fr))}.row3>:first-child{grid-column:1/-1}}
 @media (prefers-reduced-motion:reduce){.mp-flip{transition:none}}
+.mk-need{display:block;color:#ffb4a8;font-weight:700;font-size:16px}
+.mk-back{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin:0;padding:12px 16px;border-radius:14px;border:2px solid #7be08f;background:#13261b;color:var(--cream);font-size:16px}
+.mk-back[hidden]{display:none}.mk-back .btn{min-height:44px}
+.field input[aria-invalid=true]{border-color:#ffb4a8}
 </style>
 </head>
 <body>
@@ -170,6 +174,7 @@
       <div class="mk-head"><span class="eyebrow">Create your own</span><h2 id="mkH">Make your Magic Postcard</h2><div class="rule" aria-hidden="true"></div><p class="hint" style="margin:0">Sent one already? <a href="replies.html">See your replies</a>.</p></div>
       <div class="mk-grid">
         <form class="mk-form" id="mk" novalidate>
+          <p class="mk-back" id="mkBack" role="status" hidden><span><b>Welcome back.</b> Your postcard is just as you left it.</span><button type="button" class="btn ghost small" id="mkOver">Start over</button></p>
           <fieldset>
             <legend><span aria-hidden="true">1</span>Pick your picture</legend>
             <div class="mk-tabs" role="group" aria-label="Kind of card"><button type="button" data-cat="location" aria-pressed="true">Locations</button><button type="button" data-cat="event" aria-pressed="false">Events</button></div>
@@ -179,7 +184,8 @@
             <button type="button" class="btn ghost small" id="picMore" hidden aria-controls="stockTiles"></button>
             <p class="hint" id="picHint" hidden></p>
             <div class="file"><input type="file" id="photoIn" accept="image/*"><label class="btn ghost" for="photoIn">Upload my own photo</label><span class="fn" id="photoFn" aria-live="polite"></span></div>
-            <p class="hint">It's printed as a square. We use the middle of your photo.</p>
+            <p class="hint" id="photoSq">It's printed as a square. We use the middle of your photo.</p>
+            <label class="field" id="photoPosL" hidden><span id="photoPosT">Slide to choose the part of your photo</span><input type="range" id="photoPos" min="0" max="100" value="50" style="width:100%;accent-color:var(--coral);height:34px"></label>
             <div id="autoBox" hidden>
               <p class="hint"><b style="color:var(--cream)">Your photo comes alive too.</b> We make it move with Art Alive effects. Choose a style:</p>
               <div class="tiles" role="radiogroup" aria-label="How your photo comes alive">
@@ -310,9 +316,10 @@ let STOCK = [
   S.icon = aaIcon;
 
   // square photos: the middle of the picture, 1200 px across, as a JPEG
-  function squareData(im, size, type) { const cv = document.createElement('canvas'); cv.width = cv.height = size; const g = cv.getContext('2d');
-    const w = im.naturalWidth || im.width, h = im.naturalHeight || im.height, s = Math.min(w, h); g.drawImage(im, (w - s) / 2, (h - s) / 2, s, s, 0, 0, size, size);
-    return cv.toDataURL(type || 'image/jpeg', .9); }
+  // (pos: which part of a wide or tall photo, 0 = the left or top, 1 = the right or bottom; the middle unless they slide it)
+  function squareCanvas(im, size, pos) { const cv = document.createElement('canvas'); cv.width = cv.height = size; const g = cv.getContext('2d'), k = pos == null ? .5 : pos;
+    const w = im.naturalWidth || im.width, h = im.naturalHeight || im.height, s = Math.min(w, h); g.drawImage(im, (w - s) * k, (h - s) * k, s, s, 0, 0, size, size); return cv; }
+  function squareData(im, size, type, pos) { return squareCanvas(im, size, pos).toDataURL(type || 'image/jpeg', .9); }
   function fitData(im, max) { const w = im.naturalWidth || im.width, h = im.naturalHeight || im.height, k = Math.min(1, max / Math.max(w, h)), cv = document.createElement('canvas');
     cv.width = Math.round(w * k); cv.height = Math.round(h * k); cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height); return cv.toDataURL('image/png'); }
 
@@ -405,21 +412,30 @@ let STOCK = [
     const url = URL.createObjectURL(f), v = document.createElement('video'); v.preload = 'metadata'; v.muted = true; v.src = url;
     v.onloadedmetadata = () => { if (v.duration > MAX_SECONDS + 1 && isFinite(v.duration)) { fn.textContent = 'That video is ' + Math.round(v.duration) + ' seconds. Please trim it to ' + MAX_SECONDS + ' seconds or less.'; URL.revokeObjectURL(url); return; }
       if (S['video' + n + 'Url']) URL.revokeObjectURL(S['video' + n + 'Url']); S['video' + n] = f; S['video' + n + 'Url'] = url;
-      fn.textContent = (f.name || 'Your video') + (isFinite(v.duration) ? ' · ' + Math.max(1, Math.round(v.duration)) + ' seconds' : '');
+      fn.textContent = (f.name || 'Your video') + (isFinite(v.duration) ? ' · ' + Math.max(1, Math.round(v.duration)) + ' seconds' : ''); if (!quiet) autoVideo(n);
       if (quiet) { msgVideo(); return; }
       if (n) { setPlay(false); setSide('back'); msgPlay(true); } else { msgVideo(); setPlay(true); } };
     v.onerror = () => { fn.textContent = 'That video didn’t open here. Try an MP4 (most phones make these).'; }; }
   ['', '2'].forEach(n => {
     ['Rec', 'In'].forEach(k => { const inp = $('video' + n + k); inp.onchange = () => { const f = inp.files[0]; if (f) useVideo(n, f); inp.value = ''; }; });
-    $('video' + n + 'X').onclick = () => { if (S['video' + n + 'Url']) URL.revokeObjectURL(S['video' + n + 'Url']); S['video' + n] = S['video' + n + 'Url'] = null; $('video' + n + 'Fn').textContent = SLOT[n].none; msgVideo(); $('video' + n + 'Rec').focus(); };
+    $('video' + n + 'X').onclick = () => { if (S['video' + n + 'Url']) URL.revokeObjectURL(S['video' + n + 'Url']); S['video' + n] = S['video' + n + 'Url'] = null; $('video' + n + 'Fn').textContent = SLOT[n].none; msgVideo(); autoVideo(n); $('video' + n + 'Rec').focus(); };
   });
   // arrowing through a set of choices only selects; it doesn't open a file picker or start the movie
   let arrowed = false; addEventListener('keydown', e => { arrowed = /^Arrow/.test(e.key); }, true); addEventListener('pointerdown', () => { arrowed = false; }, true);
-  tiles.addEventListener('change', e => { if (e.target.name !== 'pic') return; if (e.target.value === 'own') { if (S.ownPhoto) { S.stock = null; S.photo = S.ownPhoto; S.photoData = S.ownPhotoData; setVideo(); redraw(); } else if (!arrowed) $('photoIn').click(); } else useStock(e.target.value).then(() => { if (!arrowed) setPlay(true); }); });
+  tiles.addEventListener('change', e => { if (e.target.name !== 'pic') return; if (e.target.value === 'own') { if (S.ownPhoto) { S.stock = null; S.photo = S.ownPhoto; S.photoData = S.ownPhotoData; setVideo(); redraw(); photoPosUI(); } else if (!arrowed) $('photoIn').click(); } else useStock(e.target.value).then(() => { photoPosUI(); if (!arrowed) setPlay(true); }); });
   $('photoIn').onchange = async () => { const f = $('photoIn').files[0]; if (!f) return;
     try { const im = await loadImg(URL.createObjectURL(f)), d = squareData(im, 1200); S.ownPhotoData = d; S.ownPhoto = await loadImg(d); S.photo = S.ownPhoto; S.photoData = d; S.stock = null;
-      $('picOwnR').checked = true; $('picOwnIm').innerHTML = '<img src="' + d + '" alt="">'; $('photoFn').textContent = f.name; if (!$('place').dataset.typed) $('place').value = ''; setVideo(); redraw(); if (mode() === 'anim') setPlay(true); }
+      S.ownSrc = im; $('photoPos').value = 50; photoPosUI();
+      $('picOwnR').checked = true; $('picOwnIm').innerHTML = '<img src="' + d + '" alt="">'; $('photoFn').textContent = f.name; if (!$('place').dataset.typed) $('place').value = ''; setVideo(); redraw(); autoSave(); if (mode() === 'anim') setPlay(true); }
     catch (e) { $('photoFn').textContent = 'That picture didn’t open. Try a JPEG or PNG.'; } };
+  // a wide or tall photo: a slider chooses which part goes in the square (it shows while their own photo is the picture)
+  function photoPosUI() { const im = S.ownSrc, w = im ? im.naturalWidth : 0, h = im ? im.naturalHeight : 0, on = !!im && S.photo === S.ownPhoto && Math.abs(w - h) > Math.min(w, h) * .04;
+    $('photoPosL').hidden = !on; $('photoPosT').textContent = w > h ? 'Slide left or right to choose the part of your photo' : 'Slide up or down to choose the part of your photo';
+    $('photoSq').textContent = on ? 'It’s printed as a square.' : 'It’s printed as a square. We use the middle of your photo.'; }
+  $('photoPos').addEventListener('input', () => { if (!S.ownSrc) return; if ($('stage').classList.contains('playing')) setPlay(false); if (S.side !== 'front') setSide('front');
+    S.photo = squareCanvas(S.ownSrc, 600, $('photoPos').value / 100); redraw(); });   // a quick look at the still card while sliding
+  $('photoPos').addEventListener('change', async () => { if (!S.ownSrc) return; const d = squareData(S.ownSrc, 1200, null, $('photoPos').value / 100);
+    S.ownPhotoData = S.photoData = d; S.ownPhoto = S.photo = await loadImg(d); $('picOwnIm').innerHTML = '<img src="' + d + '" alt="">'; setVideo(); redraw(); autoSave(); if (mode() === 'anim' && !arrowed) setPlay(true); });
   $('place').addEventListener('input', () => { $('place').dataset.typed = '1'; redraw(); }); $('greetText').addEventListener('input', () => { $('greetText').dataset.typed = '1'; redraw(); });
 
   document.querySelectorAll('input[name=astyle]').forEach(r => r.onchange = () => { setVideo(); if (!arrowed) setPlay(true); });
@@ -432,7 +448,7 @@ let STOCK = [
   document.querySelectorAll('input[name=icon]').forEach(r => r.onchange = () => { if (r.value === 'own' && !S.iconOwn) { if (!arrowed) $('iconIn').click(); return; } S.icon = r.value === 'own' ? S.iconOwn : aaIcon; redraw(); });
   $('iconIn').onchange = async () => { const f = $('iconIn').files[0]; if (!f) return;
     try { const im = await loadImg(URL.createObjectURL(f)), d = fitData(im, 500); S.iconData = d; S.iconOwn = await loadImg(d); S.icon = S.iconOwn; $('iconOwnR').checked = true;
-      $('iconOwnIm').innerHTML = '<img src="' + d + '" alt="">'; $('iconFn').textContent = f.name; redraw(); } catch (e) { $('iconFn').textContent = 'That picture didn’t open. Try a JPEG or PNG.'; } };
+      $('iconOwnIm').innerHTML = '<img src="' + d + '" alt="">'; $('iconFn').textContent = f.name; redraw(); autoSave(); } catch (e) { $('iconFn').textContent = 'That picture didn’t open. Try a JPEG or PNG.'; } };
 
   /* step 5: mailed by us, or printed at home (then anything can be left blank, to write by hand) */
   document.querySelectorAll('input[name=accent]').forEach(r => r.onchange = redraw);
@@ -489,11 +505,13 @@ let STOCK = [
   const idb = () => new Promise((ok, no) => { const r = indexedDB.open('art-alive-postcard', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); });
   async function stash(v) { const d = await idb(); return new Promise((ok, no) => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, 'draft'); t.oncomplete = ok; t.onerror = () => no(t.error); }); }
   async function unstash() { const d = await idb(); return new Promise(ok => { const t = d.transaction('kv', 'readwrite'), st = t.objectStore('kv'), g = st.get('draft'); g.onsuccess = () => { const v = g.result; if (v) st.delete('draft'); t.oncomplete = () => ok(v || null); }; g.onerror = () => ok(null); }); }
+  const kv = async (mode, fn) => { const d = await idb(); return new Promise((ok, no) => { const t = d.transaction('kv', mode), r = fn(t.objectStore('kv')); t.oncomplete = () => ok(r && r.result); t.onerror = t.onabort = () => no(t.error); }); };
   const FIELDS = ['place', 'greetText', 'msg', 'from', 'aName', 'aLine1', 'aLine2', 'aCity', 'aState', 'aZip'];
-  function snapshot() { const o = { at: Date.now(), stock: S.stock, photoData: S.stock ? null : S.photoData, iconData: S.icon === aaIcon ? null : S.iconData, video: S.video, video2: S.video2, send: send(), toFront: $('toFront').checked, notify: $('notify').checked, allowReply: $('allowReply').checked, astyle: astyle(), accent: accent(), f: {} };
+  function snapshot() { const o = { at: Date.now(), stock: S.stock, photoData: S.stock ? null : S.photoData, iconData: S.icon === aaIcon ? null : S.iconData, video: S.video, video2: S.video2, send: send(), toFront: $('toFront').checked, notify: $('notify').checked, allowReply: $('allowReply').checked, astyle: astyle(), accent: accent(), typed: { place: !!$('place').dataset.typed, greetText: !!$('greetText').dataset.typed }, f: {} };
     FIELDS.forEach(id => o.f[id] = $(id).value); return o; }
   async function restore(o) {
-    FIELDS.forEach(id => { if (o.f[id] != null) $(id).value = o.f[id]; }); if (o.f.place) $('place').dataset.typed = '1'; if (o.f.greetText != null) $('greetText').dataset.typed = '1';
+    FIELDS.forEach(id => { if (o.f[id] != null) $(id).value = o.f[id]; });
+    ['place', 'greetText'].forEach(id => { const t = o.typed ? o.typed[id] : id === 'place' ? !!o.f.place : o.f.greetText != null; if (t) $(id).dataset.typed = '1'; else delete $(id).dataset.typed; });
     const r = document.querySelector('input[name=accent][value="' + o.accent + '"]'); if (r) r.checked = true;
     const ra = document.querySelector('input[name=astyle][value="' + o.astyle + '"]'); if (ra) ra.checked = true;
     if (o.photoData) { S.ownPhotoData = S.photoData = o.photoData; S.ownPhoto = S.photo = await loadImg(o.photoData); S.stock = null; $('picOwnR').checked = true; $('picOwnIm').innerHTML = '<img src="' + o.photoData + '" alt="">'; }
@@ -503,8 +521,24 @@ let STOCK = [
     const rs = document.querySelector('input[name=send][value="' + (o.send || 'mail') + '"]'); if (rs) rs.checked = true; $('toFront').checked = o.toFront !== false; $('notify').checked = o.notify !== false; $('allowReply').checked = o.allowReply !== false; setSend();
     $('msgCount').textContent = (300 - $('msg').value.length) + ' characters left'; setVideo(); redraw(); }
 
+  /* The card is kept on this phone or computer while it is being made, so a refresh, a closed tab or a trip to the
+     camera app never loses it. The words and choices are saved a moment after each change; a video is saved once, when it is chosen. */
+  let dirty = false, autoT = 0;
+  const autoNow = () => { clearTimeout(autoT); if (!dirty) return; const o = snapshot(); o.video = o.video2 = null; kv('readwrite', st => st.put(o, 'auto')).catch(() => {}); };
+  const autoSave = () => { if (!dirty) return; clearTimeout(autoT); autoT = setTimeout(autoNow, 700); };
+  const autoVideo = n => { if (!dirty) return; const f = S['video' + n]; kv('readwrite', st => f ? st.put(f, 'autoV' + n) : st.delete('autoV' + n)).catch(() => {}); };
+  const autoClear = () => { dirty = false; clearTimeout(autoT); return kv('readwrite', st => { st.delete('auto'); st.delete('autoV'); st.delete('autoV2'); }).catch(() => {}); };
+  ['input', 'change'].forEach(ev => $('mk').addEventListener(ev, () => { dirty = true; autoSave(); }));
+  document.addEventListener('visibilitychange', () => { if (document.hidden) autoNow(); }); addEventListener('pagehide', autoNow);
+
+  // what's missing is also written right under the box it belongs to (the page jumps there), until they start typing
+  function need(el, text) {
+    document.querySelectorAll('.mk-need').forEach(n => n.remove());
+    const p = document.createElement('span'); p.className = 'mk-need'; p.textContent = text; el.insertAdjacentElement('afterend', p); el.setAttribute('aria-invalid', 'true');
+    const clear = () => { p.remove(); el.removeAttribute('aria-invalid'); el.removeEventListener('input', clear); }; el.addEventListener('input', clear);
+  }
   $('orderBtn').onclick = async () => {
-    const m = missing(); if (m) { say(m[1], 'bad'); const el = $(m[0]); el.focus(); el.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+    const m = missing(); if (m) { say(m[1], 'bad'); const el = $(m[0]); need(el, m[1].replace(/ in step 5\.$/, '.')); el.focus(); el.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
     if (!A || !A.configured) { say('Ordering isn’t switched on yet. You can still download your print files.', 'bad'); return; }
     const btn = $('orderBtn'); btn.disabled = true;
     try {
@@ -535,7 +569,7 @@ let STOCK = [
       if (error) throw error;
       redraw();
       const link = (C.stripeLinks || {}).postcard;
-      if (link) { say('Taking you to payment…', 'ok'); const url = new URL(link); url.searchParams.set('client_reference_id', row.id); if (u.email) url.searchParams.set('prefilled_email', u.email); setTimeout(() => { location.href = url.toString(); }, 600); return; }
+      if (link) { autoClear(); say('Taking you to payment…', 'ok'); const url = new URL(link); url.searchParams.set('client_reference_id', row.id); if (u.email) url.searchParams.set('prefilled_email', u.email); setTimeout(() => { location.href = url.toString(); }, 600); return; }
       done(code, false);
     } catch (e) {
       const t = (e && (e.message || e.details)) || '';
@@ -546,6 +580,7 @@ let STOCK = [
     } finally { btn.disabled = false; }
   };
   function done(code, paid) {
+    autoClear(); $('mkBack').hidden = true;
     const box = $('done'), url = S.qr; box.hidden = false;
     const self = paid === 'self';
     box.innerHTML = '<h3>' + (self ? 'Your print files are ready' : paid ? 'Paid. Thank you!' : 'Your postcard is saved') + '</h3><p>' + (self ? 'The front and back downloaded: 6 × 4 in with 1/8 in bleed, at 300 dpi. Print them back to back on thick card (or take them to any print shop), trim to 6 × 4 in, write on it and send it. Its QR code is live.' : paid ? 'We’ll print it and mail it in the next few days.' : 'We’ve got your order and we’ll email you when it’s printed and mailed.') + '</p>' +
@@ -555,7 +590,23 @@ let STOCK = [
 
   const qs = new URLSearchParams(location.search);
   if (qs.has('paid')) { const b = $('done'); b.hidden = false; b.innerHTML = '<h3>Paid. Thank you!</h3><p>Your Magic Postcard is on its way to the printer. We’ll email you when it’s mailed.</p><p><a href="../projects.html">See it in My projects</a></p>'; }
-  if (qs.has('resume')) { const o = await unstash().catch(() => null); if (o && Date.now() - o.at < 864e5) { await restore(o); say('Welcome! Your postcard is back. Press Order my postcard to finish.', 'ok'); $('make').scrollIntoView(); } }
+  let back = false;
+  if (qs.has('resume')) { history.replaceState(null, '', location.pathname + '#make');   // (so a refresh later is a plain visit)
+    const o = await unstash().catch(() => null); if (o && Date.now() - o.at < 864e5) { back = true; await restore(o); dirty = true; say('Welcome! Your postcard is back. Press Order my postcard to finish.', 'ok'); $('make').scrollIntoView(); } }
+  if (!back && !qs.has('paid')) {   // a card left unfinished here in the last week: it is just as they left it (unless they'd rather start over)
+    const o = await kv('readonly', st => st.get('auto')).catch(() => null);
+    if (o && o.f && Date.now() - o.at < 7 * 864e5) {
+      o.video = await kv('readonly', st => st.get('autoV')).catch(() => null); o.video2 = await kv('readonly', st => st.get('autoV2')).catch(() => null);
+      try { await restore(o); if (want && first.id === want) { const r = document.querySelector('input[name=pic][value="' + first.id + '"]'); if (r) r.checked = true; await useStock(first.id); }   // came for one card: their words, on that card
+        dirty = true; const b = $('mkBack'); b.hidden = false; $('mkOver').onclick = async () => { await autoClear(); $('mk').reset(); if (location.search) location.replace(location.pathname + '#make'); else { location.hash = '#make'; location.reload(); } }; }
+      catch (e) { autoClear(); }
+    }
+    else if (qs.has('resume') && A && A.maybeSignedIn && A.maybeSignedIn()) {   // back from signing in, but the card isn't here: it is in another tab, or the email link opened in a different browser
+      const b = $('mkBack'); b.hidden = false; b.style.borderColor = '#ffb4a8'; b.style.background = '#2a1714'; $('mkOver').hidden = true;
+      b.firstElementChild.innerHTML = '<b>You’re signed in. The postcard you were making isn’t in this tab, though.</b> Look for it in your other tab, or in the browser you made it in (the email link may have opened a different one). Or make it again here.';
+      $('make').scrollIntoView();
+    }
+  }
   if (C.postcardPrice) { $('priceV').textContent = C.postcardPrice; $('price').hidden = send() === 'self'; }
 })();
 </script>

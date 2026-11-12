@@ -36,10 +36,12 @@ Then in GitHub Desktop: write a short summary, click **Commit to main**, then **
 | `about.html`, `contact.html`, `privacy.html` | About, contact form, privacy notice |
 | `login.html`, `projects.html`, `plans.html` | Create account or log in, My projects, Plans and pricing |
 | `presskit.html` | Logos, videos, printables and ready-to-post captions |
+| `create.html` | "Create your own": the four things to make (a living picture, a game, a Magic Postcard, a snow globe), each with one button |
 | `demo/` | The camera demo ("See it now") |
 | `studio/` | The Living Painting Studio ("Create your own") |
 | `magicpostcard/` | Magic Postcards: make a postcard that comes alive, printed and mailed |
 | `games/` | The Game Maker: turn a painting into a game with your voice |
+| `make/` | Make your own game: nine ready games, made from a picture in about a minute |
 | `gallery.html`, `play/` | The Gallery page and its playable example games |
 | `how-to.html`, `howto/` | How to make one, with step-by-step pictures |
 | `voice/` | Your Chatterbox voice files and the script that makes them |
@@ -138,6 +140,24 @@ Customers log in with an email link (no password) and save their animations and 
 - One-time setup: in Supabase, open **SQL Editor → New query**, paste everything from `setup/supabase-setup.sql`, and press **Run**.
 - To make accounts invite-only, set `openSignup: false` in `site-config.js` and invite people in Supabase under **Authentication → Users → Invite**.
 - Pages: `login.html` (log in), `projects.html` (My projects). The Studio and Game Maker each have a **Save to my account** button.
+
+### Unfinished work stays on the customer's device
+
+Nobody loses their work to a closed tab, a refresh or a trip to the camera app. Nothing leaves their phone or computer until they save or order.
+
+- **Creator Studio:** saves itself in the browser as they work, and offers the draft back next time.
+- **Game Maker:** once their own picture is in, the unsaved game is kept on the device. Next visit it asks **Bring it back** or **Start fresh**. Saving to the account clears it. It is kept for 7 days at most.
+- **Magic Postcard maker:** the card in progress (words, choices, photo, videos and the address) is kept on the device and comes back when they return, with a **Start over** button. Ordering clears it. It is kept for 7 days at most.
+
+### Sign-in codes (optional, worth doing for phones)
+
+On a phone, the link in the sign-in email sometimes opens in a different browser from the one the customer was making in (the Gmail app does this). They are then signed in over there, and their unsaved work is not. A code avoids it: they type the code on the page they are already on, and go straight back to their work.
+
+1. In Supabase, open **Authentication**, then **Emails** (in older dashboards: **Email Templates**). Open **Magic Link**, add a line such as `Or type this code on the page: {{ .Token }}` and save. Do the same in **Confirm signup**.
+2. In `site-config.js`, add this line under `openSignup`: `emailCode: true,`
+3. Commit and push, then try it once with your own email: the "Check your email" screen now also has a box for the code.
+
+Until you do both steps nothing changes: people sign in with the link, as before. The code works for one hour.
 
 ## Publishing (links and QR codes)
 
