@@ -53,8 +53,23 @@
   @media (max-width: 760px) { .page { grid-template-columns: minmax(0, 1fr); } }
   header { grid-column: 1 / -1; }
   h1 { font: 400 clamp(28px, 6vw, 40px)/1.05 var(--display); margin: 0 0 6px; letter-spacing: .02em; text-wrap: balance; }
-  header p { margin: 0; color: var(--muted); max-width: 60ch; }
-  .globe { position: relative; width: min(100%, 460px); justify-self: center; aspect-ratio: 1 / 1.18; touch-action: none; cursor: grab; transform-origin: 50% 88%; }
+  /* the globe's column: (when someone opens a shared globe) "Make one with your pet", then the globe, then the words about it */
+  .stage { display: grid; gap: 14px; justify-items: center; min-width: 0; }
+  .stage > * { width: min(100%, 460px); box-sizing: border-box; }
+  #lede { margin: 0; color: var(--muted); }
+  .btn.makeone { display: none; }
+  body.viewing .btn.makeone { display: block; }
+  /* Making one goes a step at a time (data-step on the body): "photo" = choose a photo, "face" = mark the eyes and nose,
+     "globe" = the globe appears, with the name, the shake and the link to share. Until then the globe is kept off the page,
+     so nothing is in the way of scrolling; it stays its real size, so it is ready the moment it is shown. */
+  body:not(.viewing):not([data-step="globe"]) .page { grid-template-columns: minmax(0, 1fr); max-width: 560px; }
+  body:not(.viewing):not([data-step="globe"]) .stage { position: relative; overflow: hidden; justify-items: start; }
+  body:not(.viewing):not([data-step="globe"]) .globe { position: absolute; left: 0; top: 0; visibility: hidden; pointer-events: none; }
+  body:not(.viewing):not([data-step="globe"]) #lede { width: auto; max-width: 60ch; }
+  body:not(.viewing):not([data-step="globe"]) .late { display: none !important; }
+  body[data-step="globe"] .early { display: none !important; }
+  h1:focus { outline: none; }
+  .globe { position: relative; width: min(100%, 460px); justify-self: center; aspect-ratio: 1 / 1.18; touch-action: pan-y; cursor: grab; transform-origin: 50% 88%; }
   canvas { display: block; width: 100%; height: 100%; }
   .steps { display: grid; gap: 14px; min-width: 0; }
   .step { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 10px; }
@@ -70,6 +85,7 @@
     border: 0; border-radius: 999px; padding: 12px 22px; cursor: pointer; text-align: center; display: inline-block;
   }
   .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  a.btn { text-decoration: none; }
   .btn:focus-visible, .pick:focus-within { outline: 3px solid var(--ink); outline-offset: 3px; }
   .btn:disabled { opacity: .5; cursor: default; }
   .pick { position: relative; overflow: hidden; }
@@ -103,28 +119,31 @@
 </style>
 
 </head>
-<body>
+<body data-step="photo">
+<script>/* someone opening a shared globe sees the globe at once, not the making steps */ if (/[?&]g=[a-z0-9]{8}(&|$)/i.test(location.search)) { document.body.classList.add('viewing'); document.body.dataset.step = 'globe'; }</script>
 <div class="page">
   <header>
     <a class="brand" href="../">Art Alive</a>
-    <h1 id="title">Pet Snow Globe</h1>
-    <p id="lede">Add a photo of your pet. It's cut out right here on your phone or computer (the photo never leaves it) and set inside a snow globe with their name on the plaque. Then get a link to share. No account needed.</p>
+    <h1 id="title" tabindex="-1">Pet Snow Globe</h1>
   </header>
 
-  <div class="globe" id="globe" role="img" aria-label="A snowglobe. Your pet's photo appears inside it, sitting in the snow.">
-    <canvas id="c"></canvas>
+  <div class="stage">
+    <a class="btn ghost makeone" href="./">Make one with your pet</a>
+    <div class="globe" id="globe" role="img" aria-label="A snowglobe. Your pet's photo appears inside it, sitting in the snow.">
+      <canvas id="c"></canvas>
+    </div>
+    <p id="lede">Add a photo of your pet. It's cut out right here on your phone or computer (the photo never leaves it) and set inside a snow globe with their name on the plaque. Then get a link to share. No account needed.</p>
   </div>
 
   <div class="steps">
     <section class="step viewer" aria-labelledby="sV">
       <h2 id="sV">Shake it</h2>
-      <div class="row"><button class="btn" id="shakeV" type="button">Shake the snow globe</button></div>
+      <button class="btn big" id="shakeV" type="button">Shake the snow globe</button>
       <p class="small" id="viewSay">Shake your phone, tap the globe, or drag it back and forth.</p>
       <div class="acct" id="acctV" hidden></div>
-      <div class="row"><a class="btn ghost" href="./">Make one with your pet</a></div>
       <button class="textlink" id="report" type="button">Report this snow globe</button>
     </section>
-    <section class="step maker" aria-labelledby="s1">
+    <section class="step maker early" aria-labelledby="s1">
       <h2 id="s1">Step 1: Your pet's photo</h2>
       <div class="row">
         <span class="btn pick" id="pickBtn">Choose a photo<input id="file" type="file" accept="image/*" aria-label="Choose a photo of your pet"></span>
@@ -134,10 +153,11 @@
       <p class="status" id="status" role="status">Works best with one pet, the whole body in view, on a plain-ish background.</p>
     </section>
 
-    <section class="step maker" aria-labelledby="sF" id="face" hidden>
+    <section class="step maker early" aria-labelledby="sF" id="face" hidden>
       <h2 id="sF">Step 2: Tap the eyes and nose</h2>
       <p class="tapsay" id="faceSay" role="status">Tap your pet’s eye on the left</p>
       <canvas id="pick" aria-label="Your pet's cutout. Tap the left eye, the right eye, then the nose."></canvas>
+      <button class="btn big" id="seeGlobe" type="button" disabled>See my snow globe</button>
       <div class="row">
         <button class="btn ghost" id="redo" type="button">Redo taps</button>
         <button class="btn ghost" id="wrong" type="button">Not the face?</button>
@@ -146,7 +166,7 @@
       <p class="small">We zoom in on the head for you. This lets your pet blink, watch the snow, twitch their ears and sneeze at a snowflake.</p>
     </section>
 
-    <section class="step maker" aria-labelledby="s2">
+    <section class="step maker late" aria-labelledby="s2">
       <h2 id="s2">Step 3: Name and message</h2>
       <label for="name">Name on the plaque</label>
       <input id="name" type="text" maxlength="22" placeholder="Biscuit" autocomplete="off">
@@ -154,15 +174,13 @@
       <input id="msg" type="text" maxlength="34" value="Always in our hearts" autocomplete="off">
     </section>
 
-    <section class="step maker" aria-labelledby="s3">
+    <section class="step maker late" aria-labelledby="s3">
       <h2 id="s3">Step 4: Shake it</h2>
-      <div class="row">
-        <button class="btn" id="shake" type="button">Shake the snow globe</button>
-      </div>
+      <button class="btn big" id="shake" type="button">Shake the snow globe</button>
       <p class="small">Or tap the globe, or drag it back and forth. Your pet watches the snow and may catch a snowflake on the nose. When it settles, the words appear and your pet dozes off.</p>
     </section>
 
-    <section class="step share maker" aria-labelledby="s5">
+    <section class="step share maker late" aria-labelledby="s5">
       <h2 id="s5">Step 5: Share it</h2>
       <button class="btn big" id="makeLink" type="button" disabled>Get a link to share</button>
       <div id="linkBox" hidden>
@@ -174,6 +192,7 @@
       <p class="status" id="shareSay" role="status">Add a photo first. Anyone can open the link, no app or account needed.</p>
       <div class="acct" id="acct" hidden></div>
     </section>
+    <p class="small maker late"><button class="textlink" id="back" type="button">Change the photo, or the eyes and nose</button></p>
   </div>
 </div>
 
@@ -268,7 +287,7 @@ async function handleFile(file) {
     bar.hidden = true;
     say(`Cut out in ${((performance.now() - t0) / 1000).toFixed(1)} s. Now tap the eyes and nose below.`);
     startFacePick();
-    shake(1); setTimeout(() => shake(-1), 200);
+    setStep('face'); faceBox.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   } catch (e) {
     bar.hidden = true;
     say(e.message === 'nopet' ? 'Couldn’t find a pet in that photo. Try one where your pet is bigger in the frame.' : 'Something went wrong with that photo. Try another one.', true);
@@ -326,7 +345,8 @@ function boxAt(x, y, side) {
   return { x: x - side / 2, y: Math.max(-side * 0.1, y - side / 2), w: side, h: side };
 }
 const whole = () => ({ x: 0, y: 0, w: pet.width, h: pet.height });
-function startFacePick() { taps = []; face = null; choosing = false; faceBox.hidden = false; view = guessHead(); faceSay.textContent = TAP_SAY[0]; drawPick(); }
+const ALL_SET = 'All set! Drag a dot to adjust it, then press “See my snow globe”.', seeBtn = document.getElementById('seeGlobe');
+function startFacePick() { taps = []; face = null; choosing = false; faceBox.hidden = false; seeBtn.disabled = true; view = guessHead(); faceSay.textContent = TAP_SAY[0]; drawPick(); }
 function pickFit() { const v = view || whole(), w = pick.clientWidth || 300, s = Math.min(w / v.w, 420 / v.h); return { s, w: v.w * s, h: v.h * s, ox: (w - v.w * s) / 2, v }; }
 const toScreen = (f, t) => [f.ox + (t[0] - f.v.x) * f.s, (t[1] - f.v.y) * f.s];
 function drawPick() {
@@ -346,21 +366,34 @@ function pickPoint(e) { const r = pick.getBoundingClientRect(), f = pickFit(); r
 pick.addEventListener('pointerdown', e => {
   if (!pet) return;
   const p = pickPoint(e);
-  if (choosing) { choosing = false; view = boxAt(p.x, p.y, Math.min(pet.width, pet.height) * 0.6); faceSay.textContent = TAP_SAY[taps.length] || 'All set! Drag a dot to adjust it.'; drawPick(); return; }
+  if (choosing) { choosing = false; view = boxAt(p.x, p.y, Math.min(pet.width, pet.height) * 0.6); faceSay.textContent = TAP_SAY[taps.length] || ALL_SET; drawPick(); return; }
   // grab a dot that's already placed, to move it
   dragI = taps.findIndex(t => { const [x, y] = toScreen(p.f, t); return Math.hypot(x - p.sx, y - p.sy) < 22; });
   if (dragI >= 0) { pick.setPointerCapture(e.pointerId); return; }
   if (taps.length >= 3) return;
   taps.push([p.x, p.y]); drawPick();
   if (taps.length < 3) faceSay.textContent = TAP_SAY[taps.length];
-  else { face = makeFace(taps); faceSay.textContent = 'All set! Drag a dot to adjust it.'; shake(1); setTimeout(() => shake(-1), 200); }
+  else { face = makeFace(taps); faceSay.textContent = ALL_SET; seeBtn.disabled = false; }
 });
 pick.addEventListener('pointermove', e => { if (dragI < 0) return; const p = pickPoint(e); taps[dragI] = [p.x, p.y]; drawPick(); });
 pick.addEventListener('pointerup', () => { if (dragI >= 0 && taps.length === 3) face = makeFace(taps); dragI = -1; });
-document.getElementById('redo').addEventListener('click', () => { if (pet) { taps = []; face = null; faceSay.textContent = TAP_SAY[0]; drawPick(); } });
+document.getElementById('redo').addEventListener('click', () => { if (pet) { taps = []; face = null; seeBtn.disabled = true; faceSay.textContent = TAP_SAY[0]; drawPick(); } });
 document.getElementById('wrong').addEventListener('click', () => { if (!pet) return; choosing = true; view = whole(); faceSay.textContent = 'Tap your pet’s face'; drawPick(); });
-document.getElementById('skip').addEventListener('click', () => { face = null; taps = []; if (pet) drawPick(); faceSay.textContent = 'Skipped. Your pet will still glow, breathe and nap. Tap the eyes any time to try again.'; });
-window.__tap = (x, y) => { taps.push([x, y]); if (taps.length === 3) { face = makeFace(taps); } };   // for testing
+// "Skip this step" goes straight on to the globe (the pet still glows, breathes and naps; the dots can be added later)
+document.getElementById('skip').addEventListener('click', () => { if (!pet) return; face = null; taps = []; seeBtn.disabled = true; faceSay.textContent = TAP_SAY[0]; drawPick(); setStep('globe'); });
+seeBtn.addEventListener('click', () => { if (pet) setStep('globe'); });
+document.getElementById('back').addEventListener('click', () => { if (pet) setStep('face'); });
+window.__tap = (x, y) => { taps.push([x, y]); if (taps.length === 3) { face = makeFace(taps); seeBtn.disabled = false; } };   // for testing
+
+// ---------------------------------------------------------------- making one, a step at a time
+// "photo": choose a photo. "face": mark the eyes and nose. "globe": the globe appears, with the name, the shake and the link to share.
+const ledeEl = document.getElementById('lede'), LEDE_START = ledeEl.textContent, LEDE_GLOBE = 'Here’s your snow globe. Give it a shake, add a name, then get a link to share.';
+function setStep(step) {
+  const was = document.body.dataset.step; document.body.dataset.step = step;
+  ledeEl.textContent = step === 'globe' ? LEDE_GLOBE : LEDE_START;
+  if (step === 'globe') { size(); shake(1); setTimeout(() => shake(-1), 200); }   // it arrives with its snow flying
+  if (step === 'globe' || was === 'globe') { scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); try { document.getElementById('title').focus({ preventScroll: true }); } catch (e) {} }
+}
 
 function makeFace([a, b, n]) {
   const [e1, e2] = a[0] <= b[0] ? [a, b] : [b, a];
@@ -770,7 +803,7 @@ async function claimNow(code, el) {
 // opening a shared globe: artalivestudio.com/petglobe/?g=abcd2345
 const params = new URLSearchParams(location.search), viewCode = (params.get('g') || '').toLowerCase();
 async function openShared(code) {
-  document.body.classList.add('viewing');
+  document.body.classList.add('viewing'); document.body.dataset.step = 'globe';
   const title = $('title'), lede = $('lede');
   title.textContent = 'A snow globe for you'; lede.textContent = 'Someone made this for you. Give it a shake.';
   try {
