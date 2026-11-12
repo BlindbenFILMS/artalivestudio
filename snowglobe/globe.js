@@ -4,13 +4,17 @@
      picture,            // a square image or canvas: the still inside the glass
      video, start, crop, // optional: a video (url) that plays once after a shake, from `start` seconds; crop = {x, y, w, h} as fractions of the video
      logo,               // optional: an image with a see-through background; drawn in gold on the base
-     name,               // shown on the base when there's no logo
+     name,               // shown on the base when there's no logo. A list (['JOY', 'NEXT WORD']) takes turns on the base, each arriving with a glow
      base,               // 'red' | 'green' | 'blue' | 'black'
+     model,              // optional: a 3D figure that stands in the snow (made by globe3d.js). The snow falls behind it and in front of it,
+                         //   it turns when you drag, hops when you tap it, and reacts to a shake. Without it the globe is exactly as before.
+     onPlate(),          // optional: called when the base is tapped
      top, bottom,        // space to leave above and below the globe, in px
      onHint(text, big),  // "Let it settle…", "Shake again!" (big = pulse it)
      say(text)           // for screen readers
    });
    g.start()  (call from a tap: turns on sound, motion and the video's sound)   g.shake()   g.set({...})   g.sound(on)   g.destroy()
+   g.magic('JOY')  (the word arrives in gold across the front of the glass, pulses, then settles onto the base)
    ───────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
@@ -36,12 +40,14 @@
     let W = 0, H = 0, DPR = 1, cx = 0, cy = 0, R = 100, gold = null, shine = document.createElement('canvas'), dead = false;
 
     /* the picture, the video, the logo */
-    const wave = document.createElement('video'); let waveOn = false, waveA = 0, unlocked = false;
+    const wave = document.createElement('video'); let waveOn = false, waveA = 0, unlocked = false, nameAt = 0, magic = null;
     Object.assign(wave, { muted: true, loop: false, playsInline: true, preload: 'auto' }); wave.setAttribute('playsinline', '');
     function set(n) {
       Object.assign(o, n || {});
       if (n && 'video' in n) { waveOn = false; waveA = 0; if (o.video) { wave.src = o.video; wave.load(); } else wave.removeAttribute('src'); }
       if (n && 'logo' in n) gold = o.logo ? goldOf(o.logo) : null;
+      if (n && 'model' in n) ground();
+      if (n && 'name' in n) nameAt = performance.now() / 1000;
       if (n && ('top' in n || 'bottom' in n)) size();
     }
     if (o.video) { wave.src = o.video; }
@@ -64,9 +70,17 @@
     const N = calm ? 450 : 1000, NB = 56, WALL = .955, BW = 2 / NB, REPOSE = BW * .38, pile = new Float32Array(NB), F = [];
     for (let i = 0; i < N; i++) { const s = .006 + Math.pow(Math.random(), 2.2) * .02, a = Math.random() * 6.283, r = Math.sqrt(Math.random()) * .88;
       F.push({ u: Math.cos(a) * r, v: Math.sin(a) * r, vu: 0, vv: .05, s, z: Math.random(), ph: Math.random() * 6.283, down: false, b: 0, add: s * .5, wu: 0, wv: 0, fm: .75 + Math.random() * .5 }); }
-    let shineAt = 0, E = 0, stormT = 0, stormy = true, shook = false, hintStorm = false, gx = 0, gy = 1, tgx = 0, tgy = 1;
+    let shineAt = 0, E = 0, stormT = 0, stormy = true, shook = false, hintStorm = false, gx = 0, gy = 1, tgx = 0, tgy = 1, calmed = true, resting = false;
     const floorAt = u => Math.sqrt(Math.max(0, WALL * WALL - u * u));
-    const binOf = u => Math.max(0, Math.min(NB - 1, Math.floor((u + 1) / 2 * NB))), uOf = b => (b + .5) * BW - 1, surf = b => floorAt(uOf(b)) - pile[b];
+    // With a 3D figure inside, the bottom of the glass holds a fixed mound of snow for it to stand on (as a real snow globe
+    // does), and the loose snow settles on top of that in a thinner layer, so the figure isn't buried. No figure: none of this.
+    const GV = .69, base = new Float32Array(NB), groundV = u => GV + .16 * u * u, baseU = u => (o.model ? Math.max(0, floorAt(u) - groundV(u)) : 0);
+    const binOf = u => Math.max(0, Math.min(NB - 1, Math.floor((u + 1) / 2 * NB))), uOf = b => (b + .5) * BW - 1, surf = b => floorAt(uOf(b)) - base[b] - pile[b];
+    function ground() {
+      for (let b = 0; b < NB; b++) { base[b] = baseU(uOf(b)); pile[b] = 0; }
+      for (const f of F) { f.add = f.s * .5 * (o.model ? .4 : 1); if (f.down) { f.down = false; f.vv = .05; } }
+    }
+    if (o.model) ground();
     function land(f) {   // rolls toward the middle until the slope is gentle, like real snow
       let b = binOf(f.u);
       for (let k = 0; k < NB; k++) { const y = surf(b), l = b > 0 ? surf(b - 1) : -9, r = b < NB - 1 ? surf(b + 1) : -9; if (Math.max(l, r) - y > REPOSE) b = l > r ? b - 1 : b + 1; else break; }
@@ -79,11 +93,14 @@
         if (f.down) { if (Math.random() < lift) { f.down = false; pile[f.b] = Math.max(0, pile[f.b] - f.add); f.vu = (Math.random() - .5) * 1.8 * Math.min(2, E) + pu; f.vv = -(.15 + Math.random() * 1.4) * Math.min(2, E) + pv; } }
         else { f.vu += pu * (.5 + Math.random() * .5); f.vv += pv * (.5 + Math.random() * .5); }
       }
-      if (E > .9) { startWave(); shook = true; stormy = true; stormT = 0;
+      if (E > .9) { startWave(); shook = true; stormy = true; stormT = 0; calmed = false;
+        if (o.model && o.model.shake) try { o.model.shake(E); } catch (e) {}
+        if (o.onStorm) try { o.onStorm(); } catch (e) {}
         if (!hintStorm) { hintStorm = true; o.onHint('Let it settle…', false); try { navigator.vibrate && navigator.vibrate(25); } catch (e) {} } }
     }
     function step(dt, t) {
       E *= Math.exp(-dt * (calm ? 1.3 : .75)); if (stormy) stormT += dt;
+      if (stormy && !calmed && E < .35 && stormT > 2.4) { calmed = true; if (o.onCalm) try { o.onCalm(); } catch (e) {} }   // the snow is starting to settle
       gx += (tgx - gx) * Math.min(1, dt * 4); gy += (tgy - gy) * Math.min(1, dt * 4);
       const k = 1 - Math.exp(-dt * 2.4), A = .26 * E;
       for (const f of F) {
@@ -131,12 +148,43 @@
           x.drawImage(shine, lx, ly, w, h); }
         return y0;
       }
+      if (Array.isArray(o.name)) { labels(t, y0); return y0; }
       const label = String(o.name || '').trim().toUpperCase(); if (!label) return y0;
       const pw = R * 1.15, ph = R * .24, py = y0 + R * .4;
       x.fillStyle = 'rgba(10,6,10,.3)'; rr(cx - pw / 2, py - ph / 2, pw, ph, ph * .25); x.fill(); x.strokeStyle = 'rgba(226,180,90,.85)'; x.lineWidth = Math.max(1, R * .008); x.stroke();
       let fs = ph * .5; x.font = `900 ${fs}px Archivo, "Arial Black", Arial, sans-serif`; const w = x.measureText(label).width; if (w > pw * .88) { fs *= pw * .88 / w; x.font = `900 ${fs}px Archivo, "Arial Black", Arial, sans-serif`; }
       x.fillStyle = '#f1cf86'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(label, cx, py + fs * .05);
       return y0;
+    }
+    // Several names take turns on the base (a word, then "NEXT WORD", round and round), each arriving with a glow.
+    const MAGIC = 2.6, FONT = 'Archivo, "Arial Black", Arial, sans-serif';   // how long a word stays on the glass (seconds) before it settles on the base
+    function labels(t, y0) {
+      const list = o.name.map(s => String(s || '').trim().toUpperCase()).filter(Boolean); if (!list.length) return;
+      const pw = R * 1.3, ph = R * .3, py = y0 + R * .41, D0 = 3, D1 = 1.8, total = D0 + D1 * (list.length - 1);
+      let u = t - nameAt, k = 0, a = 1, glow = 0;
+      if (u < 0) { a = 0; glow = Math.max(0, 1 + u / .5); u = 0; }   // the big word is still on the glass: the base waits, warming up
+      else { u %= total; if (u >= D0) { k = 1 + Math.floor((u - D0) / D1); u = (u - D0) % D1; } const dur = k ? D1 : D0;
+        a = list.length > 1 ? Math.max(0, Math.min(1, u / .3, (dur - u) / .3)) : Math.min(1, (t - nameAt) / .3); glow = Math.max(0, 1 - u / 1.1) * (k ? .55 : 1); }
+      x.save(); x.shadowColor = `rgba(255,214,120,${.8 * glow})`; x.shadowBlur = R * .16 * glow;
+      x.fillStyle = 'rgba(10,6,10,.34)'; rr(cx - pw / 2, py - ph / 2, pw, ph, ph * .25); x.fill(); x.shadowColor = 'transparent';
+      x.strokeStyle = `rgba(${Math.round(226 + 29 * glow)},${Math.round(180 + 50 * glow)},${Math.round(90 + 90 * glow)},.9)`; x.lineWidth = Math.max(1, R * (.008 + .008 * glow)); x.stroke();
+      const label = list[k]; let fs = ph * .52; x.font = `900 ${fs}px ${FONT}`; const w = x.measureText(label).width; if (w > pw * .88) { fs *= pw * .88 / w; x.font = `900 ${fs}px ${FONT}`; }
+      x.globalAlpha = a; x.shadowColor = `rgba(255,224,150,${glow})`; x.shadowBlur = fs * .7 * glow; x.fillStyle = glow > .05 ? '#ffeab0' : '#f1cf86'; x.textAlign = 'center'; x.textBaseline = 'middle';
+      const sc = calm ? 1 : 1 + .12 * glow * Math.sin(Math.min(1, u / .5) * Math.PI); x.translate(cx, py + fs * .05); x.scale(sc, sc); x.fillText(label, 0, 0); x.restore();
+    }
+    // A word arrives on the front of the glass in gold, pulses, then settles down onto the base.
+    function drawMagic(t, y0) {
+      const u = t - magic.t0; if (u < 0) return; if (u > MAGIC + .55) { magic = null; return; }
+      const fly = Math.max(0, Math.min(1, (u - MAGIC) / .55)), e = fly * fly * (3 - 2 * fly), a = Math.min(1, u / .3) * (1 - e * e), y1 = cy - R * .06, y2 = y0 + R * .41;
+      let fs = R * .6; x.save(); x.font = `900 ${fs}px ${FONT}`; let w = x.measureText(magic.text).width; if (w > R * 1.72) { fs *= R * 1.72 / w; w = R * 1.72; }
+      const sc = (1 - e * .72) * (calm ? 1 : 1 + .09 * Math.sin(u * 6.6) * (1 - e)) * (.6 + .4 * Math.min(1, u / .3));
+      x.translate(cx, y1 + (y2 - y1) * e); x.scale(sc, sc); x.globalAlpha = a; x.font = `900 ${fs}px ${FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.lineJoin = 'round';
+      x.shadowColor = 'rgba(255,208,110,.95)'; x.shadowBlur = R * .22; x.lineWidth = fs * .09; x.strokeStyle = 'rgba(40,22,2,.6)'; x.strokeText(magic.text, 0, fs * .04);
+      const gg = x.createLinearGradient(0, -fs * .5, 0, fs * .5); gg.addColorStop(0, '#fff8de'); gg.addColorStop(.5, '#f7d680'); gg.addColorStop(1, '#d59f3c'); x.fillStyle = gg; x.fillText(magic.text, 0, fs * .04);
+      x.shadowColor = 'rgba(255,240,190,.9)'; x.shadowBlur = fs * .12; x.fillStyle = '#fff6d0';
+      if (!calm) for (let k = 0; k < 12; k++) { const an = k * .5236 + u * .5, tw = Math.max(0, Math.sin(u * 5 + k * 1.7)); if (tw <= 0) continue;   // twinkles round the word
+        x.globalAlpha = a * tw; x.beginPath(); x.arc(Math.cos(an) * (w / 2 + fs * .28), Math.sin(an) * fs * .78, fs * .028 * (1 + tw), 0, 6.283); x.fill(); }
+      x.restore();
     }
     function cover(src, sw, sh, crop) {   // fills the glass with a picture (or the cropped part of a video)
       const S = 2 * R * 1.04;
@@ -156,18 +204,30 @@
       waveA = Math.max(0, Math.min(1, waveA + (playing ? 1 : -1) * dtw / .9)); if (!playing && waveA === 0) waveOn = false;
       if (waveA > 0 && wave.readyState >= 2 && wave.videoWidth) { x.globalAlpha = waveA; cover(wave, wave.videoWidth, wave.videoHeight, o.crop); x.globalAlpha = 1; }
       let g = x.createRadialGradient(cx, cy, R * .55, cx, cy, R); g.addColorStop(0, 'rgba(10,20,45,0)'); g.addColorStop(1, 'rgba(10,20,45,.45)'); x.fillStyle = g; x.fillRect(cx - R, cy - R, 2 * R, 2 * R);
+      // a 3D figure: the snow falling behind it, then the figure, then the snow it stands in, then the snow falling in front of it
+      const fig = o.model && o.model.ready && o.model.canvas ? o.model : null;
+      const flakes = (z0, z1) => { for (const f of F) { if (f.z < z0 || f.z >= z1) continue; const sz = f.s * R * (1.4 + f.z * 1.6) * 2; x.globalAlpha = .5 + f.z * .5; x.drawImage(flake, cx + f.u * R - sz / 2, cy + f.v * R - sz / 2, sz, sz); } x.globalAlpha = 1; };
+      if (fig) { flakes(0, .68);   // (two flakes in three fall behind it, so it is never lost in the snow)
+        try { fig.frame(t, dtw, { px: 2 * R * DPR, gx, gy, E, feet: GV, calm }); x.drawImage(fig.canvas, cx - R, cy - R, 2 * R, 2 * R); } catch (e) {} }
       x.beginPath(); x.moveTo(cx - R, cy + R);
-      for (let b = 0; b <= NB; b++) { const u = b / NB * 2 - 1, i = Math.min(NB - 1, b), hh = (pile[Math.max(0, i - 1)] + pile[i] * 2 + pile[Math.min(NB - 1, i + 1)]) / 4, edge = Math.sqrt(Math.max(0, 1 - u * u));
+      for (let b = 0; b <= NB; b++) { const u = b / NB * 2 - 1, i = Math.min(NB - 1, b), hh = (pile[Math.max(0, i - 1)] + pile[i] * 2 + pile[Math.min(NB - 1, i + 1)]) / 4 + baseU(u), edge = Math.sqrt(Math.max(0, 1 - u * u));
         x.lineTo(cx + u * R, cy + (edge - Math.min(1, hh / .012) * (edge - floorAt(u)) - hh) * R); }
-      x.lineTo(cx + R, cy + R); x.closePath(); x.fillStyle = 'rgba(244,247,255,.93)'; x.fill();
-      for (const f of F) { const sz = f.s * R * (1.4 + f.z * 1.6) * 2; x.globalAlpha = .5 + f.z * .5; x.drawImage(flake, cx + f.u * R - sz / 2, cy + f.v * R - sz / 2, sz, sz); }
-      x.globalAlpha = 1; x.restore();
+      x.lineTo(cx + R, cy + R); x.closePath();
+      if (fig) {   // the mound has a little shape to it, and the figure's soft shadow lies on the snow at its feet
+        const sy = cy + surf(binOf(0)) * R, sg = x.createLinearGradient(0, sy - R * .05, 0, cy + R); sg.addColorStop(0, 'rgba(247,250,255,.97)'); sg.addColorStop(1, 'rgba(206,220,246,.97)'); x.fillStyle = sg; x.fill();
+        const rx = Math.max(.12, Math.min(.6, fig.reach || .3)) * R * 1.25, air = Math.max(0, Math.min(1, (fig.air || 0) * 4));
+        x.save(); x.clip(); x.translate(cx, sy + R * .012); x.scale(1, .24); const sh = x.createRadialGradient(0, 0, rx * .15, 0, 0, rx * (1 + air * .4));
+        sh.addColorStop(0, `rgba(36,58,112,${.34 * (1 - air * .6)})`); sh.addColorStop(1, 'rgba(36,58,112,0)'); x.fillStyle = sh; x.beginPath(); x.arc(0, 0, rx * (1 + air * .4), 0, 6.283); x.fill(); x.restore();
+        flakes(.68, 2);
+      } else { x.fillStyle = 'rgba(244,247,255,.93)'; x.fill(); flakes(0, 2); }
+      x.restore();
       g = x.createRadialGradient(cx - R * .35, cy - R * .45, R * .05, cx, cy, R * 1.02); g.addColorStop(0, 'rgba(255,255,255,.22)'); g.addColorStop(.35, 'rgba(255,255,255,.04)'); g.addColorStop(.85, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(200,225,255,.28)');
       x.fillStyle = g; x.beginPath(); x.arc(cx, cy, R, 0, 6.283); x.fill(); x.lineWidth = Math.max(1.5, R * .022); x.strokeStyle = 'rgba(220,235,255,.55)'; x.stroke();
       x.save(); x.lineCap = 'round'; x.lineWidth = R * .045; x.strokeStyle = 'rgba(255,255,255,.35)'; x.beginPath(); x.arc(cx, cy, R * .86, Math.PI * 1.08, Math.PI * 1.36); x.stroke();
       x.lineWidth = R * .02; x.strokeStyle = 'rgba(255,255,255,.25)'; x.beginPath(); x.arc(cx, cy, R * .86, Math.PI * 1.42, Math.PI * 1.48); x.stroke(); x.restore();
       g = x.createLinearGradient(cx - R * .8, 0, cx + R * .8, 0); g.addColorStop(0, '#8a6324'); g.addColorStop(.4, '#f0cc7a'); g.addColorStop(1, '#6e4c18');
       x.fillStyle = g; x.beginPath(); x.ellipse(cx, y0, R * .8, R * .11, 0, 0, Math.PI); x.ellipse(cx, y0 - R * .05, R * .8, R * .11, 0, Math.PI, 0, true); x.closePath(); x.fill();
+      if (magic) drawMagic(t, y0);
     }
 
     /* sound */
@@ -181,9 +241,10 @@
         if (AC.state === 'suspended') AC.resume();
       } catch (e) { AC = null; }
     }
-    function bell(fq, when, v) { if (!AC || !soundOn) return; const t = AC.currentTime + (when || 0);
+    function bell(fq, when, v, pan) { if (!AC || !soundOn) return; const t = AC.currentTime + (when || 0);
+      let out = OUT; if (pan && AC.createStereoPanner) { try { out = AC.createStereoPanner(); out.pan.value = Math.max(-1, Math.min(1, pan)); out.connect(OUT); } catch (e) { out = OUT; } }   // (pan: from the left or the right, for a game played by ear)
       for (const [m, a] of [[1, 1], [2.76, .25], [5.4, .08]]) { const os = AC.createOscillator(), g = AC.createGain(); os.type = 'sine'; os.frequency.value = fq * m;
-        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime((v || .12) * a, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + 1.6 / m + .3); os.connect(g); g.connect(OUT); os.start(t); os.stop(t + 2.2); } }
+        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime((v || .12) * a, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + 1.6 / m + .3); os.connect(g); g.connect(out); os.start(t); os.stop(t + 2.2); } }
     const NOTES = [1046.5, 1174.66, 1318.5, 1567.98, 1760, 2093];
     function chimes() { [0, 2, 4, 3, 5].forEach((n, i) => bell(NOTES[n] / 2, i * .32, .1)); bell(NOTES[0] / 4, 1.7, .08); }
     function sound(dt) {
@@ -205,9 +266,19 @@
       let side = ang === 90 ? e.beta : ang === -90 || ang === 270 ? -e.beta : ang === 180 ? -e.gamma : e.gamma;
       side = Math.max(-.85, Math.min(.85, Math.sin(side * Math.PI / 180) * 1.3)); tgx = side; tgy = Math.sqrt(1 - side * side);
     }
-    const pd = e => { drag = { x: e.clientX, y: e.clientY, t: performance.now() }; ac(); }, pu = () => { drag = null; };
+    let tap = null;   // a quick touch that doesn't move: on the glass (with a 3D figure) the figure hops; on the base, onPlate is called
+    const pd = e => { drag = { x: e.clientX, y: e.clientY, t: performance.now() }; tap = o.model || o.onPlate ? { x: e.clientX, y: e.clientY, t: drag.t, moved: 0 } : null; ac(); };
+    const pu = e => {
+      drag = null; const k = tap; tap = null; if (!k || k.moved > 10 || performance.now() - k.t > 400) return;
+      const b = cv.getBoundingClientRect(), qu = (k.x - b.left - cx) / R, qv = (k.y - b.top - cy) / R;
+      if (o.onPlate && qv > .92 && qv < 1.62 && Math.abs(qu) < 1.05) { try { o.onPlate(); } catch (e2) {} return; }
+      if (!o.model || !o.model.tap || qu * qu + qv * qv > 1) return;
+      try { if (o.model.tap() !== false) { bell(NOTES[2 + Math.floor(Math.random() * 3)], 0, .07); try { navigator.vibrate && navigator.vibrate(12); } catch (e2) {} } } catch (e2) {}
+    };
     const pm = e => {
       if (!drag) return; const b = cv.getBoundingClientRect(), now = performance.now(), dt = Math.max(8, now - drag.t) / 1000, du = (e.clientX - drag.x) / R / dt, dv = (e.clientY - drag.y) / R / dt;
+      if (tap) tap.moved += Math.hypot(e.clientX - drag.x, e.clientY - drag.y);
+      if (o.model && o.model.drag) try { o.model.drag((e.clientX - drag.x) / R, (e.clientY - drag.y) / R); } catch (e2) {}
       const qu = (e.clientX - b.left - cx) / R, qv = (e.clientY - b.top - cy) / R;
       if (qu * qu + qv * qv < 1.3) { for (const f of F) { const d = Math.hypot(f.u - qu, f.v - qv); if (d < .45) { const k = (1 - d / .45) * .5; if (f.down) { f.down = false; pile[f.b] = Math.max(0, pile[f.b] - f.add); } f.vu += du * k; f.vv += dv * k; } }
         stir(Math.min(.3, Math.hypot(du, dv) * .015), du * .08, dv * .08); }
@@ -225,11 +296,16 @@
     let last = performance.now();
     (function frame(now) {
       if (dead) return; const dt = Math.max(0, Math.min(.05, (now - last) / 1000)), t = now / 1000; last = now;
-      step(dt, t); drawSky(t, dt); draw(t); sound(dt); requestAnimationFrame(frame);
+      if (resting) E *= Math.exp(-dt * 2); else { step(dt, t); drawSky(t, dt); draw(t); }   // resting: a game is covering the globe
+      sound(dt); requestAnimationFrame(frame);
     })(last);
     return {
       start, set, shake() { ac(); stir(2.6, (Math.random() - .5) * .6, -.4); },
       sound(on) { soundOn = !!on; if (waveOn) wave.muted = !soundOn; },
+      // for a game played inside the globe: where the glass is on the screen, a pause while the game covers it, and the globe's bells
+      get glass() { return { x: cx, y: cy, r: R, w: W, h: H }; }, get soundOn() { return soundOn; },
+      rest(on) { resting = !!on; }, bell(fq, when, v, pan) { ac(); bell(fq, when, v, pan); }, chimes() { ac(); chimes(); },
+      magic(text) { const s = String(text || '').trim().toUpperCase(); if (!s) return; magic = { text: s, t0: performance.now() / 1000 }; nameAt = magic.t0 + MAGIC + .25; },
       destroy() { dead = true; if (ro) ro.disconnect(); removeEventListener('devicemotion', onMotion); removeEventListener('deviceorientation', onTilt); removeEventListener('pointerup', pu); wave.pause(); wave.removeAttribute('src'); sky.remove(); cv.remove(); try { AC && AC.close(); } catch (e) {} },
       get canvas() { return cv; }
     };
