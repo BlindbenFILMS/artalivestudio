@@ -59,15 +59,22 @@
   #lede { margin: 0; color: var(--muted); }
   .btn.makeone { display: none; }
   body.viewing .btn.makeone { display: block; }
-  /* Making one goes a step at a time (data-step on the body): "photo" = choose a photo, "face" = mark the eyes and nose,
-     "globe" = the globe appears, with the name, the shake and the link to share. Until then the globe is kept off the page,
-     so nothing is in the way of scrolling; it stays its real size, so it is ready the moment it is shown. */
+  /* Making one goes a screen at a time (data-step on the body):
+       "photo" = Step 1, choose a photo;   "face" = the same screen once the photo is in, with Step 2, the eyes and nose;
+       "name"  = Step 3 on a screen of its own, the name and the words, with Next;
+       "globe" = the globe, the Shake button right under it, and Step 4, the link to share.
+     Until the last screen the globe is kept off the page, so nothing is in the way of scrolling; it stays its real size,
+     so it is ready the moment it is shown. */
   body:not(.viewing):not([data-step="globe"]) .page { grid-template-columns: minmax(0, 1fr); max-width: 560px; }
   body:not(.viewing):not([data-step="globe"]) .stage { position: relative; overflow: hidden; justify-items: start; }
   body:not(.viewing):not([data-step="globe"]) .globe { position: absolute; left: 0; top: 0; visibility: hidden; pointer-events: none; }
   body:not(.viewing):not([data-step="globe"]) #lede { width: auto; max-width: 60ch; }
   body:not(.viewing):not([data-step="globe"]) .late { display: none !important; }
-  body[data-step="globe"] .early { display: none !important; }
+  body[data-step="name"] .early, body[data-step="globe"] .early { display: none !important; }
+  body:not([data-step="name"]) .namestep { display: none !important; }
+  body[data-step="name"] #lede, body[data-step="globe"]:not(.viewing) #lede { display: none; }   /* the instructions belong to the first screen only */
+  body[data-step="name"] .stage { margin-bottom: -22px; }   /* (nothing shows in the globe's column on this screen: no double gap) */
+  .stage > .btn.big { width: min(100%, 460px); }            /* the Shake button under the globe is as wide as the globe */
   h1:focus { outline: none; }
   .globe { position: relative; width: min(100%, 460px); justify-self: center; aspect-ratio: 1 / 1.18; touch-action: pan-y; cursor: grab; transform-origin: 50% 88%; }
   canvas { display: block; width: 100%; height: 100%; }
@@ -137,6 +144,7 @@
     <div class="globe" id="globe" role="img" aria-label="A snowglobe. Your pet's photo appears inside it, sitting in the snow.">
       <canvas id="c"></canvas>
     </div>
+    <button class="btn big maker late" id="shake" type="button">Shake the snow globe</button>
     <p id="lede">Add a photo of your pet. It's cut out right here on your phone or computer (the photo never leaves it) and set inside a snow globe with their name on the plaque. Then get a link to share. No account needed.</p>
   </div>
 
@@ -162,7 +170,7 @@
       <h2 id="sF">Step 2: Tap the eyes and nose</h2>
       <p class="tapsay" id="faceSay" role="status">Tap your pet’s eye on the left</p>
       <canvas id="pick" aria-label="Your pet's cutout. Tap the left eye, the right eye, then the nose."></canvas>
-      <button class="btn big" id="seeGlobe" type="button" disabled>See my snow globe</button>
+      <button class="btn big" id="next2" type="button" disabled>Next</button>
       <div class="row">
         <button class="btn ghost" id="redo" type="button">Redo taps</button>
         <button class="btn ghost" id="wrong" type="button">Not the face?</button>
@@ -171,22 +179,18 @@
       <p class="small">We zoom in on the head for you. This lets your pet blink, watch the snow, twitch their ears and sneeze at a snowflake.</p>
     </section>
 
-    <section class="step maker late" aria-labelledby="s2">
+    <section class="step maker namestep" aria-labelledby="s2">
       <h2 id="s2">Step 3: Name and message</h2>
       <label for="name">Name on the plaque</label>
-      <input id="name" type="text" maxlength="22" placeholder="Biscuit" autocomplete="off">
+      <input id="name" type="text" maxlength="22" placeholder="Biscuit" autocomplete="off" enterkeyhint="next">
       <label for="msg">Words on the glass</label>
-      <input id="msg" type="text" maxlength="34" value="Always in our hearts" autocomplete="off">
-    </section>
-
-    <section class="step maker late" aria-labelledby="s3">
-      <h2 id="s3">Step 4: Shake it</h2>
-      <button class="btn big" id="shake" type="button">Shake the snow globe</button>
-      <p class="small">Or tap the globe, or drag it back and forth. Your pet watches the snow and may catch a snowflake on the nose. When it settles, the words appear and your pet dozes off.</p>
+      <input id="msg" type="text" maxlength="34" value="Always in our hearts" autocomplete="off" enterkeyhint="next">
+      <button class="btn big" id="next3" type="button">Next</button>
+      <button class="textlink" id="back3" type="button">Back to the photo and the eyes and nose</button>
     </section>
 
     <section class="step share maker late" aria-labelledby="s5">
-      <h2 id="s5">Step 5: Share it</h2>
+      <h2 id="s5">Step 4: Share it</h2>
       <button class="btn big" id="makeLink" type="button" disabled>Get a link to share</button>
       <div id="linkBox" hidden>
         <div class="linkrow">
@@ -197,6 +201,7 @@
       <p class="status" id="shareSay" role="status">Add a photo first. Anyone can open the link, no app or account needed.</p>
       <div class="acct" id="acct" hidden></div>
     </section>
+    <p class="small maker late"><button class="textlink" id="backName" type="button">Change the name or the words</button></p>
     <p class="small maker late"><button class="textlink" id="back" type="button">Change the photo, or the eyes and nose</button></p>
   </div>
 </div>
@@ -350,8 +355,8 @@ function boxAt(x, y, side) {
   return { x: x - side / 2, y: Math.max(-side * 0.1, y - side / 2), w: side, h: side };
 }
 const whole = () => ({ x: 0, y: 0, w: pet.width, h: pet.height });
-const ALL_SET = 'All set! Drag a dot to adjust it, then press “See my snow globe”.', seeBtn = document.getElementById('seeGlobe');
-function startFacePick() { taps = []; face = null; choosing = false; faceBox.hidden = false; seeBtn.disabled = true; view = guessHead(); faceSay.textContent = TAP_SAY[0]; drawPick(); }
+const ALL_SET = 'All set! Drag a dot to adjust it, then press Next.', next2 = document.getElementById('next2');
+function startFacePick() { taps = []; face = null; choosing = false; faceBox.hidden = false; next2.disabled = true; view = guessHead(); faceSay.textContent = TAP_SAY[0]; drawPick(); }
 function pickFit() { const v = view || whole(), w = pick.clientWidth || 300, s = Math.min(w / v.w, 420 / v.h); return { s, w: v.w * s, h: v.h * s, ox: (w - v.w * s) / 2, v }; }
 const toScreen = (f, t) => [f.ox + (t[0] - f.v.x) * f.s, (t[1] - f.v.y) * f.s];
 function drawPick() {
@@ -378,26 +383,30 @@ pick.addEventListener('pointerdown', e => {
   if (taps.length >= 3) return;
   taps.push([p.x, p.y]); drawPick();
   if (taps.length < 3) faceSay.textContent = TAP_SAY[taps.length];
-  else { face = makeFace(taps); faceSay.textContent = ALL_SET; seeBtn.disabled = false; }
+  else { face = makeFace(taps); faceSay.textContent = ALL_SET; next2.disabled = false; }
 });
 pick.addEventListener('pointermove', e => { if (dragI < 0) return; const p = pickPoint(e); taps[dragI] = [p.x, p.y]; drawPick(); });
 pick.addEventListener('pointerup', () => { if (dragI >= 0 && taps.length === 3) face = makeFace(taps); dragI = -1; });
-document.getElementById('redo').addEventListener('click', () => { if (pet) { taps = []; face = null; seeBtn.disabled = true; faceSay.textContent = TAP_SAY[0]; drawPick(); } });
+document.getElementById('redo').addEventListener('click', () => { if (pet) { taps = []; face = null; next2.disabled = true; faceSay.textContent = TAP_SAY[0]; drawPick(); } });
 document.getElementById('wrong').addEventListener('click', () => { if (!pet) return; choosing = true; view = whole(); faceSay.textContent = 'Tap your pet’s face'; drawPick(); });
-// "Skip this step" goes straight on to the globe (the pet still glows, breathes and naps; the dots can be added later)
-document.getElementById('skip').addEventListener('click', () => { if (!pet) return; face = null; taps = []; seeBtn.disabled = true; faceSay.textContent = TAP_SAY[0]; drawPick(); setStep('globe'); });
-seeBtn.addEventListener('click', () => { if (pet) setStep('globe'); });
+// "Skip this step" goes straight on to Step 3 (the pet still glows, breathes and naps; the dots can be added later)
+document.getElementById('skip').addEventListener('click', () => { if (!pet) return; face = null; taps = []; next2.disabled = true; faceSay.textContent = TAP_SAY[0]; drawPick(); setStep('name'); });
+next2.addEventListener('click', () => { if (pet) setStep('name'); });
+document.getElementById('next3').addEventListener('click', () => { if (pet) setStep('globe'); });
+for (const id of ['name', 'msg']) document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter' && pet) { e.preventDefault(); e.target.blur(); setStep('globe'); } });   // (the keyboard's own Next / Return key)
+document.getElementById('back3').addEventListener('click', () => { if (pet) setStep('face'); });
 document.getElementById('back').addEventListener('click', () => { if (pet) setStep('face'); });
-window.__tap = (x, y) => { taps.push([x, y]); if (taps.length === 3) { face = makeFace(taps); seeBtn.disabled = false; } };   // for testing
+document.getElementById('backName').addEventListener('click', () => { if (pet) setStep('name'); });
+window.__tap = (x, y) => { taps.push([x, y]); if (taps.length === 3) { face = makeFace(taps); next2.disabled = false; } };   // for testing
 
-// ---------------------------------------------------------------- making one, a step at a time
-// "photo": choose a photo. "face": mark the eyes and nose. "globe": the globe appears, with the name, the shake and the link to share.
-const ledeEl = document.getElementById('lede'), LEDE_START = ledeEl.textContent, LEDE_GLOBE = 'Here’s your snow globe. Give it a shake, add a name, then get a link to share.';
+// ---------------------------------------------------------------- making one, a screen at a time
+// "photo": Step 1, choose a photo. "face": the same screen with Step 2, the eyes and nose. "name": Step 3, the name and the words, on a
+// screen of its own. "globe": the globe, the Shake button right under it, and Step 4, the link to share.
 function setStep(step) {
   const was = document.body.dataset.step; document.body.dataset.step = step;
-  ledeEl.textContent = step === 'globe' ? LEDE_GLOBE : LEDE_START;
   if (step === 'globe') { size(); shake(1); setTimeout(() => shake(-1), 200); }   // it arrives with its snow flying
-  if (step === 'globe' || was === 'globe') { scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); try { document.getElementById('title').focus({ preventScroll: true }); } catch (e) {} }
+  if (step !== was && !(was === 'photo' && step === 'face')) {                      // a new screen starts at its top (photo → face is the same screen, growing)
+    scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); try { document.getElementById('title').focus({ preventScroll: true }); } catch (e) {} }
 }
 
 function makeFace([a, b, n]) {
