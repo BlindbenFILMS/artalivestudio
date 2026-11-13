@@ -116,6 +116,11 @@
   body.viewing .maker { display: none !important; }
   .viewer { display: none; }
   body.viewing .viewer { display: grid; }
+  /* an opened globe: no words under it, so the Shake button sits close under the globe (words appear there only if the globe can't be opened) */
+  body.viewing #lede { display: none; }
+  body.viewing #lede.show { display: block; }
+  body.viewing .stage { gap: 8px; }   /* little space above and below "Make one with your pet", so the globe sits higher */
+  @media (max-width: 760px) { body.viewing .page { gap: 8px; } body.viewing h1 { margin-bottom: 2px; } }
 </style>
 
 </head>
@@ -805,11 +810,12 @@ const params = new URLSearchParams(location.search), viewCode = (params.get('g')
 async function openShared(code) {
   document.body.classList.add('viewing'); document.body.dataset.step = 'globe';
   const title = $('title'), lede = $('lede');
-  title.textContent = 'A snow globe for you'; lede.textContent = 'Someone made this for you. Give it a shake.';
+  title.textContent = 'A snow globe for you'; lede.textContent = '';
+  const tell = t => { lede.textContent = t; lede.classList.add('show'); };   // (only for trouble: the words go under the globe)
   try {
     const r = await fetch(SB + '/rest/v1/rpc/petglobe_get', { method: 'POST', headers: { apikey: CFG.supabaseKey, 'Content-Type': 'application/json' }, body: JSON.stringify({ c: code }) });
     const rows = r.ok ? await r.json() : [], row = Array.isArray(rows) ? rows[0] : rows;
-    if (!row) { lede.textContent = 'This snow globe isn’t here anymore. Links last a year unless they’re saved to an account.'; $('shakeV').hidden = true; $('report').hidden = true; return; }
+    if (!row) { tell('This snow globe isn’t here anymore. Links last a year unless they’re saved to an account.'); $('shakeV').hidden = true; $('report').hidden = true; return; }
     nameIn.value = row.name || ''; msgIn.value = row.message || '';
     if (row.name) title.textContent = row.name + '’s snow globe';
     const im = new Image(); im.crossOrigin = 'anonymous';
@@ -823,7 +829,7 @@ async function openShared(code) {
       showAcct(acctV, code, false);
       if (params.get('keep') && window.AAAccount && AAAccount.maybeSignedIn()) claimNow(code, acctV);
     }
-  } catch (e) { console.error(e); lede.textContent = 'We couldn’t open this snow globe. Check your connection and try again.'; }
+  } catch (e) { console.error(e); tell('We couldn’t open this snow globe. Check your connection and try again.'); }
 }
 if (/^[a-z0-9]{8}$/.test(viewCode)) openShared(viewCode);
 $('shakeV').addEventListener('click', () => { enableMotion(); shake(1); setTimeout(() => shake(-1), 180); setTimeout(() => shake(1), 360); });
