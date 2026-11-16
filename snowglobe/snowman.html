@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Snowman Snow Globe · Art Alive</title>
-<meta name="description" content="Shake your phone to make it snow, then help the snowman catch a word.">
+<meta name="description" content="Shake your phone to make it snow, then build the snowman and spell Happy Holidays.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Art Alive">
 <meta property="og:url" content="https://artalivestudio.com/snowglobe/snowman.html">
 <meta property="og:title" content="A snow globe with a game inside">
-<meta property="og:description" content="Shake it, then help the snowman catch a word.">
+<meta property="og:description" content="Shake it, then build the snowman and spell Happy Holidays.">
 <meta name="twitter:card" content="summary">
 <meta name="theme-color" content="#0b1530">
 <meta name="robots" content="noindex">
@@ -75,6 +75,65 @@ body.recording .bar .rec{background:#fff;color:#8f1408;animation:recpulse 1s eas
 @media (max-width:560px){.bar.two{gap:8px}.bar.two .pri{font-size:17px;letter-spacing:.1em;padding:0 6px}.bar.two #share{padding:0 13px}.bar.two #share svg{display:block}.bar.two #share .lbl{display:none}.bar .rec{padding:6px 4px}.bar .rec b{font-size:13.5px;letter-spacing:.03em}.bar .rec span{font-size:11.5px;letter-spacing:.01em}}
 @media (max-width:340px){.bar.two #share{display:none}}
 
+/* the score card: after a round, the score, a box for the player's name, and the top scores */
+.score{position:fixed;inset:0;z-index:7;display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));background:rgba(6,10,24,.66)}
+.score[hidden]{display:none}
+.score .card{display:flex;flex-direction:column;width:min(100%,400px);max-height:100%;overflow:auto;overscroll-behavior:contain;padding:16px 16px 14px;border-radius:22px;border:2px solid rgba(226,180,90,.85);background:#0f1c40;box-shadow:0 22px 60px -18px #000;text-align:center}
+.score h2{margin:0;font:800 15px/1.2 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#c3cde3}
+.score h2:focus{outline:none}
+.score .num{margin:2px 0 0;font:900 clamp(38px,12.5vw,56px)/1 Archivo,"Arial Black",Arial,sans-serif;font-stretch:115%;color:#e2b45a}
+.score .parts{margin:6px 0 0;color:#c3cde3;font-size:14px;line-height:1.35}
+.score form{margin:12px 0 0}
+.score label{display:block;margin:0 0 6px;font-weight:700;font-size:16.5px}
+.score .row{display:flex;gap:8px}
+.score input{flex:1 1 0;min-width:0;min-height:52px;padding:0 14px;border-radius:14px;border:2px solid #e2b45a;background:#fff;color:#0b1530;font:700 20px/1.2 "Atkinson Hyperlegible",Verdana,sans-serif}
+.score input:focus-visible{outline:3px solid #7cc4ff;outline-offset:2px}
+.score button{min-height:52px;padding:0 18px;border-radius:999px;border:2px solid rgba(255,255,255,.45);background:rgba(8,14,32,.55);color:#fff;font:800 15px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.07em;text-transform:uppercase;cursor:pointer}
+.score button.pri{background:#e2b45a;border-color:#e2b45a;color:#1a1206}
+.score button[disabled]{opacity:.6}
+.score .me{margin:12px 0 0;font-weight:700;font-size:17px;line-height:1.3}
+.score .me button{min-height:44px;margin:6px 0 0 6px;padding:0 14px;font-size:12.5px}
+.score h3{margin:12px 0 6px;font:900 18px/1.1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#e2b45a}
+.score ol{flex:0 1 auto;min-height:74px;overflow:auto;list-style:none;margin:0;padding:2px;text-align:left}
+.score li{display:flex;align-items:baseline;gap:10px;padding:6px 10px;border-radius:10px;font-size:18px;font-weight:700}
+.score li:nth-child(odd){background:rgba(255,255,255,.07)}
+.score li.you{background:rgba(226,180,90,.24);box-shadow:inset 0 0 0 2px rgba(226,180,90,.85)}
+.score li.gap{justify-content:center;padding:0;background:none;color:#c3cde3}
+.score li.none{justify-content:center;background:none;color:#c3cde3;font-weight:400}
+.score li .pl{flex:0 0 2.4ch;text-align:right;color:#e2b45a;font-variant-numeric:tabular-nums}
+.score li .nm{flex:1 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.score li .sc{flex:0 0 auto;font-variant-numeric:tabular-nums}
+.score .fine{margin:8px 0 0;color:#c3cde3;font-size:13.5px;line-height:1.35}
+.score .ends{margin-top:12px}
+.score .ends button{flex:1 1 0;padding:0 10px}
+/* a phone held sideways (wide and short): the score on the left, the list on the right, so that all of it shows */
+@media (max-height:520px) and (min-width:560px){
+.score .card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto auto minmax(0,1fr) auto;column-gap:20px;width:min(100%,760px);height:100%;padding:12px 16px}
+.score h2,.score .num,.score .parts,.score form,.score .me,.score .ends{grid-column:1}
+.score h2{grid-row:1}.score .num{grid-row:2;font-size:42px}.score .parts{grid-row:3}
+.score form,.score .me{grid-row:4;margin-top:8px}.score .ends{grid-row:6;margin-top:8px}
+.score h3{grid-column:2;grid-row:1;margin:0 0 6px}.score ol{grid-column:2;grid-row:2/6;min-height:0}.score .fine{grid-column:2;grid-row:6;align-self:center}
+}
+
+/* "Top scores": a button beside Share (on a phone the two sit side by side under the greeting) */
+@media (min-width:701px){.toptop{top:calc(64px + env(safe-area-inset-top,0px))}}
+@media (max-width:700px){body.tops #share2{transform:translateX(calc(-100% - 5px))}.toptop{transform:translateX(5px)}body.tops #share2,.toptop{min-width:150px;justify-content:center}}   /* (the same width, so the pair sits in the middle) */
+.toptop[hidden]{display:none}
+/* on a short phone there is no room for it under the greeting: there it is a round button, a trophy, at the globe's right shoulder (beside the top of the glass, at the edge of the screen) */
+@media (max-width:700px) and (max-height:740px){.toptop{display:inline-flex;top:var(--shoulder,96px) !important;left:auto;right:max(5px,env(safe-area-inset-right,0px));transform:none;justify-content:center;width:44px;min-width:0;padding:0;gap:0;font-size:0;border-color:rgba(226,180,90,.9);color:#e2b45a}.toptop svg{width:24px;height:24px}}
+
+/* between a phone and a wide screen, Share and Top scores are round buttons (with their words they would reach the greeting and the line under it) */
+@media (min-width:701px) and (max-width:899px){#share2,.toptop{justify-content:center;width:44px;min-width:0;padding:0;gap:0;font-size:0}#share2 svg,.toptop svg{width:22px;height:22px}}
+/* SOUND on or off: a small round button. On a phone it is at the globe's left shoulder (beside the top of the glass, at the edge of the screen: the greeting fills the top); on a wide screen, in the top left corner. It turns all of it off or on: the notes, the recorded sounds, his voice */
+.snd{position:fixed;z-index:6;top:var(--shoulder,96px);left:max(5px,env(safe-area-inset-left,0px));display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:999px;border:2px solid rgba(255,255,255,.4);background:rgba(8,14,32,.6);color:#fff;cursor:pointer;transition:opacity .35s ease}
+.snd svg{width:24px;height:24px}
+.snd .off,.snd[aria-pressed="false"] .on{display:none}
+.snd[aria-pressed="false"] .off{display:block}
+.snd[aria-pressed="false"]{color:#c3cde3;border-style:dashed}
+.snd:focus-visible{outline:3px solid #7cc4ff;outline-offset:3px}
+@media (min-width:701px){.snd{top:calc(10px + env(safe-area-inset-top,0px));left:max(10px,env(safe-area-inset-left,0px))}}
+body.playing .snd{opacity:0;pointer-events:none}
+
 /* while the game is on, the page's own words and buttons step back */
 .top,.bar,.lowrow,.sharetop{transition:opacity .35s ease}
 body.playing .top,body.playing .bar,body.playing .lowrow,body.playing .sharetop{opacity:0;pointer-events:none}
@@ -85,15 +144,26 @@ body.playing .top,body.playing .bar,body.playing .lowrow,body.playing .sharetop{
 <header class="top"><h1 id="msg">Happy Holidays</h1><p id="hint" class="big">Shake your phone!</p></header>
 <div class="bar" id="bar" hidden><button type="button" class="pri" id="shake">Shake</button><button type="button" class="rec" id="rec" aria-pressed="false" hidden><b>Record your voice</b><span>Make the snowman talk!</span></button><button type="button" id="share" aria-label="Share this snow globe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M5 13v7h14v-7"/></svg><span class="lbl">Share</span></button></div>
 <button type="button" class="sharetop" id="share2" aria-label="Share this snow globe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M5 13v7h14v-7"/></svg>Share</button>
+<button type="button" class="sharetop toptop" id="tops" aria-label="Top scores" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3"/><path d="M17 6h3v1a3 3 0 0 1-3 3"/><path d="M12 14v4"/><path d="M8 20h8"/></svg>Top scores</button>
 <div class="lowrow"><a class="own" href="./"><b>Make your own</b><span>Your photo or video, free</span></a><a class="own" href="../play/snowglobes.html"><b>More globes</b><span>See all eight</span></a></div>
-<div class="go" id="go"><button type="button" id="start" disabled>Loading…</button><p id="goTip">Shake or tilt your phone, or swipe across the globe. When the snow settles, help the snowman catch a word.</p></div>
+<button type="button" class="snd" id="snd" aria-label="Sound" aria-pressed="true"><svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path d="M15.6 9.2a4 4 0 0 1 0 5.6"/><path d="M18.3 6.6a7.6 7.6 0 0 1 0 10.8"/></svg><svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path d="M16 9.5l5 5"/><path d="M21 9.5l-5 5"/></svg></button>
+<div class="go" id="go"><button type="button" id="start" disabled>Loading…</button><p id="goTip">Shake or tilt your phone, or swipe across the globe. When the snow settles, catch snowflakes to build the snowman and letters to spell Happy Holidays. Slide him with a finger or the arrow buttons, and press Jump to hop over branches and campfires.</p></div>
+<div class="score" id="score" hidden role="dialog" aria-modal="true" aria-labelledby="scTitle"><div class="card">
+<h2 id="scTitle" tabindex="-1">Your score</h2><p class="num" id="scNum">0</p><p class="parts" id="scParts"></p>
+<form id="scForm" hidden><label for="scName">Type your name for the top scores</label><div class="row"><input id="scName" name="name" type="text" maxlength="12" autocomplete="nickname" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done"><button type="submit" class="pri" id="scSave">Save</button></div></form>
+<p class="me" id="scMe" hidden><span id="scMeTxt"></span><button type="button" id="scRename">Change name</button></p>
+<h3 id="scTop">Top scores</h3><ol id="scList" aria-labelledby="scTop"></ol><p class="fine" id="scFine"></p>
+<div class="row ends"><button type="button" class="pri" id="scAgain">Play again</button><button type="button" id="scClose">Close</button></div>
+</div></div>
 <p class="sr" id="live" aria-live="polite"></p>
-<script src="globe.js"></script><script src="sharelink.js"></script>
+<script src="../site-config.js"></script><script src="globe.js"></script><script src="sharelink.js"></script>
 <script type="module">
-import { createModel, winterNight } from './globe3d.js';
+import { createModel, winterNight, winterScenery } from './globe3d.js';
 import { build } from './figures/ora-snowman.js';      // the Ora snowman, made in Claude Design (the logo is on his hat)
 import { createGame, WORDS } from './snowgame.js';
 import { createLine, createRecorder } from './speak.js';
+import { createScores } from './scores.js';                 // the top scores, shared by everyone who plays from this link
+import { createSounds } from './sounds.js';                 // the recorded sounds: snow, wood, glass, fire (they go with the game's own notes)
 import { hello } from './figures/ora-snowman/hello.js';   // what he says when the globe opens, and how his mouth moves to it
 
 // While the snowman is speaking in the globe, nothing is read out over him: the first thing to read out waits until he has
@@ -102,8 +172,12 @@ let line = null, mine = null, held = '', game = null;
 const speakingNow = () => !!((line && line.speaking) || (mine && mine.speaking));
 const $ = id => document.getElementById(id), say = t => { if (speakingNow() && !(game && game.playing)) { if (!held) held = t; return; } $('live').textContent = ''; setTimeout(() => { $('live').textContent = t; }, 60); };
 const setHint = (t, big) => { $('hint').textContent = t; $('hint').classList.toggle('big', !!big); };
+// SOUND. One small round button (beside the top of the globe on a phone, in the top left corner of a wide screen) turns all of it off
+// or on: the game's notes, the recorded sounds and the snowman's voice. This device remembers the choice. (M on a keyboard does the same.)
+const SOUND_KEY = 'aa-snowman-sound-1'; let soundOn = true, greeted = false; try { soundOn = localStorage.getItem(SOUND_KEY) !== 'off'; } catch (e) {}
+const sounds = createSounds(); sounds.on = soundOn; $('snd').setAttribute('aria-pressed', String(soundOn));
 const msg = 'Happy Holidays';
-// he grows a little with every word, and this phone remembers how far he has got
+// he grows a little with every round, and this phone remembers how far he has got
 const SIZES = [.7, .78, .84, .89, .93, .96, .98, 1], KEY = 'aa-snowman-globe-1';
 let mem = { round: 0, word: '' }; try { mem = Object.assign(mem, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
 const keep = () => { try { localStorage.setItem(KEY, JSON.stringify(mem)); } catch (e) {} };
@@ -119,7 +193,7 @@ function topRoom() {
   document.documentElement.style.setProperty('--btnTop', Math.round(hb + 10) + 'px');
   if (innerWidth > 700) return hb + 12;
   let low = hb;
-  document.querySelectorAll('.sharetop').forEach(b => { if (b.hidden || getComputedStyle(b).display !== 'none') low = Math.max(low, hb + 10 + (b.offsetHeight || 44)); });
+  if (!matchMedia('(max-width:700px) and (max-height:740px)').matches) document.querySelectorAll('.sharetop').forEach(b => { if (getComputedStyle(b).display !== 'none' && b.getBoundingClientRect().top >= hb) low = Math.max(low, hb + 10 + (b.offsetHeight || 44)); });   // (the buttons that sit under the greeting; on a short phone Top scores is at the globe's shoulder instead, and needs no room)
   return low + 10;
 }
 // A second after the globe opens he says his hello, his mouth moving with the words. Nothing stops him: not a shake, and not
@@ -130,30 +204,97 @@ const rec = figure ? createRecorder({ seconds: 12 }) : null;
 if (figure) figure.talk = () => (mine && mine.speaking ? mine.mouth() : line ? line.mouth() : 0);
 let armed = false, auto = false, started = false, stormNow = false;
 function afterSpeech() { if (held) { const t = held; held = ''; if (!(game && game.playing)) say(t); } }   // he has finished: now whatever was waiting to be read out
-const g = AAGlobe.create($('stage'), { picture: backdrop, model: figure, name: mem.word ? [mem.word, 'NEXT WORD'] : '', base: 'blue', top: topRoom(), bottom: 144,
+const AGAIN = WORDS.length > 1 ? 'NEXT WORD' : 'PLAY AGAIN';   // what the base says in turn with the last phrase spelled (a tap on it shakes the globe)
+const g = AAGlobe.create($('stage'), { picture: backdrop, model: figure, name: mem.word ? [mem.word, AGAIN] : '', base: 'blue', top: topRoom(), bottom: 144,
   onHint(t, big) { if (game && game.playing || (rec && rec.recording)) return; setHint(t, big); if (big) say(t); },
   say(t) { say(t); },
-  onPlate() { if (started && !(game && game.playing)) g.shake(); },                // a tap on the base (where it says NEXT WORD) shakes it too
-  onStorm() { stormNow = true; if (!auto && started && game && !game.playing && !(rec && rec.recording)) armed = true; },     // a shake by hand…
+  onPlate() { if (!started || (game && game.playing)) return; if (plateOnScores()) openCard(null, true); else g.shake(); },   // a tap on the base: where it says PLAY AGAIN it shakes the globe; where it says TOP SCORES (or one of the names) it opens the list
+  onStorm() { stormNow = true; if (!auto && started && game && !game.playing && !(rec && rec.recording) && !cardOpen) armed = true; },     // a shake by hand…
   onCalm() { stormNow = false; if (armed && game && !game.playing && !(rec && rec.recording)) { armed = false; round(); } } });   // …and as its snow settles, the game
 
-game = figure ? createGame({ stage: $('stage'), globe: g, figure, backdrop, say }) : null;
-window.__globe = { g, game, figure, line, rec, get mine() { return mine; } };   // (for testing)
+g.sound(soundOn);
+game = figure ? createGame({ stage: $('stage'), globe: g, figure, backdrop, scenery: winterScenery(), say, sounds }) : null;   // (scenery: the same winter night in layers, so the wood can move past as he walks)
+// The globe's shoulders: beside the top of the glass, at the edges of the screen. The small round buttons sit there (Sound on the
+// left; on a short phone, Top scores on the right). --shoulder is how far down that is.
+const fit = o => { g.set(o); const gl = g.glass; document.documentElement.style.setProperty('--shoulder', Math.round(gl.y - gl.r) + 'px'); };
+fit({});
+window.__globe = { g, game, figure, line, rec, sounds, get mine() { return mine; }, get soundOn() { return soundOn; } };   // (for testing)
 
 async function round() {
   const word = WORDS[(mem.round | 0) % WORDS.length], before = sizeNow(); held = '';
+  clearTimeout(cardTimer); closeCard(); if (waiting) { if (scores.me.name) scores.save(scores.me.name, waiting.score).then(showBoard); waiting = null; }   // (shaken again before the card came up: a player whose name is known still has that score saved)
   document.body.classList.add('playing');
-  await game.play(word, () => {   // the globe is back (still hidden behind the logo): its snow is flying as if just shaken
+  const result = await game.play(word, () => {   // the globe is back (still hidden behind the logo): its snow is flying as if just shaken
     mem.round = (mem.round | 0) + 1; mem.word = word; keep();
     figure.grow(before, true);
     auto = true; g.shake(); auto = false;
   });
   document.body.classList.remove('playing');
-  // …and now he grows, jumps and spins, and the word arrives in gold on the glass and settles on the base
+  // …and now he grows, jumps and spins, and the phrase arrives in gold on the glass and settles on the base
   figure.grow(sizeNow()); figure.shake(1, true);
-  g.set({ name: [word, 'NEXT WORD'] }); g.magic(word); [1046.5, 1318.5, 1568, 2093].forEach((f, k) => g.bell(f, .3 + k * .09, .06));
-  if (rec && $('rec').hidden) { $('rec').hidden = false; $('bar').classList.add('two'); g.set({ bottom: lowRoom() }); }   // after a game: SHAKE is half as wide, and beside it "Record your voice" (the row is a little taller, so the globe makes room)
+  plateFrom = performance.now() + 3100; setPlate(); g.magic(word); plateAt = performance.now() / 1000 + 2.85; [1046.5, 1318.5, 1568, 2093].forEach((f, k) => g.bell(f, .3 + k * .09, .06));
+  if (rec && $('rec').hidden) { $('rec').hidden = false; $('bar').classList.add('two'); fit({ bottom: lowRoom() }); }   // after a game: SHAKE is half as wide, and beside it "Record your voice" (the row is a little taller, so the globe makes room)
+  if (result && typeof result === 'object') { waiting = result; cardTimer = setTimeout(() => { waiting = null; openCard(result); }, 2300); }   // …and when the phrase has had its moment, the score card
 }
+
+// THE SCORE AND THE TOP SCORES. After a round a card shows the score, asks once for a name, and lists the top ten with their
+// places. Everyone who plays from this link is on the same list (scores.js; a link ending ?board=some-name has a list of its
+// own). The base of the globe says TOP SCORES and takes turns through the first five names; a tap on it then opens the list.
+const scores = createScores({ board: new URLSearchParams(location.search).get('board') || 'snowman' });
+const fmt = n => Math.round(n).toLocaleString('en-US');
+let boardNow = null, cardOpen = false, cardTimer = 0, plateTimer = 0, plateFrom = 0, cardResult = null, waiting = null, lastFocus = null, cardAt = 0, cheered = true;   // (cardResult: the round the card is showing, if it is showing one)
+const plateNames = () => { const list = mem.word ? [mem.word, AGAIN] : []; if (boardNow && boardNow.top.length) { list.push('TOP SCORES'); for (const r of boardNow.top.slice(0, 5)) list.push(r.place + '. ' + r.name + '  ' + fmt(r.score)); } return list.length ? list : ''; };
+// Which text is on the base just now? It takes turns as globe.js does it: the first text for 3 seconds, each of the others for 1.8
+// (and after a round it waits 2.85 seconds, while the phrase is on the glass). plateOnScores(): is it TOP SCORES or one of the
+// names? (A tap is taken to be meant for what was showing three tenths of a second before it.)
+let plateList = mem.word ? [mem.word, AGAIN] : [], plateAt = 0;
+const setPlate = () => { const n = plateNames(); plateList = Array.isArray(n) ? n : []; plateAt = performance.now() / 1000; g.set({ name: n }); };
+const plateOnScores = () => { const at = plateList.indexOf('TOP SCORES'), n = plateList.length; if (at < 0) return false; let u = performance.now() / 1000 - .3 - plateAt; if (u < 0) return false;
+  u %= 3 + 1.8 * (n - 1); return (u < 3 ? 0 : 1 + Math.floor((u - 3) / 1.8)) >= at; };
+function plateSoon() {   // put the names on the base (not while the phrase is still arriving in gold on the glass, and not during a game)
+  clearTimeout(plateTimer); const wait = plateFrom - performance.now();
+  if (wait > 0 || (game && game.playing)) { plateTimer = setTimeout(plateSoon, Math.max(300, wait)); return; }
+  setPlate(); }
+function fillList() {
+  const ol = $('scList'), b = boardNow; ol.textContent = '';
+  const row = (r, you) => { const li = document.createElement('li'); if (you) li.className = 'you'; for (const [c, t] of [['pl', r.place], ['nm', r.name + (you ? ' (you)' : '')], ['sc', fmt(r.score)]]) { const sp = document.createElement('span'); sp.className = c; sp.textContent = t; li.appendChild(sp); } ol.appendChild(li); };
+  if (!b || !b.top.length) { const li = document.createElement('li'); li.className = 'none'; li.textContent = 'No scores yet. Be the first!'; ol.appendChild(li); }
+  else { for (const r of b.top) row(r, !!r.you); if (b.me && !b.top.some(r => r.you)) { const li = document.createElement('li'); li.className = 'gap'; li.textContent = '…'; li.setAttribute('aria-hidden', 'true'); ol.appendChild(li); row(b.me, true); } }
+  $('scFine').textContent = boardNow && boardNow.shared ? 'Everyone who plays from this link is on this list, and can see the names on it.' : 'These scores are kept on this device.';
+}
+function showBoard(b) { if (b) boardNow = b; fillList(); $('tops').hidden = !(boardNow && boardNow.top.length); document.body.classList.toggle('tops', !$('tops').hidden); if (!(game && game.playing)) fit({ top: topRoom() }); plateSoon(); }
+function meLine(b, score) {
+  const me = b && b.me; $('scMe').hidden = !me; if (!me) return;
+  const where = 'number ' + me.place + ' of ' + b.players, txt = score != null && score < me.score ? me.name + ', your best is ' + fmt(me.score) + ': ' + where + '.' : me.name + ', you are ' + where + '.';
+  $('scMeTxt').textContent = txt; say(txt); }
+async function saveScore(name, score) {
+  $('scSave').disabled = true; $('scSave').textContent = 'Saving…';
+  const b = await scores.save(name, score); $('scSave').disabled = false; $('scSave').textContent = 'Save';
+  $('scForm').hidden = true; showBoard(b); meLine(b, cardResult ? cardResult.score : null); if (cardOpen) $('scAgain').focus({ preventScroll: true });
+  if (cardOpen && cardResult && !cheered && b && b.me && b.me.place <= 3 && cardResult.score >= b.me.score) { cheered = true; sounds.play('top', { when: Math.max(0, .8 - (performance.now() - cardAt) / 1000) }); } }   // this round has put them in the first three: a short fanfare (after the card's own sound)
+function openCard(result, tapped) {   // result: the round just played (or nothing: the list alone, from the Top scores button or a tap on the base)
+  if (cardOpen || (game && game.playing) || (rec && rec.recording)) return; cardOpen = true; cardResult = result || null; armed = false; lastFocus = document.activeElement;
+  const me = scores.me; $('scTitle').textContent = result ? 'Your score' : me.best ? 'Your best score' : 'Top scores';
+  $('scNum').hidden = !(result || me.best); $('scNum').textContent = fmt(result ? result.score : me.best);
+  const P = result && result.parts; $('scParts').hidden = !P; if (P) $('scParts').textContent = 'Snowflakes ' + fmt(P.snow) + ' · Letters ' + fmt(P.letters) + ' · Gifts ' + fmt(P.gifts) + ' · Jumps ' + fmt(P.jumps) + ' · Speed ' + fmt(P.speed);
+  $('scTop').hidden = !(result || me.best); $('scMe').hidden = true; $('scForm').hidden = !(result && !me.name); $('scName').value = me.name || '';
+  fillList(); $('score').hidden = false; cheered = !result; if (result) { cardAt = performance.now(); sounds.play('card'); }
+  if (tapped) { const sc = $('score'); sc.style.pointerEvents = 'none'; setTimeout(() => { sc.style.pointerEvents = ''; }, 350); }   // (opened by a tap on the base: the tail of that same tap must not press anything on the card)
+  if (result && me.name) saveScore(me.name, result.score);                                 // a player whose name is known: saved at once
+  else if (result) say('Your score: ' + fmt(result.score) + '. Type your name for the top scores.');
+  else { if (me.name && boardNow) meLine(boardNow, null); scores.top().then(b => { showBoard(b); if (cardOpen && me.name) meLine(b, null); }); }
+  if (result && !me.name && matchMedia('(pointer: fine)').matches) $('scName').focus({ preventScroll: true }); else $('scTitle').focus({ preventScroll: true });   // (on a phone the keyboard waits for a tap on the box)
+}
+function closeCard() { if (!cardOpen) return; cardOpen = false; $('score').hidden = true; try { (lastFocus && document.contains(lastFocus) ? lastFocus : $('shake')).focus({ preventScroll: true }); } catch (e) {} }
+$('scForm').onsubmit = e => { e.preventDefault(); const nm = scores.clean($('scName').value); if (!nm) { $('scName').value = ''; $('scName').focus(); say('Type a name first.'); return; } saveScore(nm, cardResult ? cardResult.score : scores.me.best); };
+$('scRename').onclick = () => { $('scMe').hidden = true; $('scForm').hidden = false; $('scName').value = scores.me.name || ''; $('scName').focus(); $('scName').select(); };
+$('scClose').onclick = closeCard; $('scAgain').onclick = async () => { closeCard(); if ($('go')) await $('start').onclick(); g.shake(); };   // (the list can be opened before "Tap to start": Play again then starts the globe first)
+$('score').addEventListener('pointerdown', e => { if (e.target === $('score')) closeCard(); });
+$('tops').onclick = () => openCard(null);
+addEventListener('keydown', e => { if (e.key === 'Escape' && cardOpen) { e.preventDefault(); closeCard(); } });
+scores.top().then(showBoard);
+Object.assign(window.__globe, { scores, card: { open: openCard, close: closeCard, names: plateNames, onScores: plateOnScores, get board() { return boardNow; }, get isOpen() { return cardOpen; } } });   // (for testing)
+
 
 // "Record your voice: make the snowman talk!" The recording is kept in this page only: it is not sent anywhere.
 const NO_MIC = 'The microphone isn’t available. Allow this page to use it, then try again.';
@@ -161,15 +302,17 @@ const recLabel = (a, b) => { $('rec').querySelector('b').textContent = a; $('rec
 let recTick = 0;
 async function finishRecording() {
   clearInterval(recTick); document.body.classList.remove('recording'); $('rec').setAttribute('aria-pressed', 'false');
-  const made = await rec.stop(); g.sound(true);
+  const made = await rec.stop(); g.sound(soundOn);
   if (!made) { recLabel('Record your voice', 'Make the snowman talk!'); setHint('I didn’t hear anything. Try again.', false); say('I didn’t hear anything. Try again.'); return; }
   mine = made; recLabel('Record again', 'Tap him to hear it'); setHint('Listen!', true);
+  if (!soundOn) { setHint('Turn the sound on, then tap the snowman to hear it.', false); return; }   // (the sound was switched off while the microphone was open)
   mine.say(() => { if (!(game && game.playing)) setHint('Tap the snowman to hear it again.', false); afterSpeech(); });   // he says it at once, his mouth moving to it
 }
 $('rec').onclick = async () => {
   if (!rec || (game && game.playing)) return;
   if (rec.recording) return finishRecording();
   if (line) line.hush(); if (mine) mine.hush(); held = ''; armed = false;
+  if (!soundOn) setSound(true);   // (to hear him say it back, the sound has to be on)
   setHint('Your recording stays on this phone.', false);
   try { await rec.start(finishRecording); } catch (e) { setHint(NO_MIC, false); say(NO_MIC); return; }
   g.sound(false);   // (so the globe's own bells are not recorded along with the voice)
@@ -178,19 +321,36 @@ $('rec').onclick = async () => {
   recTick = setInterval(() => { if (rec.recording) recLabel('Recording… ' + Math.ceil(rec.left), 'Tap to finish'); }, 250);
 };
 // a tap on him makes him hop; once the visitor has recorded a line, it also makes him say it
-if (figure) { const hop = figure.tap.bind(figure); figure.tap = () => { const r = hop(); if (mine && !speakingNow() && !(rec && rec.recording) && !(game && game.playing)) mine.say(afterSpeech); return r; }; }
+if (figure) { const hop = figure.tap.bind(figure); figure.tap = () => { const r = hop(); if (mine && soundOn && !speakingNow() && !(rec && rec.recording) && !(game && game.playing)) mine.say(afterSpeech); return r; }; }
 
 const lowRoom = () => ($('bar').classList.contains('two') ? 82 + $('bar').offsetHeight : 144);   // room for the buttons under the globe
-addEventListener('resize', () => g.set({ top: topRoom(), bottom: lowRoom() })); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => g.set({ top: topRoom() }));
+addEventListener('resize', () => fit({ top: topRoom(), bottom: lowRoom() })); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fit({ top: topRoom() }));
 try { document.fonts.load('900 64px Archivo'); } catch (e) {}
-$('start').disabled = false; $('start').textContent = 'Tap to start'; $('start').focus();
-$('start').onclick = async () => { if (line) line.unlock(); await g.start(); started = true; $('go').remove(); $('bar').hidden = false; $('shake').focus({ preventScroll: true });
-  const tip = 'Shake your phone, tilt it, or press Shake to make it snow.' + (game ? ' When the snow settles, help the snowman catch a word.' : '');
-  if (line) { held = tip; setTimeout(() => line.say(afterSpeech), 330); } else say(msg + '. ' + tip); };   // (the recording begins with half a second of quiet, so his first word comes one second after the globe opens)
+$('start').disabled = false; $('start').textContent = 'Tap to start'; $('start').focus(); if (soundOn) sounds.prepare();
+$('start').onclick = async () => { if (soundOn) sounds.unlock(); if (line) line.unlock(); await g.start(); started = true; $('go').remove(); $('bar').hidden = false; $('shake').focus({ preventScroll: true });
+  const tip = 'Shake your phone, tilt it, or press Shake to make it snow.' + (game ? ' When the snow settles, catch snowflakes to build the snowman and letters to spell Happy Holidays. Slide him with a finger or the Left and Right buttons, and press Jump to hop over branches and campfires.' : '');
+  if (line && soundOn) { greeted = true; held = tip; setTimeout(() => line.say(afterSpeech), 330); } else say(msg + '. ' + tip); };   // (the recording begins with half a second of quiet, so his first word comes one second after the globe opens)
 $('shake').onclick = () => g.shake();
-$('share').onclick = () => AAShareLink.open({ url: location.href.split('#')[0], title: 'Snowman Snow Globe', text: 'Shake it, then help the snowman catch a word!' });
+// Sound off: the notes, the recorded sounds and his voice all stop (he stops in the middle of a word). Sound on: they are back; and if
+// he has not said his hello yet this visit, he says it now.
+function setSound(on, tell) {
+  soundOn = !!on; try { localStorage.setItem(SOUND_KEY, soundOn ? 'on' : 'off'); } catch (e) {}
+  $('snd').setAttribute('aria-pressed', String(soundOn)); sounds.on = soundOn; if (!(rec && rec.recording)) g.sound(soundOn);
+  if (!soundOn) { if (line) line.hush(); if (mine) mine.hush(); }
+  else { if (started) sounds.unlock(); else sounds.prepare();
+    if (tell && started && line && !greeted && !(game && game.playing) && !(rec && rec.recording) && !cardOpen) { greeted = true; line.say(afterSpeech); } }
+  if (tell) say(soundOn ? 'Sound on.' : 'Sound off.');
+}
+$('snd').onclick = () => { setSound(!soundOn, true); if (soundOn) setTimeout(() => sounds.play('tap'), 60); };
+addEventListener('keydown', e => { if ((e.key === 'm' || e.key === 'M') && !e.metaKey && !e.ctrlKey && !e.altKey && !e.repeat && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName || '')) setSound(!soundOn, true); });
+// a soft wooden tap under every button, here and in the game (not while the microphone is open: it would be in the recording)
+const tapOn = e => { const b = e.target && e.target.closest ? e.target.closest('button') : null; return !!b && !b.disabled && !(rec && rec.recording); };
+addEventListener('pointerdown', e => { if (tapOn(e)) sounds.play('tap'); }, { capture: true, passive: true });
+addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat && tapOn(e)) sounds.play('tap'); }, true);
+Object.assign(window.__globe, { setSound });   // (for testing)
+$('share').onclick = () => AAShareLink.open({ url: location.href.split('#')[0], title: 'Snowman Snow Globe', text: 'Shake it, then build the snowman and spell Happy Holidays!' });
 $('share2').onclick = () => $('share').click();
-addEventListener('keydown', e => { if ((e.key === 's' || e.key === 'S') && !e.metaKey && !e.ctrlKey && !$('go') && !(game && game.playing)) g.shake(); });
+addEventListener('keydown', e => { if ((e.key === 's' || e.key === 'S') && !e.metaKey && !e.ctrlKey && !$('go') && !(game && game.playing) && !cardOpen && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName || '')) g.shake(); });
 </script>
 </body>
 </html>

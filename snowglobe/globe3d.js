@@ -13,6 +13,12 @@
    held = a game is holding it, still = keep still for a close-up, bare = leave its logo off, talk = how wide its mouth is open). It can also return focus (a spot on it, such as a logo: where
    it is in the picture is reported every frame as figure.focus) and badge (that logo as a flat picture), for a view that zooms
    into the spot and back out of it.
+   A figure that can be built up piece by piece returns pieces: true and shape (see figures/ora-snowman.js). A game then sets
+   figure.made = { torso, base, armR, armL, gloveR, gloveL, scarf, buttons } (passed on as state.made; null = whole), and reads
+   figure.shape: where its parts are just now in the picture's measure, with heights counted up from its feet.
+   A figure can also return marks: named points on it ({ hat: { object, at: [x, y, z] in that object's own measure }, … }).
+   Where each one is in the picture just drawn is reported every frame as figure.marks.hat = [x, y] (the picture runs from −1
+   to 1 each way, y downward), exactly as drawn: turned, leaning, jumping. A game can put something there (a flame, say).
 
    Options (all optional):
      fit    1      bigger or smaller than the automatic size (1.1 = 10% bigger)
@@ -113,7 +119,11 @@ export async function createModel(source, o = {}) {
     canvas, ready: true, air: 0, tris, clips: clips.map(c => c.name), reach: 0, height: 0,
     feetV: feet + SINK - (o.lift || 0),   // where its feet are in the picture it draws (0 = the middle, 1 = the bottom edge)
     pose: null,                           // a game can hold it: { yaw, lean, look, up, cheer, walk, still, bare } (then it doesn't sway, follow a drag or jump at a shake)
+    pieces: !!(custom && custom.pieces),  // it can be built up piece by piece…
+    made: null,                           // …as far as this says: { torso, base, armR, armL, gloveR, gloveL, scarf, buttons } (null = whole)
+    shape: null,                          // where its parts are just now: { top, half, body, arms, balls: [[x, y, r] …], spots: { name: [x, y] } } (half: how far it spreads, arms and all; body: without them)
     focus: null,                          // where its spot (a logo) is in the picture, if the figure has one
+    marks: null,                          // where its named points are in the picture just drawn: { name: [x, y] } (−1 … 1 each way, y downward), if the figure has any
     badge: (custom && custom.badge) || null,
     get grown() { return grown; },
     get facing() { const a = spin.rotation.y % (Math.PI * 2); return a > Math.PI ? a - Math.PI * 2 : a < -Math.PI ? a + Math.PI * 2 : a; },   // which way it is turned just now
@@ -150,9 +160,14 @@ export async function createModel(source, o = {}) {
       }
       spin.scale.set(1 / Math.sqrt(sq), sq, 1 / Math.sqrt(sq)); tilt.position.y = y0 + y * grown;
       let talk = 0; try { talk = Math.max(0, Math.min(1, +(typeof M.talk === 'function' ? M.talk() : M.talk) || 0)); } catch (e) {}
-      if (custom) try { custom.update(t, dt, { look: P ? P.look || 0 : 0, up: P ? P.up || 0 : 0, cheer, air: y, grown, held, still: !!(P && P.still), bare: !!(P && P.bare), walk: P ? P.walk || 0 : 0, talk }); } catch (e) {}
+      if (custom) try { custom.update(t, dt, { look: P ? P.look || 0 : 0, up: P ? P.up || 0 : 0, cheer, air: y, grown, held, still: !!(P && P.still), bare: !!(P && P.bare), walk: P ? P.walk || 0 : 0, talk, made: M.made || null }); } catch (e) {}
+      const sh = custom && custom.shape;
+      if (sh) { const co = Math.cos(spin.rotation.y), si = Math.sin(spin.rotation.y), up = v => (v - box.min.y) * k, spots = {};   // (turned the way it is facing; heights from its feet)
+        for (const n in sh.spots) { const q = sh.spots[n]; spots[n] = [((q[0] - mid.x) * co + ((q[2] || 0) - mid.z) * si) * k, up(q[1])]; }
+        const body = Math.min(.6, sh.half * k); M.shape = { top: up(sh.top), half: sh.arms ? M.reach : body, body, arms: !!sh.arms, balls: sh.balls.map(b => [(b[0] - mid.x) * co * k, up(b[1]), b[2] * k]), spots }; }
       if (camera.view && camera.view.enabled) camera.clearViewOffset();
       scene.updateMatrixWorld(); spot();           // (measured with the whole picture in view)
+      const mk = custom && custom.marks; if (mk) { const out = M.marks || (M.marks = {}); for (const n in mk) { const q = mk[n]; if (!q || !q.object) continue; fv.fromArray(q.at).applyMatrix4(q.object.matrixWorld).project(camera); const p = out[n] || (out[n] = [0, 0]); p[0] = fv.x; p[1] = -fv.y; } }
       const V = env.view; if (V) camera.setViewOffset(2, 2, V[0] - V[2] + 1, V[1] - V[2] + 1, V[2] * 2, V[2] * 2);
       renderer.render(scene, camera);
     },
@@ -193,4 +208,37 @@ export function winterNight(size = 1024, seed = 7) {
   for (const [base, hgt, col, n] of rows) for (let i = 0; i < n; i++) { const x = (i + rnd()) / n * S, k = .7 + rnd() * .6; if (Math.abs(x - S / 2) < S * .1 && hgt > S * .14) continue; pine(x, base + rnd() * S * .012, hgt * k, col); }
   gr = g.createLinearGradient(0, S * .8, 0, S); gr.addColorStop(0, 'rgba(233,241,255,0)'); gr.addColorStop(.35, 'rgba(240,246,255,.95)'); gr.addColorStop(1, '#f4f8ff'); g.fillStyle = gr; g.fillRect(0, S * .8, S, S * .2);
   return c;
+}
+
+/* The same winter night in layers, for a game in which the wood moves past as the figure walks:
+     const scenery = winterScenery();   →   { sky, layers: [{ canvas, top, speed }, …], haze: { canvas, top } }
+   sky     the still part: night sky, moon and stars (a square picture, like winterNight())
+   layers  the hills and three rows of pines, far to near. Each is a strip as wide as the picture that repeats sideways without
+           a seam (top: where the strip begins, as a part of the picture's height; speed: how fast it passes, compared with the
+           ground under the figure's feet: far things pass slowly)
+   haze    the snowy ground at the bottom of the picture: one column of it, to be stretched across */
+export function winterScenery(size = 1024, seed = 7) {
+  let a = seed >>> 0; const rnd = () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const S = size, TAU = Math.PI * 2, mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+  const sky = mk(S, S), g = sky.getContext('2d');
+  let gr = g.createLinearGradient(0, 0, 0, S); gr.addColorStop(0, '#081028'); gr.addColorStop(.45, '#17306a'); gr.addColorStop(.74, '#5b7fbd'); gr.addColorStop(.86, '#cfe0fb'); gr.addColorStop(1, '#e9f1ff');
+  g.fillStyle = gr; g.fillRect(0, 0, S, S);
+  const mx = S * .7, my = S * .24, mr = S * .062;   // the moon and its halo
+  gr = g.createRadialGradient(mx, my, mr * .6, mx, my, mr * 6); gr.addColorStop(0, 'rgba(255,244,214,.5)'); gr.addColorStop(.25, 'rgba(210,226,255,.16)'); gr.addColorStop(1, 'rgba(210,226,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, S, S);
+  g.fillStyle = '#fff6dc'; g.beginPath(); g.arc(mx, my, mr, 0, 6.283); g.fill();
+  g.fillStyle = 'rgba(214,198,160,.35)'; for (const [dx, dy, r] of [[-.3, -.2, .22], [.25, .3, .16], [.1, -.4, .1]]) { g.beginPath(); g.arc(mx + dx * mr, my + dy * mr, r * mr, 0, 6.283); g.fill(); }
+  for (let i = 0; i < 90; i++) { const x = rnd() * S, y = rnd() * S * .6, r = (.4 + rnd() * 1.2) * S / 1024; g.fillStyle = `rgba(255,255,255,${.25 + rnd() * .65})`; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill(); }   // stars
+  // the strips: each covers the part of the picture from TOP down to just under where the snow begins
+  const TOP = .52, BH = Math.ceil(S * .37), layers = [];
+  const strip = (speed, draw) => { const c = mk(S, BH), q = c.getContext('2d'); q.translate(0, -S * TOP); draw(q); layers.push({ canvas: c, top: TOP, speed }); };
+  const hill = (q, y, amp, col, ph) => { q.fillStyle = col; q.beginPath(); q.moveTo(0, S); for (let x = 0; x <= S; x += 8) q.lineTo(x, y - Math.sin(x / S * TAU + ph) * amp - Math.sin(x / S * TAU * 3 + ph * 2) * amp * .35); q.lineTo(S, S); q.closePath(); q.fill(); };
+  const pine = (q, x, base, hgt, col) => { const w = hgt * .42; q.fillStyle = col; q.beginPath();
+    for (let k = 0; k < 4; k++) { const ty = base - hgt * (1 - k * .2), by = base - hgt * (.62 - k * .2), hw = w * (.28 + k * .24); q.moveTo(x, ty); q.lineTo(x + hw, by); q.lineTo(x - hw, by); q.closePath(); }
+    q.fill(); q.fillRect(x - hgt * .03, base - hgt * .06, hgt * .06, hgt * .08); };
+  strip(.05, q => hill(q, S * .74, S * .03, '#9db7e6', 1.3));
+  strip(.09, q => hill(q, S * .78, S * .022, '#c4d6f6', 4.1));
+  for (const [base, hgt, col, n, speed] of [[S * .77, S * .1, '#56719f', 16, .16], [S * .8, S * .15, '#34507f', 12, .27], [S * .835, S * .21, '#1c3159', 9, .45]])
+    strip(speed, q => { for (let i = 0; i < n; i++) { const x = (i + rnd()) / n * S, k = .7 + rnd() * .6, b = base + rnd() * S * .012; for (const d of [-S, 0, S]) pine(q, x + d, b, hgt * k, col); } });   // (drawn three times over, a picture's width apart, so the strip joins up with itself)
+  const hz = mk(1, Math.ceil(S * .2)), h = hz.getContext('2d'); gr = h.createLinearGradient(0, 0, 0, S * .2); gr.addColorStop(0, 'rgba(233,241,255,0)'); gr.addColorStop(.35, 'rgba(240,246,255,.95)'); gr.addColorStop(1, '#f4f8ff'); h.fillStyle = gr; h.fillRect(0, 0, 1, S * .2);
+  return { sky, layers, haze: { canvas: hz, top: .8 } };
 }
