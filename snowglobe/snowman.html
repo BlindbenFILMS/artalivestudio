@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Snowman Snow Globe · Art Alive</title>
 <meta name="description" content="Shake your phone to make it snow, then build the snowman and spell Happy Holidays.">
 <meta property="og:type" content="website">
@@ -14,6 +14,11 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="A snow globe holding a smiling snowman in an Ora hat and a striped scarf, waving in falling snow, with Happy Holidays from Ora and Shake your phone!">
+<meta property="og:video" content="https://artalivestudio.com/play/share/snowglobe-snowman.mp4?v=1">
+<meta property="og:video:secure_url" content="https://artalivestudio.com/play/share/snowglobe-snowman.mp4?v=1">
+<meta property="og:video:type" content="video/mp4">
+<meta property="og:video:width" content="1200">
+<meta property="og:video:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Happy Holidays from Ora">
 <meta name="twitter:description" content="A snow globe with a game inside. Shake your phone, then build the snowman and spell Happy Holidays.">
@@ -28,6 +33,11 @@
 :root{--night:#0b1530;--snow:#f6f8ff;--gold:#e2b45a;--soft:#c3cde3;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--night);color:var(--snow);font:17px/1.45 "Atkinson Hyperlegible",Verdana,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+/* The page stays the size it opens at: no pinch zoom and no double-tap zoom. (A zoomed game cannot be played, and on a phone there was
+   no way back out, because the game takes every touch.) If it is ever zoomed all the same, the script below marks <html class="zoomed">,
+   and then every part of the page lets a pinch through until it is back at its own size. */
+html,body{touch-action:manipulation;touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html.zoomed,html.zoomed *{touch-action:manipulation!important}
 #stage{position:fixed;inset:0}
 .top{position:fixed;left:0;right:0;top:0;padding:calc(14px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));text-align:center;pointer-events:none}
 .top h1{margin:0;white-space:nowrap;font:900 clamp(20px,7.6vw,46px)/1 Archivo,"Arial Black",Arial,sans-serif;font-stretch:118%;letter-spacing:.02em;text-transform:uppercase;text-shadow:0 2px 18px rgba(0,0,0,.45)}
@@ -35,7 +45,7 @@ html,body{margin:0;height:100%;background:var(--night);color:var(--snow);font:17
 .top p.big{margin-top:12px;color:var(--gold);font:900 clamp(22px,7vw,34px)/1.1 Archivo,"Arial Black",Arial,sans-serif;font-stretch:115%;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 2px 14px rgba(0,0,0,.5);animation:pulse 1.3s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.14);opacity:.8}}
 @media (prefers-reduced-motion:reduce){.top p.big{animation:fade 1.6s ease-in-out infinite}@keyframes fade{50%{opacity:.6}}}
-.bar{position:fixed;left:0;right:0;bottom:calc(78px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:10px;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.bar{position:fixed;left:0;right:0;bottom:calc(var(--low,78px) + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:10px;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
 .bar button,.go button{min-height:52px;padding:0 24px;border-radius:999px;border:2px solid rgba(255,255,255,.35);background:rgba(8,14,32,.55);color:#fff;font:800 15px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.07em;text-transform:uppercase;cursor:pointer}
 .bar button{padding:0 18px;flex:0 1 auto}
 @media (max-width:420px){.bar{gap:8px}.bar button{flex:1 1 0;padding:0 8px;font-size:13.5px;letter-spacing:.05em}}
@@ -50,16 +60,11 @@ button:focus-visible,a:focus-visible{outline:3px solid #7cc4ff;outline-offset:3p
 .own b{font:800 14px/1.2 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#e2b45a}
 .own span{font-size:12.5px;color:#c3cde3}
 .own:focus-visible{outline:3px solid #7cc4ff;outline-offset:3px}
-.sharetop{position:fixed;z-index:6;top:calc(10px + env(safe-area-inset-top,0px));right:max(10px,env(safe-area-inset-right,0px));display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;border:2px solid rgba(255,255,255,.4);background:rgba(8,14,32,.6);color:#fff;font:800 13px/1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
-.sharetop svg{width:18px;height:18px}
-@media (max-width:700px){.sharetop{top:calc(108px + env(safe-area-inset-top,0px));right:auto;left:50%;transform:translateX(-50%)}}
-@media (max-width:700px) and (max-height:740px){.sharetop{display:none}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (max-height:520px){.top p{display:none}}
 
-/* the greeting, its pulsing line and the button under it: each in its own space, a small gap between, never touching the globe */
+/* the greeting and its pulsing line: each in its own space, a small gap between, never touching the globe */
 .top p,.top p.big{margin-top:8px;min-height:calc(clamp(22px,7vw,34px) * 1.15);display:flex;align-items:center;justify-content:center}
-@media (max-width:700px){.sharetop,.vistop{top:var(--btnTop,108px) !important}}
 
 /* "Make your own" and "More globes" side by side at the bottom */
 .lowrow{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:8px;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
@@ -67,20 +72,10 @@ button:focus-visible,a:focus-visible{outline:3px solid #7cc4ff;outline-offset:3p
 @media (max-width:420px){.lowrow .own{flex:1 1 0;padding:8px 10px}.lowrow .own b{font-size:12.5px;letter-spacing:.04em}.lowrow .own span{font-size:11.5px}}
 .top p.big{white-space:nowrap;font-size:clamp(17px,5.3vw,34px)}
 
-/* the bottom is one big SHAKE button, with a small Share beside it. After a game SHAKE is half as wide, and beside it is RECORD YOUR VOICE */
+/* the bottom is one big SHAKE button, and nothing else */
 .bar{max-width:680px;margin:0 auto;align-items:stretch}
 .bar .pri{flex:1 1 0;min-height:62px;font-size:20px;letter-spacing:.14em}
-.bar #share{flex:0 0 auto;min-height:62px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-.bar #share svg{display:none;width:20px;height:20px}
-.bar .rec{flex:1 1 0;min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 10px;background:#ff5a45;border-color:#ff5a45;color:#1a0d08}
-.bar .rec b{font:800 14.5px/1.1 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em}
-.bar .rec span{font:700 11.5px/1.15 Archivo,Arial,sans-serif;letter-spacing:.04em}
-body.recording .bar .rec{background:#fff;color:#8f1408;animation:recpulse 1s ease-in-out infinite}
-@keyframes recpulse{50%{box-shadow:0 0 0 7px rgba(255,90,69,.5)}}
-@media (prefers-reduced-motion:reduce){body.recording .bar .rec{animation:none;box-shadow:0 0 0 5px rgba(255,90,69,.6)}}
-@media (max-width:420px){.bar .pri{flex:1 1 0;font-size:19px;letter-spacing:.14em}.bar #share{flex:0 0 auto;padding:0 14px}}
-@media (max-width:560px){.bar.two{gap:8px}.bar.two .pri{font-size:17px;letter-spacing:.1em;padding:0 6px}.bar.two #share{padding:0 13px}.bar.two #share svg{display:block}.bar.two #share .lbl{display:none}.bar .rec{padding:6px 4px}.bar .rec b{font-size:13.5px;letter-spacing:.03em}.bar .rec span{font-size:11.5px;letter-spacing:.01em}}
-@media (max-width:340px){.bar.two #share{display:none}}
+@media (max-width:420px){.bar .pri{flex:1 1 0;font-size:19px;letter-spacing:.14em}}
 
 /* the score card: after a round, the score, a box for the player's name, and the top scores */
 .score{position:fixed;inset:0;z-index:7;display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));background:rgba(6,10,24,.66)}
@@ -122,15 +117,13 @@ body.recording .bar .rec{background:#fff;color:#8f1408;animation:recpulse 1s eas
 .score h3{grid-column:2;grid-row:1;margin:0 0 6px}.score ol{grid-column:2;grid-row:2/6;min-height:0}.score .fine{grid-column:2;grid-row:6;align-self:center}
 }
 
-/* "Top scores": a button beside Share (on a phone the two sit side by side under the greeting) */
-@media (min-width:701px){.toptop{top:calc(64px + env(safe-area-inset-top,0px))}}
-@media (max-width:700px){body.tops #share2{transform:translateX(calc(-100% - 5px))}.toptop{transform:translateX(5px)}body.tops #share2,.toptop{min-width:150px;justify-content:center}}   /* (the same width, so the pair sits in the middle) */
+/* "Top scores": a small round button with a trophy, opposite the Sound button. On a phone it is at the globe's right shoulder (beside the
+   top of the glass, at the edge of the screen); on a wide screen, in the top right corner. (The base of the globe opens the list too,
+   while it says TOP SCORES or one of the names.) */
+.toptop{position:fixed;z-index:6;top:var(--shoulder,96px);right:max(5px,env(safe-area-inset-right,0px));display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:999px;border:2px solid rgba(226,180,90,.9);background:rgba(8,14,32,.6);color:#e2b45a;font-size:0;cursor:pointer}
+.toptop svg{width:24px;height:24px}
 .toptop[hidden]{display:none}
-/* on a short phone there is no room for it under the greeting: there it is a round button, a trophy, at the globe's right shoulder (beside the top of the glass, at the edge of the screen) */
-@media (max-width:700px) and (max-height:740px){.toptop{display:inline-flex;top:var(--shoulder,96px) !important;left:auto;right:max(5px,env(safe-area-inset-right,0px));transform:none;justify-content:center;width:44px;min-width:0;padding:0;gap:0;font-size:0;border-color:rgba(226,180,90,.9);color:#e2b45a}.toptop svg{width:24px;height:24px}}
-
-/* between a phone and a wide screen, Share and Top scores are round buttons (with their words they would reach the greeting and the line under it) */
-@media (min-width:701px) and (max-width:899px){#share2,.toptop{justify-content:center;width:44px;min-width:0;padding:0;gap:0;font-size:0}#share2 svg,.toptop svg{width:22px;height:22px}}
+@media (min-width:701px){.toptop{top:calc(10px + env(safe-area-inset-top,0px));right:max(10px,env(safe-area-inset-right,0px))}}
 /* SOUND on or off: a small round button. On a phone it is at the globe's left shoulder (beside the top of the glass, at the edge of the screen: the greeting fills the top); on a wide screen, in the top left corner. It turns all of it off or on: the notes, the recorded sounds, his voice */
 .snd{position:fixed;z-index:6;top:var(--shoulder,96px);left:max(5px,env(safe-area-inset-left,0px));display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:999px;border:2px solid rgba(255,255,255,.4);background:rgba(8,14,32,.6);color:#fff;cursor:pointer;transition:opacity .35s ease}
 .snd svg{width:24px;height:24px}
@@ -142,16 +135,15 @@ body.recording .bar .rec{background:#fff;color:#8f1408;animation:recpulse 1s eas
 body.playing .snd{opacity:0;pointer-events:none}
 
 /* while the game is on, the page's own words and buttons step back */
-.top,.bar,.lowrow,.sharetop{transition:opacity .35s ease}
-body.playing .top,body.playing .bar,body.playing .lowrow,body.playing .sharetop{opacity:0;pointer-events:none}
+.top,.bar,.lowrow,.toptop{transition:opacity .35s ease}
+body.playing .top,body.playing .bar,body.playing .lowrow,body.playing .toptop{opacity:0;pointer-events:none}
 </style>
 </head>
 <body>
 <div id="stage" role="img" aria-label="A snow globe"></div>
 <header class="top"><h1 id="msg">Happy Holidays</h1><p id="hint" class="big">Shake your phone!</p></header>
-<div class="bar" id="bar" hidden><button type="button" class="pri" id="shake">Shake</button><button type="button" class="rec" id="rec" aria-pressed="false" hidden><b>Record your voice</b><span>Make the snowman talk!</span></button><button type="button" id="share" aria-label="Share this snow globe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M5 13v7h14v-7"/></svg><span class="lbl">Share</span></button></div>
-<button type="button" class="sharetop" id="share2" aria-label="Share this snow globe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M5 13v7h14v-7"/></svg>Share</button>
-<button type="button" class="sharetop toptop" id="tops" aria-label="Top scores" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3"/><path d="M17 6h3v1a3 3 0 0 1-3 3"/><path d="M12 14v4"/><path d="M8 20h8"/></svg>Top scores</button>
+<div class="bar" id="bar" hidden><button type="button" class="pri" id="shake">Shake</button></div>
+<button type="button" class="toptop" id="tops" aria-label="Top scores" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3"/><path d="M17 6h3v1a3 3 0 0 1-3 3"/><path d="M12 14v4"/><path d="M8 20h8"/></svg>Top scores</button>
 <div class="lowrow"><a class="own" href="./"><b>Make your own</b><span>Your photo or video, free</span></a><a class="own" href="../play/snowglobes.html"><b>More globes</b><span>See all eight</span></a></div>
 <button type="button" class="snd" id="snd" aria-label="Sound" aria-pressed="true"><svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path d="M15.6 9.2a4 4 0 0 1 0 5.6"/><path d="M18.3 6.6a7.6 7.6 0 0 1 0 10.8"/></svg><svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path d="M16 9.5l5 5"/><path d="M21 9.5l-5 5"/></svg></button>
 <div class="go" id="go"><button type="button" id="start" disabled>Loading…</button><p id="goTip">Shake or tilt your phone, or swipe across the globe. When the snow settles, catch snowflakes to build the snowman and letters to spell Happy Holidays. Slide him with a finger or the arrow buttons, and press Jump to hop over branches and campfires.</p></div>
@@ -163,12 +155,29 @@ body.playing .top,body.playing .bar,body.playing .lowrow,body.playing .sharetop{
 <div class="row ends"><button type="button" class="pri" id="scAgain">Play again</button><button type="button" id="scClose">Close</button></div>
 </div></div>
 <p class="sr" id="live" aria-live="polite"></p>
-<script src="../site-config.js"></script><script src="globe.js"></script><script src="sharelink.js"></script>
+<script>
+// THE PAGE STAYS THE SIZE IT OPENS AT: no pinch zoom, no double-tap zoom. The style sheet does most of it (touch-action); Safari
+// also needs its own pinch events stopped, and two fingers moving together are stopped everywhere. If the page is ever zoomed all
+// the same (some phones can force it), nothing is stopped until it is back at its own size: a pinch anywhere, even on the game,
+// brings it back, and then it is locked again.
+(function () {
+  var vv = window.visualViewport, root = document.documentElement;
+  function big() { return !!vv && vv.scale > 1.01; }
+  function mark() { root.classList.toggle('zoomed', big()); }
+  if (vv) { vv.addEventListener('resize', mark); vv.addEventListener('scroll', mark); mark(); }
+  function stop(e) { if (!big() && e.cancelable) e.preventDefault(); }
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (n) { document.addEventListener(n, stop, { passive: false }); });
+  document.addEventListener('touchmove', function (e) { if (e.touches && e.touches.length > 1) stop(e); }, { passive: false });
+  document.addEventListener('dblclick', function (e) { var t = e.target; if (!(t && t.closest && t.closest('input,textarea'))) stop(e); });
+  window.__zoomLock = { big: big, mark: mark };   // (for testing)
+})();
+</script>
+<script src="../site-config.js"></script><script src="globe.js"></script>
 <script type="module">
 import { createModel, winterNight, winterScenery } from './globe3d.js';
 import { build } from './figures/ora-snowman.js';      // the Ora snowman, made in Claude Design (the logo is on his hat)
 import { createGame, WORDS } from './snowgame.js';
-import { createLine, createRecorder } from './speak.js';
+import { createLine } from './speak.js';
 import { createScores } from './scores.js';                 // the top scores, shared by everyone who plays from this link
 import { createSounds } from './sounds.js';                 // the recorded sounds: snow, wood, glass, fire (they go with the game's own notes)
 import { hello } from './figures/ora-snowman/hello.js';   // what he says when the globe opens, and how his mouth moves to it
@@ -194,25 +203,22 @@ const backdrop = winterNight();
 let figure = null; try { figure = await createModel(build, { size: sizeNow() }); } catch (e) { figure = null; }   // no 3D on this device: the globe still snows
 $('stage').setAttribute('aria-label', 'A snow globe. Inside the glass: ' + (figure ? 'a smiling snowman in a blue woolly hat with the Ora logo on it and a striped scarf, waving, in a pine wood at night.' : 'a pine wood at night.'));
 
-// how much room the top needs: the greeting, then (on phones) the button under it, each with a small gap
-function topRoom() {
-  const hd = document.querySelector('.top'), hb = hd ? hd.getBoundingClientRect().bottom : 100;
-  document.documentElement.style.setProperty('--btnTop', Math.round(hb + 10) + 'px');
-  if (innerWidth > 700) return hb + 12;
-  let low = hb;
-  if (!matchMedia('(max-width:700px) and (max-height:740px)').matches) document.querySelectorAll('.sharetop').forEach(b => { if (getComputedStyle(b).display !== 'none' && b.getBoundingClientRect().top >= hb) low = Math.max(low, hb + 10 + (b.offsetHeight || 44)); });   // (the buttons that sit under the greeting; on a short phone Top scores is at the globe's shoulder instead, and needs no room)
-  return low + 10;
-}
+// how much room the top needs: the greeting and the line under it, and a small gap (the two small round buttons are at the globe's
+// shoulders, or in the corners of a wide screen, and need none)
+function topRoom() { const hd = document.querySelector('.top'), hb = hd ? hd.getBoundingClientRect().bottom : 100; return hb + (innerWidth > 700 ? 12 : 10); }
+// how much room the bottom needs: the two links, a gap, the SHAKE button, a gap. On the narrowest phones the links' words take more
+// lines, so the links are taller: the SHAKE button then sits higher (--low: how far up it sits), just clear of them.
+function lowRoom() { const lr = document.querySelector('.lowrow'), h = lr ? lr.getBoundingClientRect().height : 60, low = Math.max(78, Math.round(10 + h + 8)); document.documentElement.style.setProperty('--low', low + 'px'); return low + 66; }
 // A second after the globe opens he says his hello, his mouth moving with the words. Nothing stops him: not a shake, and not
 // the game, which begins as soon as the snow settles whether he has finished or not (he goes on speaking through the zoom).
-// After a game, the visitor can record a line of their own for him to say (mine).
+// ("Record your voice", a line of the visitor's own for him to say, was taken off the page: rec and mine are left empty. See the README.)
 line = figure ? createLine(hello) : null;
-const rec = figure ? createRecorder({ seconds: 12 }) : null;
+const rec = null;
 if (figure) figure.talk = () => (mine && mine.speaking ? mine.mouth() : line ? line.mouth() : 0);
 let armed = false, auto = false, started = false, stormNow = false;
 function afterSpeech() { if (held) { const t = held; held = ''; if (!(game && game.playing)) say(t); } }   // he has finished: now whatever was waiting to be read out
 const AGAIN = WORDS.length > 1 ? 'NEXT WORD' : 'PLAY AGAIN';   // what the base says in turn with the last phrase spelled (a tap on it shakes the globe)
-const g = AAGlobe.create($('stage'), { picture: backdrop, model: figure, name: mem.word ? [mem.word, AGAIN] : '', base: 'blue', top: topRoom(), bottom: 144,
+const g = AAGlobe.create($('stage'), { picture: backdrop, model: figure, name: mem.word ? [mem.word, AGAIN] : '', base: 'blue', top: topRoom(), bottom: lowRoom(),
   onHint(t, big) { if (game && game.playing || (rec && rec.recording)) return; setHint(t, big); if (big) say(t); },
   say(t) { say(t); },
   onPlate() { if (!started || (game && game.playing)) return; if (plateOnScores()) openCard(null, true); else g.shake(); },   // a tap on the base: where it says PLAY AGAIN it shakes the globe; where it says TOP SCORES (or one of the names) it opens the list
@@ -240,7 +246,6 @@ async function round() {
   // …and now he grows, jumps and spins, and the phrase arrives in gold on the glass and settles on the base
   figure.grow(sizeNow()); figure.shake(1, true);
   plateFrom = performance.now() + 3100; setPlate(); g.magic(word); plateAt = performance.now() / 1000 + 2.85; [1046.5, 1318.5, 1568, 2093].forEach((f, k) => g.bell(f, .3 + k * .09, .06));
-  if (rec && $('rec').hidden) { $('rec').hidden = false; $('bar').classList.add('two'); fit({ bottom: lowRoom() }); }   // after a game: SHAKE is half as wide, and beside it "Record your voice" (the row is a little taller, so the globe makes room)
   if (result && typeof result === 'object') { waiting = result; cardTimer = setTimeout(() => { waiting = null; openCard(result); }, 2300); }   // …and when the phrase has had its moment, the score card
 }
 
@@ -303,38 +308,12 @@ scores.top().then(showBoard);
 Object.assign(window.__globe, { scores, card: { open: openCard, close: closeCard, names: plateNames, onScores: plateOnScores, get board() { return boardNow; }, get isOpen() { return cardOpen; } } });   // (for testing)
 
 
-// "Record your voice: make the snowman talk!" The recording is kept in this page only: it is not sent anywhere.
-const NO_MIC = 'The microphone isn’t available. Allow this page to use it, then try again.';
-const recLabel = (a, b) => { $('rec').querySelector('b').textContent = a; $('rec').querySelector('span').textContent = b; };
-let recTick = 0;
-async function finishRecording() {
-  clearInterval(recTick); document.body.classList.remove('recording'); $('rec').setAttribute('aria-pressed', 'false');
-  const made = await rec.stop(); g.sound(soundOn);
-  if (!made) { recLabel('Record your voice', 'Make the snowman talk!'); setHint('I didn’t hear anything. Try again.', false); say('I didn’t hear anything. Try again.'); return; }
-  mine = made; recLabel('Record again', 'Tap him to hear it'); setHint('Listen!', true);
-  if (!soundOn) { setHint('Turn the sound on, then tap the snowman to hear it.', false); return; }   // (the sound was switched off while the microphone was open)
-  mine.say(() => { if (!(game && game.playing)) setHint('Tap the snowman to hear it again.', false); afterSpeech(); });   // he says it at once, his mouth moving to it
-}
-$('rec').onclick = async () => {
-  if (!rec || (game && game.playing)) return;
-  if (rec.recording) return finishRecording();
-  if (line) line.hush(); if (mine) mine.hush(); held = ''; armed = false;
-  if (!soundOn) setSound(true);   // (to hear him say it back, the sound has to be on)
-  setHint('Your recording stays on this phone.', false);
-  try { await rec.start(finishRecording); } catch (e) { setHint(NO_MIC, false); say(NO_MIC); return; }
-  g.sound(false);   // (so the globe's own bells are not recorded along with the voice)
-  document.body.classList.add('recording'); $('rec').setAttribute('aria-pressed', 'true'); recLabel('Recording… ' + Math.ceil(rec.left), 'Tap to finish'); setHint('Speak now!', true); say('Recording.');
-  try { navigator.vibrate && navigator.vibrate(60); } catch (e) {}
-  recTick = setInterval(() => { if (rec.recording) recLabel('Recording… ' + Math.ceil(rec.left), 'Tap to finish'); }, 250);
-};
-// a tap on him makes him hop; once the visitor has recorded a line, it also makes him say it
-if (figure) { const hop = figure.tap.bind(figure); figure.tap = () => { const r = hop(); if (mine && soundOn && !speakingNow() && !(rec && rec.recording) && !(game && game.playing)) mine.say(afterSpeech); return r; }; }
 
-const lowRoom = () => ($('bar').classList.contains('two') ? 82 + $('bar').offsetHeight : 144);   // room for the buttons under the globe
-addEventListener('resize', () => fit({ top: topRoom(), bottom: lowRoom() })); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fit({ top: topRoom() }));
+addEventListener('resize', () => fit({ top: topRoom(), bottom: lowRoom() })); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fit({ top: topRoom(), bottom: lowRoom() }));
 try { document.fonts.load('900 64px Archivo'); } catch (e) {}
 $('start').disabled = false; $('start').textContent = 'Tap to start'; $('start').focus(); if (soundOn) sounds.prepare();
-$('start').onclick = async () => { if (soundOn) sounds.unlock(); if (line) line.unlock(); await g.start(); started = true; $('go').remove(); $('bar').hidden = false; $('shake').focus({ preventScroll: true });
+let starting = false;   // (a double tap on "Tap to start" is one start, not two)
+$('start').onclick = async () => { if (starting) return; starting = true; if (soundOn) sounds.unlock(); if (line) line.unlock(); await g.start(); started = true; $('go').remove(); $('bar').hidden = false; $('shake').focus({ preventScroll: true });
   const tip = 'Shake your phone, tilt it, or press Shake to make it snow.' + (game ? ' When the snow settles, catch snowflakes to build the snowman and letters to spell Happy Holidays. Slide him with a finger or the Left and Right buttons, and press Jump to hop over branches and campfires.' : '');
   if (line && soundOn) { greeted = true; held = tip; setTimeout(() => line.say(afterSpeech), 330); } else say(msg + '. ' + tip); };   // (the recording begins with half a second of quiet, so his first word comes one second after the globe opens)
 $('shake').onclick = () => g.shake();
@@ -350,13 +329,11 @@ function setSound(on, tell) {
 }
 $('snd').onclick = () => { setSound(!soundOn, true); if (soundOn) setTimeout(() => sounds.play('tap'), 60); };
 addEventListener('keydown', e => { if ((e.key === 'm' || e.key === 'M') && !e.metaKey && !e.ctrlKey && !e.altKey && !e.repeat && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName || '')) setSound(!soundOn, true); });
-// a soft wooden tap under every button, here and in the game (not while the microphone is open: it would be in the recording)
+// a soft wooden tap under every button, here and in the game
 const tapOn = e => { const b = e.target && e.target.closest ? e.target.closest('button') : null; return !!b && !b.disabled && !(rec && rec.recording); };
 addEventListener('pointerdown', e => { if (tapOn(e)) sounds.play('tap'); }, { capture: true, passive: true });
 addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat && tapOn(e)) sounds.play('tap'); }, true);
 Object.assign(window.__globe, { setSound });   // (for testing)
-$('share').onclick = () => AAShareLink.open({ url: location.href.split('#')[0], title: 'Snowman Snow Globe', text: 'Shake it, then build the snowman and spell Happy Holidays!' });
-$('share2').onclick = () => $('share').click();
 addEventListener('keydown', e => { if ((e.key === 's' || e.key === 'S') && !e.metaKey && !e.ctrlKey && !$('go') && !(game && game.playing) && !cardOpen && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName || '')) g.shake(); });
 </script>
 </body>
