@@ -17,6 +17,8 @@
                                      it at this pitch), when (seconds from now), from (seconds into it), cut (let it go after this many seconds)
    const fire = sounds.loop('fire')  a sound that goes round. fire.set(level 0 … 1, pan): how much of it just now (call it as often as
                                      you like: it glides); fire.stop(): fade it out and let it go
+   const eng = sounds.engine()       the snowmobile's engine. It is not a recording: it is made here, from two low notes that putter.
+                                     eng.set(level 0 … 1, how fast it is turning 0 … 1) as often as you like; eng.stop()
    sounds.on = false                 everything here off (or on again). sounds.on reads it back
    sounds.state, sounds.log          (for testing) what is loaded, and the last 300 sounds played
    ───────────────────────────────────────────────────────────── */
@@ -46,7 +48,7 @@ const FILES = {
 // MASTER moves them all together.
 const MASTER = 0;
 const LOUD = { flake: -39, big: -35, letter: -29, gift: -29, piece: -32, jump: -33, land: -32, step: -45, burn: -28, trip: -28, icicle: -29,
-  finale: -25, zoom: -31, card: -28, top: -26, tap: -38, night: -44, fire: -31 };
+  finale: -25, zoom: -31, card: -28, top: -26, tap: -38, night: -44, fire: -31, engine: -40 };   // (engine: the snowmobile's, made here: a low purr, well under the notes that say what is coming)
 // How loud each file is as it was written (measured the same way, by the script that prepared them): the game needs this to play
 // each one at the figure above. A file that is replaced needs its figure measured again.
 const AS_WRITTEN = { 'flake-1': -23.8, 'flake-2': -20.5, 'flake-3': -20.9, 'flake-big': -20.4, letter: -20.5, gift: -20.4, piece: -22.8, jump: -20.4, land: -20.3,
@@ -129,13 +131,36 @@ export function createSounds({ base = new URL('./sounds/', import.meta.url).href
     loops.push(me); return me;
   }
 
+  // The snowmobile's engine. Two low buzzing notes a fifth apart, their loudness fluttering quickly (the putter of a small engine),
+  // with the top taken off. Turning faster, the notes and the putter rise and a little more of the top is let through. Most of it
+  // lies below what a phone's loudspeaker plays, so on a phone it is a soft purr; it never covers the notes a player rides by.
+  function engine() {
+    let n = null, want = 0, rev = 0;
+    function start() {
+      if (n || !live()) return;
+      try { const o1 = AC.createOscillator(), o2 = AC.createOscillator(), g2 = AC.createGain(), am = AC.createGain(), lfo = AC.createOscillator(), depth = AC.createGain(), f = AC.createBiquadFilter(), out = AC.createGain();
+        o1.type = 'sawtooth'; o2.type = 'square'; g2.gain.value = .3; am.gain.value = .62; lfo.type = 'sine'; depth.gain.value = .36; f.type = 'lowpass'; f.Q.value = .7; out.gain.value = 0;
+        o1.connect(am); o2.connect(g2); g2.connect(am); lfo.connect(depth); depth.connect(am.gain); am.connect(f); f.connect(out); out.connect(OUT);
+        o1.start(); o2.start(); lfo.start(); n = { o1, o2, lfo, f, out }; tune(.01); note('engine', 'engine', 0, 0, 1); } catch (e) { n = null; }
+    }
+    function tune(glide) { const t = AC.currentTime, f0 = 46 + 42 * rev; n.o1.frequency.setTargetAtTime(f0, t, glide); n.o2.frequency.setTargetAtTime(f0 * 1.505, t, glide); n.lfo.frequency.setTargetAtTime(11 + 14 * rev, t, glide);
+      n.f.frequency.setTargetAtTime(250 + 430 * rev, t, glide); n.out.gain.setTargetAtTime(gain(MASTER + LOUD.engine) * want, t, .12); }
+    const me = {
+      get level() { return want; }, get pan() { return 0; }, get going() { return !!n; }, get rev() { return rev; },
+      set(v, r) { want = clamp(+v || 0, 0, 1); rev = clamp(+r || 0, 0, 1); if (want > 0) start(); if (n && AC) try { tune(.09); } catch (e) {} },
+      stop() { want = 0; if (!n || !AC) { n = null; return; } const t = AC.currentTime, old = n; n = null;
+        try { old.out.gain.cancelScheduledValues(t); old.out.gain.setTargetAtTime(0, t, .15); for (const k of ['o1', 'o2', 'lfo']) old[k].stop(t + 1); } catch (e) {} }
+    };
+    loops.push(me); return me;
+  }
+
   // A page that is put away (another tab, the phone locked) goes quiet, and carries on when it is back. And if the phone itself
   // has stopped the sound (a call, say), the next touch starts it again.
   document.addEventListener('visibilitychange', () => { if (!AC) return; try { const p = document.hidden ? AC.suspend() : AC.resume(); if (p && p.catch) p.catch(() => {}); } catch (e) {} });
   addEventListener('pointerdown', () => { if (AC && AC.state !== 'running' && !document.hidden) try { const p = AC.resume(); if (p && p.catch) p.catch(() => {}); } catch (e) {} }, { capture: true, passive: true });
 
   return {
-    prepare, unlock, play, loop,
+    prepare, unlock, play, loop, engine,
     get on() { return on; },
     set on(v) { on = !!v; if (AC && OUT) try { OUT.gain.setTargetAtTime(on ? 1 : 0, AC.currentTime, .03); } catch (e) {} if (!on) for (const l of loops) l.stop(); },
     get state() { return { on, unlocked: !!AC, running: !!AC && AC.state === 'running', loaded, files: names.length, asked: Object.keys(bytes).length, loops: loops.map(l => ({ level: l.level, pan: l.pan, going: l.going })) }; },

@@ -176,6 +176,7 @@ body.playing .top,body.playing .bar,body.playing .lowrow,body.playing .toptop{op
 <script type="module">
 import { createModel, winterNight, winterScenery } from './globe3d.js';
 import { build } from './figures/ora-snowman.js';      // the Ora snowman, made in Claude Design (the logo is on his hat)
+import { buildRide } from './figures/ora-snowmobile.js';   // …and the same snowman on the Ora snowmobile: the big gift of the game, which he rides
 import { createGame, WORDS } from './snowgame.js';
 import { createLine } from './speak.js';
 import { createScores } from './scores.js';                 // the top scores, shared by everyone who plays from this link
@@ -226,12 +227,15 @@ const g = AAGlobe.create($('stage'), { picture: backdrop, model: figure, name: m
   onCalm() { stormNow = false; if (armed && game && !game.playing && !(rec && rec.recording)) { armed = false; round(); } } });   // …and as its snow settles, the game
 
 g.sound(soundOn);
-game = figure ? createGame({ stage: $('stage'), globe: g, figure, backdrop, scenery: winterScenery(), say, sounds }) : null;   // (scenery: the same winter night in layers, so the wood can move past as he walks)
+// The snowmobile he unwraps and rides when the phrase is spelled: a second figure (the snowman on it), drawn only during the ride.
+// (If it cannot be made on this device, the game is as it was before there was a ride.)
+let ride = null; try { if (figure) { let spec = null; const model = await createModel(T => (spec = buildRide(T)), { fit: 1.4, sway: false }); ride = { model, state: spec.state }; } } catch (e) { ride = null; }
+game = figure ? createGame({ stage: $('stage'), globe: g, figure, backdrop, scenery: winterScenery(), say, sounds, ride }) : null;   // (scenery: the same winter night in layers, so the wood can move past as he walks)
 // The globe's shoulders: beside the top of the glass, at the edges of the screen. The small round buttons sit there (Sound on the
 // left; on a short phone, Top scores on the right). --shoulder is how far down that is.
 const fit = o => { g.set(o); const gl = g.glass; document.documentElement.style.setProperty('--shoulder', Math.round(gl.y - gl.r) + 'px'); };
 fit({});
-window.__globe = { g, game, figure, line, rec, sounds, get mine() { return mine; }, get soundOn() { return soundOn; } };   // (for testing)
+window.__globe = { g, game, figure, ride, line, rec, sounds, get mine() { return mine; }, get soundOn() { return soundOn; } };   // (for testing)
 
 async function round() {
   const word = WORDS[(mem.round | 0) % WORDS.length], before = sizeNow(); held = '';
@@ -288,7 +292,7 @@ function openCard(result, tapped) {   // result: the round just played (or nothi
   if (cardOpen || (game && game.playing) || (rec && rec.recording)) return; cardOpen = true; cardResult = result || null; armed = false; lastFocus = document.activeElement;
   const me = scores.me; $('scTitle').textContent = result ? 'Your score' : me.best ? 'Your best score' : 'Top scores';
   $('scNum').hidden = !(result || me.best); $('scNum').textContent = fmt(result ? result.score : me.best);
-  const P = result && result.parts; $('scParts').hidden = !P; if (P) $('scParts').textContent = 'Snowflakes ' + fmt(P.snow) + ' · Letters ' + fmt(P.letters) + ' · Gifts ' + fmt(P.gifts) + ' · Jumps ' + fmt(P.jumps) + ' · Speed ' + fmt(P.speed);
+  const P = result && result.parts; $('scParts').hidden = !P; if (P) $('scParts').textContent = 'Snowflakes ' + fmt(P.snow) + ' · Letters ' + fmt(P.letters) + ' · Gifts ' + fmt(P.gifts) + ' · Jumps ' + fmt(P.jumps) + ' · Speed ' + fmt(P.speed) + (result.ride ? ' · Coins ' + fmt(P.coins) + ' · Ride ' + fmt(P.ride) : '');
   $('scTop').hidden = !(result || me.best); $('scMe').hidden = true; $('scForm').hidden = !(result && !me.name); $('scName').value = me.name || '';
   fillList(); $('score').hidden = false; cheered = !result; if (result) { cardAt = performance.now(); sounds.play('card'); }
   if (tapped) { const sc = $('score'); sc.style.pointerEvents = 'none'; setTimeout(() => { sc.style.pointerEvents = ''; }, 350); }   // (opened by a tap on the base: the tail of that same tap must not press anything on the card)
@@ -314,7 +318,7 @@ try { document.fonts.load('900 64px Archivo'); } catch (e) {}
 $('start').disabled = false; $('start').textContent = 'Tap to start'; $('start').focus(); if (soundOn) sounds.prepare();
 let starting = false;   // (a double tap on "Tap to start" is one start, not two)
 $('start').onclick = async () => { if (starting) return; starting = true; if (soundOn) sounds.unlock(); if (line) line.unlock(); await g.start(); started = true; $('go').remove(); $('bar').hidden = false; $('shake').focus({ preventScroll: true });
-  const tip = 'Shake your phone, tilt it, or press Shake to make it snow.' + (game ? ' When the snow settles, catch snowflakes to build the snowman and letters to spell Happy Holidays. Slide him with a finger or the Left and Right buttons, and press Jump to hop over branches and campfires.' : '');
+  const tip = 'Shake your phone, tilt it, or press Shake to make it snow.' + (game ? ' When the snow settles, catch snowflakes to build the snowman and letters to spell Happy Holidays. Slide him with a finger or the Left and Right buttons, and press Jump to hop over branches and campfires. When it is spelled, a big gift comes down for him.' : '');
   if (line && soundOn) { greeted = true; held = tip; setTimeout(() => line.say(afterSpeech), 330); } else say(msg + '. ' + tip); };   // (the recording begins with half a second of quiet, so his first word comes one second after the globe opens)
 $('shake').onclick = () => g.shake();
 // Sound off: the notes, the recorded sounds and his voice all stop (he stops in the middle of a word). Sound on: they are back; and if
