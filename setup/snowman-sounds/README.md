@@ -23,7 +23,42 @@ It needs Python 3 with numpy and scipy, and ffmpeg.
 
 How loud each sound is *played* is not decided here: that is the `LOUD` line in `snowglobe/sounds.js`.
 
-`dsp.py` is the small toolbox the other two use (cutting, fading, filters, the measure of loudness "as on a phone").
+`dsp.py` is the small toolbox the others use (cutting, fading, filters, the measure of loudness "as on a phone").
+
+## The snowmobile's sounds (18 November 2026)
+
+Ben made seventeen more recordings in Runway (Runway Agent, Seed Audio 1.0; the zip "Runway Agent - 17 generations"). Fifteen files
+for the game were made from them, the same way, by `prep_ride.py` instead of `prep.py`:
+
+1. Give each recording its short name (the second table below) and decode it: `ffmpeg -i ride-start.mp3 -f f32le -ac 2 -ar 44100 st/ride-start.f32`.
+2. `python3 prep_ride.py st out`, then `./encode.sh out out/mp3`, and copy the MP3s into `snowglobe/sounds/`.
+3. Decode them again (`-ac 2` for `tidings`, `-ac 1` for the rest) and run `python3 checkmp3.py out out/dec`. Put any changed figure into
+   `AS_WRITTEN` in `snowglobe/sounds.js`; and if a loop's length has changed (`period` in `out/report.json`), into `LOOP` there.
+
+Runway named every file after the same opening words ("Sound effect only, no speech, …"), so six of them differ only by a number
+that the download gave them. They can be told apart by length and by ear:
+
+| Short name | The file as Runway named it (after "Agent Audio - Sound effect only_ no speech_ no voices_ no singing_ ") | What it is |
+|---|---|---|
+| `ride-start` | no music_ A small_ friendly snowm.mp3 (3 s) | the starter whirs, the engine catches |
+| `engine-loop` | no music_ A small_ friendly snowm (1).mp3 (10 s) | cruising: a soft even purr |
+| `slow-down` | no music_ A small_ friendly snowm (2).mp3 (2 s) | not used: a steady hum that does not sink |
+| `rev-up` | no music_ A small_ friendly snowm (3).mp3 (2 s) | the engine rising |
+| `engine-fast-loop` | no music_ A small_ friendly snowm (4).mp3 (10 s) | full speed: a higher hum on one note |
+| `ride-stop` | no music_ A small_ friendly snowm (5).mp3 (3 s) | a slow putter that dies |
+| `ride-bump` | no music_ A small snowmobile runs.mp3 | into a branch |
+| `ride-launch` | no music_ A small snowmobile shoo.mp3 | off the top of a ramp |
+| `ride-land` | no music_ A small snowmobile land.mp3 | down into the snow |
+| `big-air` | A joyful big jump in a children_s.mp3 | a rising rush of air, with bells |
+| `ice-hit` | no music_ A big icicle falls and.mp3 | an icicle smashes on the snowmobile |
+| `ice-creak` | no music_ An icicle overhead is a.mp3 | an icicle about to break loose |
+| `coin` | A single gold coin is collected i.mp3 | one note: the C three octaves above middle C |
+| `tidings` | A short_ happy flourish for spell.mp3 | GOOD TIDINGS is spelled |
+| `lamp-low` | A gentle warning that a lamp is r.mp3 | two soft notes |
+| `wind` | no music_ Cold air rushing past a.mp3 (10 s) | not used: nearly all of it below 300 Hz, which a phone cannot play |
+| `long-take` | no music_ One long continuous tak.mp3 (20 s) | not used: a spare (start, steady hum, wind-down and putter in one take) |
+
+`rev-down` (the engine sinking) has no recording of its own: `prep_ride.py` makes it from `engine-fast-loop`, played slower and slower.
 
 ## Which recording is which
 

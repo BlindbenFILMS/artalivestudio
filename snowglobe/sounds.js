@@ -17,7 +17,8 @@
                                      it at this pitch), when (seconds from now), from (seconds into it), cut (let it go after this many seconds)
    const fire = sounds.loop('fire')  a sound that goes round. fire.set(level 0 … 1, pan): how much of it just now (call it as often as
                                      you like: it glides); fire.stop(): fade it out and let it go
-   const eng = sounds.engine()       the snowmobile's engine. It is not a recording: it is made here, from two low notes that putter.
+   const eng = sounds.engine()       the snowmobile's engine: two recordings that go round, a purr and a higher hum (and if they are not
+                                     there, it is made here instead, from two low notes that putter).
                                      eng.set(level 0 … 1, how fast it is turning 0 … 1) as often as you like; eng.stop()
    sounds.on = false                 everything here off (or on again). sounds.on reads it back
    sounds.state, sounds.log          (for testing) what is loaded, and the last 300 sounds played
@@ -39,7 +40,16 @@ const FILES = {
   zoom: ['zoom'],                             // the view goes into the logo on his hat and out of it (into the game, and back)
   card: ['card'], top: ['top-score'],         // the score card opens; the player is in the first three
   tap: ['tap'],                               // a button pressed
-  night: ['night-loop'], fire: ['campfire-loop']   // loops: the winter night under the game; a campfire as it comes and goes
+  night: ['night-loop'], fire: ['campfire-loop'],  // loops: the winter night under the game; a campfire as it comes and goes
+  // The snowmobile (18 November 2026)
+  start: ['ride-start'],                      // the big gift has burst open: the starter whirs and the engine catches
+  purr: ['engine-loop'], hum: ['engine-fast-loop'],   // loops: its engine at its ordinary speed, and brought right forward (engine(), below)
+  revup: ['rev-up'], revdown: ['rev-down'],   // it is brought forward: the engine rises; it drops back: the engine sinks
+  bump: ['ride-bump'],                        // it runs into a branch
+  launch: ['ride-launch'], bigair: ['big-air'], thump: ['ride-land'],   // a ramp throws it; BIG AIR; it comes down on the snow
+  icehit: ['ice-hit'], creak: ['ice-creak'],  // an icicle comes down on it; an icicle over it is about to fall
+  coin: ['coin'], tidings: ['tidings'], low: ['lamp-low'],   // an Ora coin; GOOD TIDINGS is spelled; the lamp is low
+  stop: ['ride-stop']                         // the lamp is out: the engine putters and dies
 };
 
 // HOW LOUD each sound is played, in dB below full scale, as it will seem on a phone (its loudest tenth of a second; a loop: its
@@ -48,17 +58,23 @@ const FILES = {
 // MASTER moves them all together.
 const MASTER = 0;
 const LOUD = { flake: -39, big: -35, letter: -29, gift: -29, piece: -32, jump: -33, land: -32, step: -45, burn: -28, trip: -28, icicle: -29,
-  finale: -25, zoom: -31, card: -28, top: -26, tap: -38, night: -44, fire: -31, engine: -40 };   // (engine: the snowmobile's, made here: a low purr, well under the notes that say what is coming)
+  finale: -25, zoom: -31, card: -28, top: -26, tap: -38, night: -44, fire: -31, engine: -40,   // (engine: the snowmobile's, when it has to be made here: a low purr, well under the notes that say what is coming)
+  // the snowmobile's recordings. Its engine goes on all the while he rides, so it is kept low: a purr at the back (a little over the
+  // winter night), and a clearly louder hum right forward, so that the Faster button is heard at once
+  purr: -38, hum: -34.5, start: -28, stop: -28, revup: -29, revdown: -34, bump: -27, launch: -31, bigair: -29, thump: -31, icehit: -28, creak: -32,
+  coin: -33, tidings: -26, low: -30 };
 // How loud each file is as it was written (measured the same way, by the script that prepared them): the game needs this to play
 // each one at the figure above. A file that is replaced needs its figure measured again.
 const AS_WRITTEN = { 'flake-1': -23.8, 'flake-2': -20.5, 'flake-3': -20.9, 'flake-big': -20.4, letter: -20.5, gift: -20.4, piece: -22.8, jump: -20.4, land: -20.3,
   'step-1': -20.4, 'step-2': -20.4, 'step-3': -20.4, 'step-4': -20.4, 'step-5': -20.4, burn: -20.4, trip: -20.5, icicle: -20.4, finale: -20.4, zoom: -20.4,
-  card: -20.5, 'top-score': -20.4, tap: -20.5, 'night-loop': -20.4, 'campfire-loop': -22.9 };
+  card: -20.5, 'top-score': -20.4, tap: -20.5, 'night-loop': -20.4, 'campfire-loop': -22.9,
+  'ride-start': -20.5, 'engine-loop': -20.4, 'engine-fast-loop': -20.3, 'rev-up': -20.4, 'rev-down': -20.4, 'ride-bump': -20.4, 'ride-launch': -20.4, 'big-air': -20.4,
+  'ride-land': -20.4, 'ice-hit': -20.3, 'ice-creak': -20.4, coin: -20.4, tidings: -20.4, 'lamp-low': -20.4, 'ride-stop': -20.4 };
 const VARY = { flake: .1, big: .04, step: .14, piece: .03 };   // these come often: each time a little louder or softer, a little higher or lower (this much each way), so no two are quite alike
-const HZ = { letter: 1171.5 };                                 // the note a file sounds, where it has one (the letter chime: the D two octaves above middle C)
+const HZ = { letter: 1171.5, coin: 2092 };                     // the note a file sounds, where it has one (the letter chime: the D two octaves above middle C; the coin: the C three octaves above it)
 // The loops: [where the loop begins in the file, how long it is] in seconds. Each file holds the loop with 0.3 s of itself before
 // and after it, so the join is good wherever a browser puts the very start of the file. (Each loop is a whole number of MP3 frames long.)
-const LOOP = { night: [.12, 17.998367], fire: [.12, 7.993469] };
+const LOOP = { night: [.12, 17.998367], fire: [.12, 7.993469], purr: [.12, 5.8], hum: [.12, 4.38102] };
 const WIDE = { night: .55 };                                   // played twice at once, half a loop apart, one to each side: wide in headphones, and the join is never bare
 const EASE = { night: .5, fire: .09 };                         // how quickly a loop glides to a new level (seconds)
 
@@ -131,25 +147,40 @@ export function createSounds({ base = new URL('./sounds/', import.meta.url).href
     loops.push(me); return me;
   }
 
-  // The snowmobile's engine. Two low buzzing notes a fifth apart, their loudness fluttering quickly (the putter of a small engine),
-  // with the top taken off. Turning faster, the notes and the putter rise and a little more of the top is let through. Most of it
-  // lies below what a phone's loudspeaker plays, so on a phone it is a soft purr; it never covers the notes a player rides by.
+  // The snowmobile's engine. Two recordings that go round: a soft purr (its ordinary speed, at the back) and a higher, eager hum (brought
+  // right forward). How fast it is turning (rev, 0 … 1) says how much of each is heard and how fast each is played: about .44 is its
+  // ordinary speed (all purr), .84 right forward (all hum), and between them one gives way to the other, both rising in pitch as they go.
+  // So bringing the snowmobile forward is heard as the engine rising, and dropping back as it sinking.
+  // If the recordings are not there (not loaded yet, or missing), the engine is made here instead, as it was before there were
+  // recordings: two low buzzing notes a fifth apart, their loudness fluttering quickly (the putter of a small engine), with the top
+  // taken off; turning faster, the notes and the putter rise and a little more of the top is let through.
   function engine() {
-    let n = null, want = 0, rev = 0;
+    let n = null, rec = null, want = 0, rev = 0;
+    function recorded() {
+      const A = bufs['engine-loop'], B = bufs['engine-fast-loop']; if (!A || !B) return false;
+      try { const one = (buf, at) => { const src = AC.createBufferSource(), g = AC.createGain(); src.buffer = buf; src.loop = true; src.loopStart = at[0]; src.loopEnd = at[0] + at[1]; g.gain.value = 0; src.connect(g); g.connect(OUT);
+          src.start(0, at[0] + Math.random() * .5 * at[1]); return { src, g }; };
+        rec = { a: one(A, LOOP.purr), b: one(B, LOOP.hum) }; note('purr', 'engine-loop', 0, 0, 1); return true; } catch (e) { rec = null; return false; }
+    }
     function start() {
-      if (n || !live()) return;
+      if (n || rec || !live()) return; if (recorded()) { tune(.01); return; }
       try { const o1 = AC.createOscillator(), o2 = AC.createOscillator(), g2 = AC.createGain(), am = AC.createGain(), lfo = AC.createOscillator(), depth = AC.createGain(), f = AC.createBiquadFilter(), out = AC.createGain();
         o1.type = 'sawtooth'; o2.type = 'square'; g2.gain.value = .3; am.gain.value = .62; lfo.type = 'sine'; depth.gain.value = .36; f.type = 'lowpass'; f.Q.value = .7; out.gain.value = 0;
         o1.connect(am); o2.connect(g2); g2.connect(am); lfo.connect(depth); depth.connect(am.gain); am.connect(f); f.connect(out); out.connect(OUT);
         o1.start(); o2.start(); lfo.start(); n = { o1, o2, lfo, f, out }; tune(.01); note('engine', 'engine', 0, 0, 1); } catch (e) { n = null; }
     }
-    function tune(glide) { const t = AC.currentTime, f0 = 46 + 42 * rev; n.o1.frequency.setTargetAtTime(f0, t, glide); n.o2.frequency.setTargetAtTime(f0 * 1.505, t, glide); n.lfo.frequency.setTargetAtTime(11 + 14 * rev, t, glide);
+    function tune(glide) { const t = AC.currentTime;
+      if (rec) { const x = clamp((rev - .44) / .4, 0, 1), a = Math.cos(x * Math.PI / 2), b = Math.sin(x * Math.PI / 2);   // (x: how far from the purr to the hum)
+        rec.a.g.gain.setTargetAtTime(gain(MASTER + LOUD.purr - AS_WRITTEN['engine-loop']) * want * a, t, .1); rec.b.g.gain.setTargetAtTime(gain(MASTER + LOUD.hum - AS_WRITTEN['engine-fast-loop']) * want * b, t, .1);
+        rec.a.src.playbackRate.setTargetAtTime(.78 + .5 * rev, t, glide); rec.b.src.playbackRate.setTargetAtTime(.72 + .36 * rev, t, glide); return; }
+      const f0 = 46 + 42 * rev; n.o1.frequency.setTargetAtTime(f0, t, glide); n.o2.frequency.setTargetAtTime(f0 * 1.505, t, glide); n.lfo.frequency.setTargetAtTime(11 + 14 * rev, t, glide);
       n.f.frequency.setTargetAtTime(250 + 430 * rev, t, glide); n.out.gain.setTargetAtTime(gain(MASTER + LOUD.engine) * want, t, .12); }
     const me = {
-      get level() { return want; }, get pan() { return 0; }, get going() { return !!n; }, get rev() { return rev; },
-      set(v, r) { want = clamp(+v || 0, 0, 1); rev = clamp(+r || 0, 0, 1); if (want > 0) start(); if (n && AC) try { tune(.09); } catch (e) {} },
-      stop() { want = 0; if (!n || !AC) { n = null; return; } const t = AC.currentTime, old = n; n = null;
-        try { old.out.gain.cancelScheduledValues(t); old.out.gain.setTargetAtTime(0, t, .15); for (const k of ['o1', 'o2', 'lfo']) old[k].stop(t + 1); } catch (e) {} }
+      get level() { return want; }, get pan() { return 0; }, get going() { return !!n || !!rec; }, get rev() { return rev; }, get recorded() { return !!rec; },
+      set(v, r) { want = clamp(+v || 0, 0, 1); rev = clamp(+r || 0, 0, 1); if (want > 0) start(); if ((n || rec) && AC) try { tune(.09); } catch (e) {} },
+      stop() { want = 0; if (!AC) { n = rec = null; return; } const t = AC.currentTime, old = n, was = rec; n = rec = null;
+        if (was) try { for (const q of [was.a, was.b]) { q.g.gain.cancelScheduledValues(t); q.g.gain.setTargetAtTime(0, t, .12); q.src.stop(t + .7); } } catch (e) {}
+        if (old) try { old.out.gain.cancelScheduledValues(t); old.out.gain.setTargetAtTime(0, t, .15); for (const k of ['o1', 'o2', 'lfo']) old[k].stop(t + 1); } catch (e) {} }
     };
     loops.push(me); return me;
   }
@@ -163,7 +194,7 @@ export function createSounds({ base = new URL('./sounds/', import.meta.url).href
     prepare, unlock, play, loop, engine,
     get on() { return on; },
     set on(v) { on = !!v; if (AC && OUT) try { OUT.gain.setTargetAtTime(on ? 1 : 0, AC.currentTime, .03); } catch (e) {} if (!on) for (const l of loops) l.stop(); },
-    get state() { return { on, unlocked: !!AC, running: !!AC && AC.state === 'running', loaded, files: names.length, asked: Object.keys(bytes).length, loops: loops.map(l => ({ level: l.level, pan: l.pan, going: l.going })) }; },
+    get state() { return { on, unlocked: !!AC, running: !!AC && AC.state === 'running', loaded, files: names.length, asked: Object.keys(bytes).length, loops: loops.map(l => ({ level: l.level, pan: l.pan, going: l.going, rev: l.rev, recorded: l.recorded })) }; },
     log
   };
 }

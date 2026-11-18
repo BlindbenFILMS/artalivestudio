@@ -10,13 +10,13 @@ print(f"{'sound':<14}{'wav s':>7}{'mp3 s':>7}{'wav loud':>9}{'mp3 loud':>9}{'mp3
 for n, r in rep.items():
     sr, w = wavfile.read(os.path.join(O, n + '.wav')); w = w.astype(float); w = w[:, None] if w.ndim == 1 else w
     m = np.fromfile(os.path.join(D, n + '.f32'), dtype=np.float32).astype(float).reshape(-1, 2 if r['stereo'] else 1)
-    meas = loud_mean if n == 'night-loop' else loud; d = meas(m) - meas(w); worst = max(worst, abs(d)); r['mp3'] = round(float(meas(m)), 1)
+    meas = loud_mean if n in ('night-loop', 'engine-loop', 'engine-fast-loop') else loud; d = meas(m) - meas(w); worst = max(worst, abs(d)); r['mp3'] = round(float(meas(m)), 1)
     print(f"{n:<14}{len(w) / SR:>7.3f}{len(m) / SR:>7.3f}{meas(w):>9.1f}{meas(m):>9.1f}{peak_db(m):>9.1f}")
 print('largest change in loudness from encoding:', round(worst, 2), 'dB')
 json.dump(rep, open(os.path.join(O, 'report.json'), 'w'), indent=1)
 # The join: where the loop goes round, the sound jumps from what would have come next to what does. How big is that jump beside
 # the sound's own sample-to-sample movement? (Tried at 2,000 places where a decoder might put the start.)
-for n in ('night-loop', 'campfire-loop'):
+for n in [k for k, r in rep.items() if r.get('kind') == 'loop']:
     m = np.fromfile(os.path.join(D, n + '.f32'), dtype=np.float32).astype(float); N = int(round(rep[n]['period'] * SR)); step = np.abs(np.diff(m)); typ = np.sqrt((step ** 2).mean())
     ls = np.arange(int(.05 * SR), int(.25 * SR), 4); jump = np.abs(m[ls] - m[ls + N])
     lo = signal.sosfiltfilt(signal.butter(2, 1500, 'lowpass', fs=SR, output='sos'), m); jl = np.abs(lo[ls] - lo[ls + N]); tl = np.sqrt((np.diff(lo) ** 2).mean())

@@ -89,6 +89,13 @@
    forms, and a long whoosh through the logo. Two go round: the winter night under the whole game, and a campfire's crackle,
    which grows as the fire comes near, from its side. They are textures, kept under the notes; without them (or with the
    sound off) the game is exactly as it was.
+   The snowmobile has recordings of its own (18 November 2026): its engine starting as the big gift bursts open; the engine
+   itself, two recordings that go round (a purr at the back, a higher hum right forward: sounds.engine()); the engine rising
+   as it is brought forward quickly and sinking as it drops back; a crack and a thump for a branch; a swish as a ramp throws
+   it, a rush of air and bells for BIG AIR, and a heavy thump as it comes down; a creak for an icicle about to fall and a
+   smash for one that hits; a coin's own note, played up the scale; a flourish for GOOD TIDINGS; two soft notes when the lamp
+   is low; and the engine puttering to a stop when it is out. Where one of these takes the place of notes the game rang
+   before, or of a sound of the first half, those are still used if the recording cannot play.
 
    A figure that cannot be built piece by piece (figure.pieces is not set) is whole from the start and simply grows bigger
    with the snow; no gifts fall for it.
@@ -368,13 +375,13 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     for (const c of G.ice) if (!c.deco && c.state === 'hang' && (!best || Math.abs(iceX(c) - mid) < Math.abs(iceX(best) - mid))) best = c;
     if (!best) return false; best.state = 'shake'; best.t = 0; best.cue = 0; best.max = 1; best.len = Math.max(best.len, .45); best.secs = .5; R.iceN++;   // (it is a long one: what length it lacks, it grows as it shakes)
     note(R.iceN <= 2 ? 'Icicle! Move out from under it' : 'Icicle!', R.iceN <= 2 ? 2.2 : 1.3);   // (every time: it hangs at the top of the screen, a long way from where he is looking)
-    globe.bell(2793.83, 0, .06); globe.bell(3520, .07, .045); buzz(40); say('An icicle above him is about to fall! Move him forward or back, out from under it.'); return true;
+    globe.bell(2793.83, 0, .06); globe.bell(3520, .07, .045); buzz(40); fx('creak', { pan: from(iceX(best)) }); say('An icicle above him is about to fall! Move him forward or back, out from under it.'); return true;
   }
   // One has come down on him. In the free seconds it is only a knock. After them it dims the lamp (ICE_HIT). For a moment after it nothing
   // else can catch him (and one that comes down on him in the moment after a bump breaks on him without harm).
   function rideIceHit() {
     const R = G.ride, t = G.t, free = R.t < RIDE_FREE; R.iceHits++; R.bumpT = t; R.safeT = Math.max(R.safeT, t + .8); G.ouchT = t; if (!free) R.b = Math.max(0, R.b - ICE_HIT);
-    chunks(14, '#d9ecff', true); [329.63, 261.63, 196].forEach((f, k) => globe.bell(f, k * .11, .08)); buzz([70, 40, 70]);
+    chunks(14, '#d9ecff', true); [329.63, 261.63, 196].forEach((f, k) => globe.bell(f, k * .11, .08)); buzz([70, 40, 70]); fx('icehit', { pan: here() });   // (with the icicle's own breaking: together, an icicle that broke on something hard)
     note(free ? 'Bonk! Move away from icicles' : 'Icicle! Your light is dimmer', 2); say('An icicle hit him' + (free ? '. Move him out from under the next one.' : ', and the lamp is dimmer. Move him out from under the next one.'));
   }
   function stepIce(dt, play) {
@@ -538,7 +545,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     const r = clamp(PW * .15, 46, 84), gx = PX + PW * .62;
     G.phase = 'gift'; G.pt = 0; G.note = null; G.cheerT = G.t; glow(false); G.pad.l = G.pad.r = 0; G.jumpAsk = -9;
     G.ride = { on: false, t: 0, m: 0, b: LAMP0, bs: LAMP0, dark: 0, darkOn: false, darkAt: DARK1[0], lightAt: DARK1[1], u: 1, len: 1, acc: 0, pitch: 0, flash: 0, end: 0, openT: 0, box: { x: gx, y: -r * 2.2, r, vy: 0, down: false, t: 0, cue: 0 },
-      coins: [], beatAt: FIRST[0][1], beatN: 0, last: '', safeT: -9, bumpT: -9, bumps: 0, combo: 0, comboT: -9, run: 0, runAt: null, lowT: -9, sprayAt: 0, lampX: 0, reach: 0, told: {}, boost: 0, surge: 0, z: 1, pk: peak(), fastest: 0, ramps: [], airs: 0, lifts: 0, top: 1e9, first: null, letter: null, nextAt: LETTER_AT, iceAt: 1e9, iceN: 0, iceHits: 0, iceDown: 0, again: 0, tidings: 0, caught: 0, missed: 0, missRow: 0, gotAny: false, rushAt: -9 };
+      coins: [], beatAt: FIRST[0][1], beatN: 0, last: '', safeT: -9, bumpT: -9, bumps: 0, combo: 0, comboT: -9, run: 0, runAt: null, lowT: -9, sprayAt: 0, lampX: 0, reach: 0, told: {}, boost: 0, surge: 0, z: 1, pk: peak(), fastest: 0, ramps: [], airs: 0, lifts: 0, top: 1e9, first: null, letter: null, nextAt: LETTER_AT, iceAt: 1e9, iceN: 0, iceHits: 0, iceDown: 0, again: 0, tidings: 0, caught: 0, missed: 0, missRow: 0, gotAny: false, rushAt: -9, revAt: -9, backAt: -9 };
     G.tx = clamp(PX + PW * .27, PX + edge(), PX + PW - edge());
     ride.state.rider = true; ride.state.lamp = 1; ride.model.pose = { yaw: RYAW, lean: 0, look: -.45, up: 0, cheer: 0, walk: 0 };
     note('The big gift!', 2.4); [783.99, 1046.5, 1318.5].forEach((f, k) => globe.bell(f, k * .12, .06)); say(G.word + ' is spelled! Here comes the big gift.');
@@ -574,7 +581,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     R.darkOn = true; R.dark = 1;   // the ride begins in the dark (DARK1): as the puff of snow clears, the headlight is what shows the way
     G.sx = clamp(B.x - R.len * .1, PX + R.len * .5, PX + PW - R.len * .5); G.tx = G.sx; G.jy = 0; G.jv = 0; G.air = false; G.gy = 0; G.ramp = null; G.vx = 0; G.roll = null;
     for (const col of ['#ffd76a', '#ff5a45', '#ffffff']) pop(B.x, B.y, col, 12, true); pop(G.sx, moundY(G.sx) - 20, '#ffffff', 22, true);
-    [1046.5, 1318.5, 1568, 2093, 2637].forEach((f, n) => globe.bell(f, n * .07, .06, pan)); buzz([30, 40, 30, 40, 80]); fx('gift', { pan }); fx('piece', { pan, when: .35 });
+    [1046.5, 1318.5, 1568, 2093, 2637].forEach((f, n) => globe.bell(f, n * .07, .06, pan)); buzz([30, 40, 30, 40, 80]); fx('gift', { pan }); fx('piece', { pan, when: .35 }); fx('start', { pan: here(), when: .6 });   // (start: its starter whirs, once the gift's own burst has been heard, and the engine catches as the puff of snow clears and the ride begins)
     btnL.innerHTML = ICON_SLOW; btnL.setAttribute('aria-label', 'Slower'); btnR.innerHTML = ICON_FAST; btnR.setAttribute('aria-label', 'Faster');   // on the snowmobile the two buttons beside JUMP are SLOWER and FASTER: they bring it back and forward along the snow
     note('A snowmobile! Press JUMP to hop', 3.4);
     say('The big gift was a snowmobile with a headlight, and he is on it! He rides through a dark wood, and the headlight shows the way. Press Jump, or tap the screen, to hop over campfires and branches and to reach the Ora coins: every coin makes his light a little bigger. Hold the Faster button, where the Right button was, to bring him forward, which is faster and jumps higher; hold the Slower button to drop back. Icicles fall: move him out from under them. Snowflakes fall again: catch the letters to spell ' + TIDINGS.toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase()) + '.');
@@ -615,7 +622,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
   }
   function coinGot(c) {
     const R = G.ride, t = G.t, py = moundY(c.x) - c.h, pan = from(c.x); G.coins++; R.b = Math.min(1, R.b + COIN_LIGHT);
-    R.combo = t - R.comboT < 1.3 ? Math.min(R.combo + 1, COIN_NOTES.length - 1) : 0; R.comboT = t; globe.bell(COIN_NOTES[R.combo], 0, .05, pan); globe.bell(COIN_NOTES[R.combo] * 2, .03, .02, pan);   // (a run of coins rings up the scale)
+    R.combo = t - R.comboT < 1.3 ? Math.min(R.combo + 1, COIN_NOTES.length - 1) : 0; R.comboT = t; if (!fx('coin', { pan, hz: COIN_NOTES[R.combo] })) { globe.bell(COIN_NOTES[R.combo], 0, .05, pan); globe.bell(COIN_NOTES[R.combo] * 2, .03, .02, pan); }   // (a run of coins rings up the scale: the coin's own recorded note, played higher each time)
     G.score += PTS.coin; G.pts.coins += PTS.coin; R.run += PTS.coin; R.runAt = [c.x, py]; pop(c.x, py, '#ffe08a', 6); buzz(8);   // (its points are shown once for the whole run of coins, when the run is over: see stepRide)
     if (!R.told.coin) { R.told.coin = 1; note('Ora coins make your light bigger!', 2.8); say('A coin! Every Ora coin makes his light bigger.'); }
   }
@@ -635,7 +642,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     G.fly.push({ ch: L.ch, k, x: L.x, y: L.y, t: 0, r: L.r }); pop(L.x, L.y, '#ffe9a8', 16, true);
     globe.bell(SCALE[k % SCALE.length], 0, .13); globe.bell(SCALE[k % SCALE.length] * 2, .07, .06); buzz(25); fx('letter', { pan, hz: chime(k) }); say(L.ch + '!'); gain(PTS.letter, 'letters', L.x, L.y);
     if (G.i >= G.letters.length) {   // GOOD TIDINGS is spelled: points, more light for the lamp, and it begins again
-      R.tidings++; R.again = R.t + 2.2; R.nextAt = R.t + 2.6; R.b = Math.min(1, R.b + TID_LIGHT); gain(PTS.tidings, 'letters', G.sx + R.u * .5, headY() - 26, TIDINGS + '!');
+      R.tidings++; R.again = R.t + 2.2; R.nextAt = R.t + 2.6; R.b = Math.min(1, R.b + TID_LIGHT); fx('tidings', { when: .12 }); gain(PTS.tidings, 'letters', G.sx + R.u * .5, headY() - 26, TIDINGS + '!');
       [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, n) => globe.bell(f, .18 + n * .09, .07)); buzz([30, 40, 30, 40, 90]); note(TIDINGS + '! Spell it again', 2.6); say(TIDINGS + ' is spelled! The lamp burns brighter. Spell it again.'); }
   }
   // He has run into something. In the free seconds it is only a bump. After them it dims the lamp. For a moment after it nothing
@@ -646,7 +653,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     if (fire) { G.burns++; G.singe = { t: 0, ph: Math.random(), on: FLAMES.map(q => q[0]).filter(n => mark(n)), at: [], out: false };
       for (let k = 0; k < 6; k++) G.pops.push({ x: o.x + (Math.random() - .5) * 24, y: restY(o.x) - 14 - Math.random() * 24, vx: -40 - Math.random() * 60, vy: -110 - Math.random() * 100, life: .7 + Math.random() * .4, t: 0, s: 3 + Math.random() * 4, col: 'rgba(235,242,255,.75)' });   // (steam)
       [523.25, 392, 261.63].forEach((f, k) => globe.bell(f, k * .12, .08)); fx('burn', { pan }); }
-    else { G.trips++; [196, 146.83].forEach((f, k) => globe.bell(f, k * .09, .08)); fx('trip', { pan, cut: .32 }); }
+    else { G.trips++; [196, 146.83].forEach((f, k) => globe.bell(f, k * .09, .08)); if (!fx('bump', { pan })) fx('trip', { pan, cut: .32 }); }
     const what = fire ? 'He rode through the campfire' : 'He ran into the branch';
     note(free ? (fire ? 'Hot! Jump the campfires' : 'Bump! Jump the branches') : 'Bump! Your light is dimmer', 2); say(what + (free ? '. Jump over the next one.' : ', and the lamp is dimmer. Coins charge it.'));
   }
@@ -654,7 +661,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
   function endRide() {
     const R = G.ride; if (R.end) return; R.end = .001; R.b = 0; glow(false); G.jumpAsk = -9;
     for (const o of G.obs) pop(o.x, moundY(o.x) - 10, o.kind === 'fire' ? '#ffc46b' : '#7a5433', 8); G.obs = []; for (const c of R.coins) pop(c.x, moundY(c.x) - c.h, '#ffe08a', 4); R.coins = []; for (const r of R.ramps) pop(r.x + r.L * .6, moundY(r.x) - r.h * .4, '#ffffff', 9); R.ramps = []; if (R.letter) { pop(R.letter.x, R.letter.y, '#ffffff', 8); R.letter = null; } G.pad.l = G.pad.r = 0; G.drag = null;
-    [523.25, 415.3, 329.63].forEach((f, k) => globe.bell(f, k * .15, .07)); buzz([60, 50, 120]);
+    [523.25, 415.3, 329.63].forEach((f, k) => globe.bell(f, k * .15, .07)); buzz([60, 50, 120]); fx('stop', { pan: here() });   // (stop: the engine putters and dies)
     note('The lamp is out. What a ride!', 2.4); say('The lamp has gone out, and the snowmobile comes to a stop. What a ride!');
   }
   function stepRide(dt) {
@@ -664,8 +671,10 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     // the dark stretches, the lamp running down and the points for riding all go by that much quicker (dtau).
     const xb = rideX(), xf = rideFar(), fwd = over ? 0 : clamp((G.sx - xb) / Math.max(1, xf - xb), 0, 1), surge = over ? 0 : clamp(G.vx / (PW * .9), -1, 1);
     R.boost += (clamp(fwd + Math.max(0, surge) * .4, 0, 1) - R.boost) * Math.min(1, dt * 7); if (R.boost < .004) R.boost = 0; R.fastest = Math.max(R.fastest, R.boost); R.surge = surge;
-    if (surge > .35 && t - R.rushAt > .7 && !over) { R.rushAt = t; buzz(12); if (cues) { globe.bell(196, 0, .045); globe.bell(293.66, .05, .045); }   // a surge forward: a burst of snow from its track, and two quick low notes under the engine
+    if (surge > .35 && t - R.rushAt > .7 && !over) { R.rushAt = t; buzz(12);   // a surge forward: a burst of snow from its track, and the engine rising (its recording at most every second and a half, and only when there is still some way to go forward; without the recording: two quick low notes)
+      if (t - R.revAt > 1.5 && fwd < .8) { R.revAt = t; if (!fx('revup', { pan: here() }) && cues) { globe.bell(196, 0, .045); globe.bell(293.66, .05, .045); } }
       const rr = at('rear'); if (rr && !G.air) for (let k = 0; k < 14; k++) G.pops.push({ x: rr[0] + Math.random() * 10, y: rr[1] + 2, vx: -(120 + Math.random() * 260), vy: -40 - Math.random() * 190, g: 420, life: .35 + Math.random() * .4, t: 0, s: 2.5 + Math.random() * 4.5, col: 'rgba(255,255,255,.9)' }); }
+    if (surge < -.45 && fwd > .2 && t - R.backAt > 1.5 && !over) { R.backAt = t; fx('revdown', { pan: here() }); }   // dropping back: the engine sinks (at most every second and a half, and only when there is still some way to drop)
     const dtau = dt * (1 + BOOST * R.boost); if (R.end) R.end += dt; else R.t += dtau; const tau = R.t, free = tau < RIDE_FREE;
     // how fast: it sets off, then goes a little faster for every second ridden after the free ones; when the lamp is out it comes to a stop
     const goal = over ? 0 : FAST[0] + Math.max(0, tau - RIDE_FREE) * FAST[1]; R.m += (goal - R.m) * Math.min(1, dt * (over ? 2.4 : 1.2));
@@ -679,7 +688,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     // the lamp: after the free seconds it runs down, and coins charge it
     if (!over) { if (!free) { R.b -= (DRAIN[0] + DRAIN[1] * (tau - RIDE_FREE)) * dtau; if (!R.told.free) { R.told.free = 1; note('Coins keep your light on!', 3); say('From now on the lamp slowly runs down, and running into something, or an icicle that hits him, dims it a lot. Coins charge it a little. When it is out, the ride is over.'); globe.bell(659.25, 0, .05); globe.bell(880, .1, .05); } }
       R.b = clamp(R.b, 0, 1);
-      if (!free && R.b < .2 && R.b > 0 && t - R.lowT > 7) { R.lowT = t; note('Your light is low: get coins!', 2.2); say('The lamp is low. Get coins.'); globe.bell(311.13, 0, .05); globe.bell(261.63, .12, .05); }
+      if (!free && R.b < .2 && R.b > 0 && t - R.lowT > 7) { R.lowT = t; note('Your light is low: get coins!', 2.2); say('The lamp is low. Get coins.'); if (!fx('low')) { globe.bell(311.13, 0, .05); globe.bell(261.63, .12, .05); } }
       if (R.b <= 0) endRide(); }
     R.bs += (R.b - R.bs) * Math.min(1, dt * 6);
     const flick = calm ? 1 : 1 - .6 * Math.max(0, Math.sin((t - R.bumpT) * 40)) * Math.exp(-(t - R.bumpT) * 4); ride.state.lamp = R.end ? Math.max(0, .35 - R.end) : (.35 + .65 * R.bs) * flick;   // (it flickers when he has run into something)
@@ -745,7 +754,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
   }
 
   // JUMP was pressed near the top of a ramp: the big jump (its words rise ahead of him, where he will not fly through them)
-  function bigAir() { const R = G.ride; R.airs++; [659.25, 880, 1174.66, 1568].forEach((f, k) => globe.bell(f, k * .06, .05)); buzz([20, 30, 40]); G.gainT = G.t; G.gains.push({ n: 0, tag: 'BIG AIR!', x: G.sx + R.len * .95, y: feetY() - R.u * 1.2, t: 0 }); say('Big air!'); }
+  function bigAir() { const R = G.ride; R.airs++; [659.25, 880, 1174.66, 1568].forEach((f, k) => globe.bell(f, k * .06, .05)); buzz([20, 30, 40]); fx('bigair', { pan: here() }); G.gainT = G.t; G.gains.push({ n: 0, tag: 'BIG AIR!', x: G.sx + R.len * .95, y: feetY() - R.u * 1.2, t: 0 }); say('Big air!'); }
 
   /* ── one step of the game ── */
   function step(dt) {
@@ -784,14 +793,14 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
       const pk = riding() ? rpeak() : peak(), up = riding() ? 1 + JUMP_UP * G.ride.boost : 1, cap = h => (riding() && G.ride.top < 1e8 ? Math.min(h, Math.max(pk * .5, G.ride.top - G.jy)) : h), go = h => { G.jg = 8 * pk / (JT * JT); G.jv = Math.sqrt(2 * G.jg * cap(h)); };   // (go: thrown upward so as to rise by h more)
       let thrown = false;
       if (onSnow) { if (RR && on0 && !on) { const best = !!on0.armed; thrown = true; G.air = true; G.launchT = t; G.late = !best; RR.lifts++; go(pk * (best ? RAMP.best : RAMP.auto) * up);   // the top of the ramp has gone by: it throws him (higher, if JUMP was pressed near the top)
-          globe.bell(392, 0, .05); globe.bell(523.25, .06, .05); globe.bell(783.99, .12, .04); buzz(20); fx('jump', { pan: here() }); pop(G.sx + RR.len * .2, moundY(G.sx) - G.jy, '#ffffff', 8); if (best) { G.jumps++; bigAir(); } }
+          globe.bell(392, 0, .05); globe.bell(523.25, .06, .05); globe.bell(783.99, .12, .04); buzz(20); if (!fx('launch', { pan: here() })) fx('jump', { pan: here() }); pop(G.sx + RR.len * .2, moundY(G.sx) - G.jy, '#ffffff', 8); if (best) { G.jumps++; bigAir(); } }
         else G.jy = gy; }
       const asked = (play || RR) && !G.roll && t - G.jumpAsk < .2;
       if (asked && onSnow && !thrown) { G.jumpAsk = -9;
         if (RR && on && (G.sx + RR.len * .25 - on.x) / on.L >= 1 - RAMP.zone) { if (!on.armed) { on.armed = true; globe.bell(987.77, 0, .05); buzz(10); } }   // near the top of a ramp: the big jump is set, and goes off at the top
         else { go(pk * up); G.jy = gy + .01; G.air = true; G.jumps++; globe.bell(392, 0, .05); globe.bell(659.25, .07, .04); buzz(15); fx('jump', { pan: here() }); } }
       else if (asked && RR && G.late && t - G.launchT < RAMP.late && G.air) { G.jumpAsk = -9; G.late = false; go(pk * RAMP.best * up); G.jumps++; bigAir(); }   // (pressed a moment after the ramp threw him: it still counts)
-      if (G.air) { G.jv -= (G.jg || 8 * peak() / (JT * JT)) * dt; G.jy += G.jv * dt; if (G.jy <= gy && G.jv <= 0) { G.jy = gy; G.jv = 0; G.air = false; G.late = false; pop(G.sx, moundY(G.sx) - gy, '#ffffff', 6); globe.bell(130.81, 0, .035); fx('land', { pan: here() }); } }
+      if (G.air) { G.jv -= (G.jg || 8 * peak() / (JT * JT)) * dt; G.jy += G.jv * dt; if (G.jy <= gy && G.jv <= 0) { G.jy = gy; G.jv = 0; G.air = false; G.late = false; pop(G.sx, moundY(G.sx) - gy, '#ffffff', 6); globe.bell(130.81, 0, .035); if (!(riding() && fx('thump', { pan: here() }))) fx('land', { pan: here() }); } }
       G.gy = gy; G.ramp = G.air ? null : on; }
 
     if (play) {
@@ -1222,10 +1231,10 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     const p = G.phase, there = p === 'card' || p === 'open' || p === 'play' || p === 'gift' || p === 'ride' || p === 'word'; let v = 0, pan = 0;
     if (p === 'play' || p === 'ride') for (const o of G.obs) if (o.kind === 'fire') { const q = Math.pow(clamp(1 - Math.abs(o.x - G.sx) / (PW * 1.15), 0, 1), 2); if (q > v) { v = q; pan = clamp((o.x - G.sx) / (PW * .45), -1, 1) * .8; } }
     night.set(there ? 1 : 0, 0); fire.set(v, pan);
-    // the snowmobile's engine (made by sounds.js, not a recording): it idles as he gets on, runs as he rides, a little higher in a jump and as the ride gets faster, and dies away when the lamp is out
+    // the snowmobile's engine (sounds.js: two recordings that go round, a purr and a hum). It comes in as the recording of it starting catches (a little over a second after the big gift bursts open), purrs at the back, rises to the hum as he is brought forward, is a little higher in a jump and as the ride gets faster, and gives way at once to the recording of it dying when the lamp is out
     if (rideOK && sounds.engine) { const R = G.ride, on = !!(R && R.on && (p === 'gift' || p === 'ride')); if (on && !eng) eng = sounds.engine();
-      if (eng) { const push = on ? clamp(R.boost + .5 * Math.max(0, R.surge), 0, 1) : 0;   // (push: how hard it is being driven. At the back the engine purrs; brought forward it is a good deal louder and higher: the Faster button is heard at once)
-        eng.set(!on ? 0 : R.end ? Math.max(0, 1 - R.end / 1.3) * .62 : (.55 + .45 * Math.min(1, R.m / FAST[0])) * (.62 + .38 * push), !on ? 0 : clamp(.1 + .34 * Math.min(1.2, R.m / FAST[0]) + .4 * R.boost + .16 * Math.max(0, R.surge) + (G.jy > 0 ? .12 : 0), 0, 1)); } }
+      if (eng) { const since = !on ? 0 : p === 'gift' ? G.pt - R.openT : 1.3 + G.pt, rec = !!eng.recorded, push = on ? clamp(R.boost + .5 * Math.max(0, R.surge), 0, 1) : 0;   // (since: seconds since the gift burst open. push: how hard it is being driven; when the engine has to be made by sounds.js, with no recordings, that is what makes it louder)
+        eng.set(!on ? 0 : R.end ? Math.max(0, 1 - R.end / (rec ? .5 : 1.3)) * (rec ? 1 : .62) : (.35 + .65 * Math.min(1, R.m / FAST[0])) * (rec ? 1 : .62 + .38 * push) * smooth(1.2, 2.0, since), !on ? 0 : clamp(.1 + .34 * Math.min(1.2, R.m / FAST[0]) + .4 * R.boost + .16 * Math.max(0, R.surge) + (G.jy > 0 ? .12 : 0), 0, 1)); } }
   }
   function frame(now) {
     if (!G) return; const dt = clamp((now - last) / 1000, 0, .05); last = now;
