@@ -11,6 +11,8 @@
      onPlate(),          // optional: called when the base is tapped
      top, bottom,        // space to leave above and below the globe, in px
      onHint(text, big),  // "Let it settle…", "Shake again!" (big = pulse it)
+     moon,               // optional: where the moon is in the picture, {u, v} in globe units (the glass is radius 1): flakes passing near it shine brighter
+     glitter,            // false: no glitter in the water (it has gold and silver glitter unless told not to)
      say(text)           // for screen readers
    });
    g.start()  (call from a tap: turns on sound, motion and the video's sound)   g.shake()   g.set({...})   g.sound(on)   g.destroy()
@@ -24,6 +26,17 @@
   };
   const flake = document.createElement('canvas'); flake.width = flake.height = 32;
   { const g = flake.getContext('2d'), r = g.createRadialGradient(16, 16, 0, 16, 16, 16); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(.45, 'rgba(255,255,255,.9)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 32, 32); }
+  // (24 Nov 2026) more sprites: a soft out-of-focus flake (for flakes far back, and the big blurry ones in front of the glass), a six-pointed
+  // snowflake that tumbles, and a glint of glitter (a small four-pointed star)
+  const soft = document.createElement('canvas'); soft.width = soft.height = 48;
+  { const g = soft.getContext('2d'), r = g.createRadialGradient(24, 24, 0, 24, 24, 24); r.addColorStop(0, 'rgba(255,255,255,.75)'); r.addColorStop(.55, 'rgba(255,255,255,.5)'); r.addColorStop(.8, 'rgba(255,255,255,.18)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 48, 48); }
+  const star = document.createElement('canvas'); star.width = star.height = 64;
+  { const g = star.getContext('2d'); g.translate(32, 32); g.strokeStyle = '#ffffff'; g.lineCap = 'round'; g.shadowColor = 'rgba(255,255,255,.8)'; g.shadowBlur = 3; g.lineWidth = 3.2; g.beginPath();
+    for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3, c = Math.cos(a), s = Math.sin(a); g.moveTo(0, 0); g.lineTo(c * 27, s * 27); for (const [m, b] of [[15, 8], [22, 5]]) { g.moveTo(c * m, s * m); g.lineTo(c * m + Math.cos(a + .75) * b, s * m + Math.sin(a + .75) * b); g.moveTo(c * m, s * m); g.lineTo(c * m + Math.cos(a - .75) * b, s * m + Math.sin(a - .75) * b); } }
+    g.stroke(); g.beginPath(); g.arc(0, 0, 3.5, 0, 6.283); g.fillStyle = '#fff'; g.fill(); }
+  const glint = c => { const cv = document.createElement('canvas'); cv.width = cv.height = 32; const g = cv.getContext('2d'), r = g.createRadialGradient(16, 16, 0, 16, 16, 7); r.addColorStop(0, '#ffffff'); r.addColorStop(.4, c); r.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = r; g.fillRect(0, 0, 32, 32);
+    g.fillStyle = '#ffffff'; g.beginPath(); g.moveTo(16, 1); g.lineTo(17.3, 14.7); g.lineTo(31, 16); g.lineTo(17.3, 17.3); g.lineTo(16, 31); g.lineTo(14.7, 17.3); g.lineTo(1, 16); g.lineTo(14.7, 14.7); g.closePath(); g.fill(); return cv; };
+  const GLINT = [glint('rgba(255,214,120,.95)'), glint('rgba(232,240,255,.95)')];   // gold, silver
   function goldOf(logo) {   // the logo in gold, using its shape (its see-through parts stay see-through)
     const c = document.createElement('canvas'); c.width = logo.naturalWidth || logo.width; c.height = logo.naturalHeight || logo.height; const g = c.getContext('2d');
     g.drawImage(logo, 0, 0); g.globalCompositeOperation = 'source-in'; const gr = g.createLinearGradient(0, 0, c.width * .3, c.height);
@@ -70,6 +83,15 @@
     const N = calm ? 450 : 1000, NB = 56, WALL = .955, BW = 2 / NB, REPOSE = BW * .38, pile = new Float32Array(NB), F = [];
     for (let i = 0; i < N; i++) { const s = .006 + Math.pow(Math.random(), 2.2) * .02, a = Math.random() * 6.283, r = Math.sqrt(Math.random()) * .88;
       F.push({ u: Math.cos(a) * r, v: Math.sin(a) * r, vu: 0, vv: .05, s, z: Math.random(), ph: Math.random() * 6.283, down: false, b: 0, add: s * .5, wu: 0, wv: 0, fm: .75 + Math.random() * .5 }); }
+    // (24 Nov 2026) Among the snow: six-pointed snowflakes that tumble and flutter slowly as they drift; and gold and silver glitter that
+    // twinkles as it catches the light and sinks a little faster than the snow. Neither adds to the snow on the ground.
+    for (let i = 0; i < (calm ? 10 : 22); i++) { const a = Math.random() * 6.283, r = Math.sqrt(Math.random()) * .85;
+      F.push({ u: Math.cos(a) * r, v: Math.sin(a) * r, vu: 0, vv: .05, s: .022 + Math.random() * .016, z: .2 + Math.random() * .8, ph: Math.random() * 6.283, down: false, b: 0, add: 0, wu: 0, wv: 0, fm: .32 + Math.random() * .16, star: true, rot: Math.random() * 6.283, vr: (Math.random() - .5) * 1.4, tilt: Math.random() * 6.283 }); }
+    if (o.glitter !== false) for (let i = 0; i < (calm ? 45 : 120); i++) { const a = Math.random() * 6.283, r = Math.sqrt(Math.random()) * .88;
+      F.push({ u: Math.cos(a) * r, v: Math.sin(a) * r, vu: 0, vv: .05, s: .0045 + Math.random() * .004, z: Math.random(), ph: Math.random() * 6.283, down: false, b: 0, add: 0, wu: 0, wv: 0, fm: 1.6 + Math.random() * .6, glit: Math.random() < .55 ? 0 : 1, tw: 2 + Math.random() * 5 }); }
+    // (big soft out-of-focus flakes in front of the glass were tried on 24 Nov and taken out the same day: Ben found them too big and distracting. Set the count above 0 to bring them back)
+    const BOKEH = []; for (let i = 0; i < 0; i++) BOKEH.push({ u: Math.random() * 1.8 - .9, v: Math.random() * 1.8 - .9, s: .07 + Math.random() * .07, a: .1 + Math.random() * .1, ph: Math.random() * 6.283, sp: .035 + Math.random() * .04 });
+    let cap = 0, puffs = [];   // snow that has settled on the figure's hat (0 … 1); and the puff of it flying off when the globe is shaken
     let shineAt = 0, E = 0, stormT = 0, stormy = true, shook = false, hintStorm = false, gx = 0, gy = 1, tgx = 0, tgy = 1, calmed = true, resting = false;
     const floorAt = u => Math.sqrt(Math.max(0, WALL * WALL - u * u));
     // With a 3D figure inside, the bottom of the glass holds a fixed mound of snow for it to stand on (as a real snow globe
@@ -93,13 +115,17 @@
         if (f.down) { if (Math.random() < lift) { f.down = false; pile[f.b] = Math.max(0, pile[f.b] - f.add); f.vu = (Math.random() - .5) * 1.8 * Math.min(2, E) + pu; f.vv = -(.15 + Math.random() * 1.4) * Math.min(2, E) + pv; } }
         else { f.vu += pu * (.5 + Math.random() * .5); f.vv += pv * (.5 + Math.random() * .5); }
       }
+      if (amount > .25 && cap > .08) { puffOff(); }   // a shake knocks the snow off his hat
       if (E > .9) { startWave(); shook = true; stormy = true; stormT = 0; calmed = false;
         if (o.model && o.model.shake) try { o.model.shake(E); } catch (e) {}
         if (o.onStorm) try { o.onStorm(); } catch (e) {}
         if (!hintStorm) { hintStorm = true; o.onHint('Let it settle…', false); try { navigator.vibrate && navigator.vibrate(25); } catch (e) {} } }
     }
+    function puffOff() { const H = o.model && o.model.marks && o.model.marks.hat; if (H && !calm) for (let i = 0; i < Math.round(10 + cap * 22); i++) puffs.push({ u: H[0] + (Math.random() - .5) * .16, v: H[1] + .03 + Math.random() * .05, vu: (Math.random() - .5) * .9, vv: -(.2 + Math.random() * .7), s: .008 + Math.random() * .014, t: 0, life: .8 + Math.random() * .7 }); cap = 0; }
     function step(dt, t) {
       E *= Math.exp(-dt * (calm ? 1.3 : .75)); if (stormy) stormT += dt;
+      if (o.model && E < .3) cap = Math.min(1, cap + dt * (E < .12 ? .09 : .03));   // as the snow settles, a little gathers on his hat (in about ten seconds)
+      for (const p of puffs) { p.t += dt; p.vv += 1.4 * dt; p.u += p.vu * dt; p.v += p.vv * dt; } puffs = puffs.filter(p => p.t < p.life);
       if (stormy && !calmed && E < .35 && stormT > 2.4) { calmed = true; if (o.onCalm) try { o.onCalm(); } catch (e) {} }   // the snow is starting to settle
       gx += (tgx - gx) * Math.min(1, dt * 4); gy += (tgy - gy) * Math.min(1, dt * 4);
       const k = 1 - Math.exp(-dt * 2.4), A = .26 * E;
@@ -111,6 +137,7 @@
         if (E > .02) { const u = f.u, v = f.v, a1 = 2.2 * u + 1.3 * t, b1 = 2.6 * v - 1.1 * t, c2 = Math.cos(3.4 * u + 2.9 * v + 1.7 * t), s3 = Math.sin(4.6 * u - 3.8 * v - 2.1 * t);
           const pu = 2.2 * Math.cos(a1) * Math.sin(b1) + 1.7 * c2 - 1.61 * s3, pv = 2.6 * Math.sin(a1) * Math.cos(b1) + 1.45 * c2 + 1.33 * s3;
           fu += A * pv - .1 * E * v; fv += -A * pu + .1 * E * u; }   // swirls that stir without squeezing flakes together
+        if (f.star) { f.rot += (f.vr + Math.sin(t * .9 + f.ph) * .6) * dt * (1 + E); f.tilt += dt * (.8 + E); fu += Math.sin(t * 1.7 + f.ph) * .05; }   // (a snowflake tumbles and flutters from side to side)
         f.vu += (fu - f.vu) * k; f.vv += (fv - f.vv) * k; f.u += f.vu * dt; f.v += f.vv * dt;
         const r = Math.hypot(f.u, f.v), lim = WALL - f.s;
         if (r > lim) { const nu = f.u / r, nv = f.v / r, dot = f.vu * nu + f.vv * nv; f.u = nu * lim; f.v = nv * lim; if (dot > 0) { f.vu -= dot * nu * 1.2; f.vv -= dot * nv * 1.2; } }
@@ -206,9 +233,26 @@
       let g = x.createRadialGradient(cx, cy, R * .55, cx, cy, R); g.addColorStop(0, 'rgba(10,20,45,0)'); g.addColorStop(1, 'rgba(10,20,45,.45)'); x.fillStyle = g; x.fillRect(cx - R, cy - R, 2 * R, 2 * R);
       // a 3D figure: the snow falling behind it, then the figure, then the snow it stands in, then the snow falling in front of it
       const fig = o.model && o.model.ready && o.model.canvas ? o.model : null;
-      const flakes = (z0, z1) => { for (const f of F) { if (f.z < z0 || f.z >= z1) continue; const sz = f.s * R * (1.4 + f.z * 1.6) * 2; x.globalAlpha = .5 + f.z * .5; x.drawImage(flake, cx + f.u * R - sz / 2, cy + f.v * R - sz / 2, sz, sz); } x.globalAlpha = 1; };
+      // the snow: far flakes soft and dim, near ones bright; near the moon they shine brighter; snowflakes tumble; glitter twinkles
+      const mn = o.moon, near = f => mn ? Math.exp(-((f.u - mn.u) ** 2 + (f.v - mn.v) ** 2) / .05) : 0;
+      const flakes = (z0, z1) => { for (const f of F) { if (f.z < z0 || f.z >= z1) continue; const px = cx + f.u * R, py = cy + f.v * R, m = near(f);
+          if (f.glit != null) { const tw = calm ? .6 : Math.pow(.5 + .5 * Math.sin(t * f.tw + f.ph), 6), sz = f.s * R * (2.2 + 4.5 * tw + 2 * m) * 2; x.globalAlpha = Math.min(1, .35 + .65 * tw + .4 * m); x.drawImage(GLINT[f.glit], px - sz / 2, py - sz / 2, sz, sz); continue; }
+          if (f.star) { const sz = f.s * R * (1.5 + f.z) * 2, sq = .45 + .55 * Math.abs(Math.cos(f.tilt)); x.globalAlpha = Math.min(1, .55 + f.z * .35 + .35 * m); x.save(); x.translate(px, py); x.rotate(f.rot); x.scale(1, sq); x.drawImage(star, -sz / 2, -sz / 2, sz, sz); x.restore(); continue; }
+          const sz = f.s * R * (1.4 + f.z * 1.6) * 2; x.globalAlpha = Math.min(1, (f.z < .3 ? .32 + f.z : .5 + f.z * .5) + .45 * m); x.drawImage(f.z < .3 ? soft : flake, px - sz / 2, py - sz / 2, sz, sz); } x.globalAlpha = 1; };
+      // the snow on his hat: a soft white cap round the bottom of the bobble, between it and the logo, growing as the snow settles
+      const hatSnow = () => { const M = fig && fig.marks, Hm = M && M.hat, Fo = fig && fig.focus; if (!Hm || !Fo || cap < .02 || !(Fo.front > .3)) return;
+        const hw = Math.hypot(Fo.ux, Fo.uy) * R, ang = Math.atan2(Fo.uy, Fo.ux), W8 = .42, hx = cx + (Hm[0] * W8 + Fo.x * (1 - W8)) * R, hy = cy + (Hm[1] * W8 + Fo.y * (1 - W8)) * R, k = Math.min(1, cap * 1.2), ca = Math.cos(-ang), sa = Math.sin(-ang);
+        const pdx = (Hm[0] * R + cx - hx), pdy = (Hm[1] * R + cy - hy), px = pdx * ca - pdy * sa, py = pdx * sa + pdy * ca;   // (the bobble, in the hat's own level)
+        x.save(); x.translate(hx, hy); x.rotate(ang); x.globalAlpha = .6 + .38 * k;
+        const g = x.createLinearGradient(0, -hw * .5, 0, hw * .2); g.addColorStop(0, '#ffffff'); g.addColorStop(1, 'rgba(226,236,255,.92)'); x.fillStyle = g;
+        const rx = hw * (1.05 + .3 * k), top = hw * (.22 + .3 * k); x.beginPath(); x.moveTo(-rx, hw * .04);
+        for (let i = 0; i <= 12; i++) { const a = Math.PI + i / 12 * Math.PI; x.lineTo(Math.cos(a) * rx, Math.sin(a) * top + (i % 2 ? -hw * .03 : 0)); }   // (a soft, lumpy top)
+        for (let i = 0; i <= 8; i++) { const q = 1 - i / 8; x.lineTo(-rx + 2 * rx * q, hw * (.05 + .05 * Math.sin(i * 1.9)) * (q > 0 && q < 1 ? 1 : .4)); }   // (and a lumpy edge where it lies on the hat)
+        x.closePath(); x.fill();
+        x.globalAlpha = .55 + .4 * k; x.fillStyle = '#ffffff'; x.beginPath(); x.ellipse(px, py - hw * .14, hw * (.2 + .1 * k), hw * (.08 + .07 * k), 0, 0, 6.283); x.fill(); x.restore(); };   // (and a little on the bobble)
+      const puffDraw = () => { for (const p of puffs) { const sz = p.s * R * 2.4; x.globalAlpha = Math.max(0, 1 - p.t / p.life) * .9; x.drawImage(flake, cx + p.u * R - sz / 2, cy + p.v * R - sz / 2, sz, sz); } x.globalAlpha = 1; };
       if (fig) { flakes(0, .68);   // (two flakes in three fall behind it, so it is never lost in the snow)
-        try { fig.frame(t, dtw, { px: 2 * R * DPR, gx, gy, E, feet: GV, calm }); x.drawImage(fig.canvas, cx - R, cy - R, 2 * R, 2 * R); } catch (e) {} }
+        try { fig.frame(t, dtw, { px: 2 * R * DPR, gx, gy, E, feet: GV, calm }); x.drawImage(fig.canvas, cx - R, cy - R, 2 * R, 2 * R); hatSnow(); puffDraw(); } catch (e) {} }
       x.beginPath(); x.moveTo(cx - R, cy + R);
       for (let b = 0; b <= NB; b++) { const u = b / NB * 2 - 1, i = Math.min(NB - 1, b), hh = (pile[Math.max(0, i - 1)] + pile[i] * 2 + pile[Math.min(NB - 1, i + 1)]) / 4 + baseU(u), edge = Math.sqrt(Math.max(0, 1 - u * u));
         x.lineTo(cx + u * R, cy + (edge - Math.min(1, hh / .012) * (edge - floorAt(u)) - hh) * R); }
@@ -220,6 +264,7 @@
         sh.addColorStop(0, `rgba(36,58,112,${.34 * (1 - air * .6)})`); sh.addColorStop(1, 'rgba(36,58,112,0)'); x.fillStyle = sh; x.beginPath(); x.arc(0, 0, rx * (1 + air * .4), 0, 6.283); x.fill(); x.restore();
         flakes(.68, 2);
       } else { x.fillStyle = 'rgba(244,247,255,.93)'; x.fill(); flakes(0, 2); }
+      for (const b of BOKEH) { b.v += b.sp * dtw * (1 + E * 3); b.u += Math.sin(t * .3 + b.ph) * .01 * dtw + gx * .02 * dtw; if (b.v > 1.1) { b.v = -1.1; b.u = Math.random() * 1.8 - .9; } const sz = b.s * R * 2; x.globalAlpha = b.a; x.drawImage(soft, cx + b.u * R - sz / 2, cy + b.v * R - sz / 2, sz, sz); } x.globalAlpha = 1;   // (big soft flakes in front of the glass, out of focus)
       x.restore();
       g = x.createRadialGradient(cx - R * .35, cy - R * .45, R * .05, cx, cy, R * 1.02); g.addColorStop(0, 'rgba(255,255,255,.22)'); g.addColorStop(.35, 'rgba(255,255,255,.04)'); g.addColorStop(.85, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(200,225,255,.28)');
       x.fillStyle = g; x.beginPath(); x.arc(cx, cy, R, 0, 6.283); x.fill(); x.lineWidth = Math.max(1.5, R * .022); x.strokeStyle = 'rgba(220,235,255,.55)'; x.stroke();
@@ -264,7 +309,8 @@
     function onTilt(e) {
       if (e.gamma == null) return; const ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
       let side = ang === 90 ? e.beta : ang === -90 || ang === 270 ? -e.beta : ang === 180 ? -e.gamma : e.gamma;
-      side = Math.max(-.85, Math.min(.85, Math.sin(side * Math.PI / 180) * 1.3)); tgx = side; tgy = Math.sqrt(1 - side * side);
+      side = Math.max(-.85, Math.min(.85, Math.sin(side * Math.PI / 180) * 1.3)); const d = side - tgx; tgx = side; tgy = Math.sqrt(1 - side * side);
+      if (Math.abs(d) > .06) stir(Math.min(.2, Math.abs(d) * .6), d * 1.6, -Math.abs(d) * .3);   // (24 Nov) tilting the phone sloshes the water: the snow swirls toward the low side
     }
     let tap = null;   // a quick touch that doesn't move: on the glass (with a 3D figure) the figure hops; on the base, onPlate is called
     const pd = e => { drag = { x: e.clientX, y: e.clientY, t: performance.now() }; tap = o.model || o.onPlate ? { x: e.clientX, y: e.clientY, t: drag.t, moved: 0 } : null; ac(); };
@@ -300,6 +346,8 @@
       sound(dt); requestAnimationFrame(frame);
     })(last);
     return {
+      tilt(side) { onTilt({ gamma: Math.asin(Math.max(-.65, Math.min(.65, side / 1.3))) * 180 / Math.PI, beta: 0 }); },   // (for testing: tilt it as a phone would, −1 … 1)
+      get cap() { return cap; },
       start, set, shake() { ac(); stir(2.6, (Math.random() - .5) * .6, -.4); },
       sound(on) { soundOn = !!on; if (waveOn) wave.muted = !soundOn; },
       // for a game played inside the globe: where the glass is on the screen, a pause while the game covers it, and the globe's bells
