@@ -28,7 +28,7 @@
 <link rel="icon" type="image/png" href="../favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=Atkinson+Hyperlegible:wght@400;700&family=Playfair+Display:ital,wght@1,600;1,700&display=swap">
 <style>
 :root{--night:#0b1530;--snow:#f6f8ff;--gold:#e2b45a;--soft:#c3cde3;color-scheme:dark}
 *{box-sizing:border-box}
@@ -51,10 +51,28 @@ html.zoomed,html.zoomed *{touch-action:manipulation!important}
 @media (max-width:420px){.bar{gap:8px}.bar button{flex:1 1 0;padding:0 8px;font-size:13.5px;letter-spacing:.05em}}
 .bar .pri{background:var(--gold);border-color:var(--gold);color:#1a1206}
 button:focus-visible,a:focus-visible{outline:3px solid #7cc4ff;outline-offset:3px}
-.go{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;background:rgba(6,10,24,.55);text-align:center}
-.go button{min-height:68px;min-width:230px;font-size:21px;background:var(--gold);border-color:var(--gold);color:#1a1206;box-shadow:0 12px 34px -10px #000}
+/* THE OPENING: a holiday card from Ora (24 Nov 2026). Tap to start zooms into its logo, and out of the logo on the snowman's hat into the globe */
+.go{position:fixed;inset:0;z-index:5;text-align:center;background:#0b1530;overflow:hidden}
+.card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:min(2.6vh,18px);box-sizing:border-box;padding:calc(max(28px,4vh) + env(safe-area-inset-top,0px)) max(30px,env(safe-area-inset-right,0px)) calc(max(28px,4vh) + env(safe-area-inset-bottom,0px)) max(30px,env(safe-area-inset-left,0px));background:radial-gradient(120% 80% at 50% 0%,#24418f 0%,#152a63 45%,#0b1530 100%)}
+.cardsnow{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.card .frame{position:absolute;inset:calc(12px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));border:1.5px solid rgba(226,180,90,.8);border-radius:14px;pointer-events:none}
+.card .frame::after{content:'';position:absolute;inset:5px;border:1px solid rgba(226,180,90,.4);border-radius:10px}
+.oralogo{position:relative;height:min(11vh,15vw,84px);width:auto;flex:0 0 auto;filter:drop-shadow(0 3px 12px rgba(0,0,0,.35))}
+.cardtext::before{content:'';position:absolute;inset:-14% -10%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(10,20,52,.55),rgba(10,20,52,0))}
+.cardtext{position:relative;z-index:0;max-width:30em;display:flex;flex-direction:column;align-items:center;gap:min(1.4vh,10px)}
+.hh{margin:0;font:900 min(11.5vw,7.4vh,64px)/1 Archivo,'Arial Black',Arial,sans-serif;font-stretch:118%;letter-spacing:.03em;text-transform:uppercase;color:var(--gold);text-shadow:0 2px 18px rgba(0,0,0,.4)}
+.fam{margin:0;font:italic 700 min(8vw,5vh,40px)/1.15 'Playfair Display',Georgia,serif;color:#fff}
+.rule{display:flex;align-items:center;gap:10px;color:var(--gold);width:min(70%,260px);margin:min(.8vh,6px) 0}
+.rule span{flex:1;height:1.5px;background:linear-gradient(90deg,transparent,rgba(226,180,90,.85),transparent)}
+.rule svg{width:min(3.4vh,24px);height:min(3.4vh,24px);flex:0 0 auto}
+.inv{margin:0;max-width:24em;font-size:min(4.7vw,3vh,20px);line-height:1.4;color:#fff}
+.prize{margin:0;max-width:24em;font-size:min(4.2vw,2.7vh,18px);line-height:1.4;color:var(--soft)}
+.inv b,.prize b{color:var(--gold);font-weight:700}
+.plate{position:absolute;inset:0;opacity:0;pointer-events:none}
+
+.go button{position:relative;margin-top:min(1.6vh,10px);min-height:min(68px,11vh);min-width:230px;font-size:21px;background:var(--gold);border-color:var(--gold);color:#1a1206;box-shadow:0 12px 34px -10px #000}
 .go button[disabled]{opacity:.6}
-.go p{margin:0;max-width:30ch;color:#fff;text-shadow:0 1px 4px #000}
+
 .go a{color:#fff}
 .own{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:2px;width:max-content;max-width:calc(100% - 32px);padding:8px 18px;border-radius:16px;border:1.5px solid rgba(226,180,90,.7);background:rgba(8,14,32,.55);color:#f6f8ff;text-decoration:none;text-align:center}
 .own b{font:800 14px/1.2 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#e2b45a}
@@ -72,8 +90,12 @@ button:focus-visible,a:focus-visible{outline:3px solid #7cc4ff;outline-offset:3p
 @media (max-width:420px){.lowrow .own{flex:1 1 0;padding:8px 10px}.lowrow .own b{font-size:12.5px;letter-spacing:.04em}.lowrow .own span{font-size:11.5px}}
 .top p.big{white-space:nowrap;font-size:clamp(17px,5.3vw,34px)}
 
-/* the bottom is one big SHAKE button, and nothing else */
-.bar{max-width:680px;margin:0 auto;align-items:stretch}
+/* the bottom: a line about swirling the snow, and under it SHAKE and PLAY THE GAME */
+.bar{max-width:680px;margin:0 auto;align-items:stretch;flex-wrap:wrap;row-gap:8px}
+.bar .swirl{flex:0 0 100%;margin:0;text-align:center;color:var(--soft);font:700 12.5px/1.3 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+@media (max-width:360px){.bar .swirl{font-size:11px;letter-spacing:.03em}}
+.bar .play{flex:1 1 0;min-height:62px;font-size:17px;letter-spacing:.08em;background:rgba(8,14,32,.6);border-color:var(--gold);color:var(--gold)}
+@media (max-width:420px){.bar .play{font-size:15px;letter-spacing:.05em}}
 .bar .pri{flex:1 1 0;min-height:62px;font-size:20px;letter-spacing:.14em}
 @media (max-width:420px){.bar .pri{flex:1 1 0;font-size:19px;letter-spacing:.14em}}
 
@@ -122,7 +144,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #7cc4ff;outline-offset:3p
    while it says TOP SCORES or one of the names.) */
 .toptop{position:fixed;z-index:6;top:var(--shoulder,96px);right:max(5px,env(safe-area-inset-right,0px));display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:999px;border:2px solid rgba(226,180,90,.9);background:rgba(8,14,32,.6);color:#e2b45a;font-size:0;cursor:pointer}
 .toptop svg{width:24px;height:24px}
-.toptop[hidden]{display:none}
+.toptop[hidden],.snd[hidden],.lowrow[hidden],.bar [hidden],.bar[hidden]{display:none!important}
 @media (min-width:701px){.toptop{top:calc(10px + env(safe-area-inset-top,0px));right:max(10px,env(safe-area-inset-right,0px))}}
 /* SOUND on or off: a small round button. On a phone it is at the globe's left shoulder (beside the top of the glass, at the edge of the screen: the greeting fills the top); on a wide screen, in the top left corner. It turns all of it off or on: the notes, the recorded sounds, his voice */
 .snd{position:fixed;z-index:6;top:var(--shoulder,96px);left:max(5px,env(safe-area-inset-left,0px));display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:999px;border:2px solid rgba(255,255,255,.4);background:rgba(8,14,32,.6);color:#fff;cursor:pointer;transition:opacity .35s ease}
@@ -142,11 +164,25 @@ body.playing .top,body.playing .bar,body.playing .lowrow,body.playing .toptop{op
 <body>
 <div id="stage" role="img" aria-label="A snow globe"></div>
 <header class="top"><h1 id="msg">Happy Holidays</h1><p id="hint" class="big">Shake your phone!</p></header>
-<div class="bar" id="bar" hidden><button type="button" class="pri" id="shake">Shake</button></div>
-<button type="button" class="toptop" id="tops" aria-label="Top scores" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3"/><path d="M17 6h3v1a3 3 0 0 1-3 3"/><path d="M12 14v4"/><path d="M8 20h8"/></svg>Top scores</button>
-<div class="lowrow"><a class="own" href="./"><b>Make your own</b><span>Your photo or video, free</span></a><a class="own" href="../play/snowglobes.html"><b>More globes</b><span>See all eight</span></a></div>
-<button type="button" class="snd" id="snd" aria-label="Sound" aria-pressed="true"><svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path d="M15.6 9.2a4 4 0 0 1 0 5.6"/><path d="M18.3 6.6a7.6 7.6 0 0 1 0 10.8"/></svg><svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path d="M16 9.5l5 5"/><path d="M21 9.5l-5 5"/></svg></button>
-<div class="go" id="go"><button type="button" id="start" disabled>Loading…</button><p id="goTip">Shake or tilt your phone, or swipe across the globe. When the snow settles, catch snowflakes to build the snowman and letters to spell Happy Holidays. Slide him with a finger or the arrow buttons, and press Jump to hop over branches and campfires.</p></div>
+<div class="bar" id="bar" hidden><p class="swirl" id="swirl">To swirl snow: swipe globe or shake your phone or push button</p><button type="button" class="pri" id="shake">Shake</button><button type="button" class="play" id="play">Play the game</button></div>
+<button type="button" class="toptop" id="tops" aria-label="Top scores" hidden data-off><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3"/><path d="M17 6h3v1a3 3 0 0 1-3 3"/><path d="M12 14v4"/><path d="M8 20h8"/></svg>Top scores</button>
+<div class="lowrow" hidden><a class="own" href="./"><b>Make your own</b><span>Your photo or video, free</span></a><a class="own" href="../play/snowglobes.html"><b>More globes</b><span>See all eight</span></a></div>
+<button type="button" class="snd" id="snd" aria-label="Sound" aria-pressed="true" hidden><svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path d="M15.6 9.2a4 4 0 0 1 0 5.6"/><path d="M18.3 6.6a7.6 7.6 0 0 1 0 10.8"/></svg><svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path d="M16 9.5l5 5"/><path d="M21 9.5l-5 5"/></svg></button>
+<div class="go" id="go">
+<div class="card" id="card"><canvas class="cardsnow" id="cardSnow" aria-hidden="true"></canvas><div class="frame" aria-hidden="true"></div>
+<img class="oralogo" id="goLogo" src="figures/ora-snowman/ora-mark-white.png" alt="Ora">
+<div class="cardtext" id="cardText">
+<h2 class="hh">Happy Holidays</h2>
+<p class="fam">to our Ora Family!</p>
+<div class="rule" aria-hidden="true"><span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M12 2l-2 2M12 2l2 2M12 22l-2-2M12 22l2-2"/></svg><span></span></div>
+<p class="inv">Build a snowman and go dashing through the snow with us, for a chance to win a <b>$100&nbsp;gift&nbsp;card</b>!</p>
+<p class="prize">For the <b>top 5 high scores</b> on the in-game scoreboard on <b>New Year&rsquo;s Day</b>.</p>
+</div>
+<button type="button" id="start" disabled>Loading…</button>
+<p id="goTip" class="sr">Shake your phone, or swipe across the globe, to swirl the snow. Press Play the game to play: catch snowflakes to build the snowman and letters to spell Happy Holidays. Slide him with a finger or the arrow buttons, and press Jump to hop over branches and campfires.</p>
+</div>
+<div class="plate" id="goPlate" aria-hidden="true"></div>
+</div>
 <div class="score" id="score" hidden role="dialog" aria-modal="true" aria-labelledby="scTitle"><div class="card">
 <h2 id="scTitle" tabindex="-1">Your score</h2><p class="num" id="scNum">0</p><p class="parts" id="scParts"></p>
 <form id="scForm" hidden><label for="scName">Type your name for the top scores</label><div class="row"><input id="scName" name="name" type="text" maxlength="12" autocomplete="nickname" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done"><button type="submit" class="pri" id="scSave">Save</button></div></form>
@@ -209,7 +245,7 @@ $('stage').setAttribute('aria-label', 'A snow globe. Inside the glass: ' + (figu
 function topRoom() { const hd = document.querySelector('.top'), hb = hd ? hd.getBoundingClientRect().bottom : 100; return hb + (innerWidth > 700 ? 12 : 10); }
 // how much room the bottom needs: the two links, a gap, the SHAKE button, a gap. On the narrowest phones the links' words take more
 // lines, so the links are taller: the SHAKE button then sits higher (--low: how far up it sits), just clear of them.
-function lowRoom() { const lr = document.querySelector('.lowrow'), h = lr ? lr.getBoundingClientRect().height : 60, low = Math.max(78, Math.round(10 + h + 8)); document.documentElement.style.setProperty('--low', low + 'px'); return low + 66; }
+function lowRoom() { const b = $('bar'), h = b && !b.hidden ? b.getBoundingClientRect().height : 96, low = 16; document.documentElement.style.setProperty('--low', low + 'px'); return low + Math.round(h) + 10; }   // (since 24 Nov: the words about swirling the snow, and under them SHAKE and PLAY THE GAME)
 // A second after the globe opens he says his hello, his mouth moving with the words. Nothing stops him: not a shake, and not
 // the game, which begins as soon as the snow settles whether he has finished or not (he goes on speaking through the zoom).
 // ("Record your voice", a line of the visitor's own for him to say, was taken off the page: rec and mine are left empty. See the README.)
@@ -219,12 +255,12 @@ if (figure) figure.talk = () => (mine && mine.speaking ? mine.mouth() : line ? l
 let armed = false, auto = false, started = false, stormNow = false;
 function afterSpeech() { if (held) { const t = held; held = ''; if (!(game && game.playing)) say(t); } }   // he has finished: now whatever was waiting to be read out
 const AGAIN = WORDS.length > 1 ? 'NEXT WORD' : 'PLAY AGAIN';   // what the base says in turn with the last phrase spelled (a tap on it shakes the globe)
-const g = AAGlobe.create($('stage'), { picture: backdrop, model: figure, name: mem.word ? [mem.word, AGAIN] : '', base: 'blue', top: topRoom(), bottom: lowRoom(),
+const g = AAGlobe.create($('stage'), { picture: backdrop, model: figure, name: mem.word ? [mem.word] : '', base: 'blue', top: topRoom(), bottom: lowRoom(),
   onHint(t, big) { if (game && game.playing || (rec && rec.recording)) return; setHint(t, big); if (big) say(t); },
   say(t) { say(t); },
   onPlate() { if (!started || (game && game.playing)) return; if (plateOnScores()) openCard(null, true); else g.shake(); },   // a tap on the base: where it says PLAY AGAIN it shakes the globe; where it says TOP SCORES (or one of the names) it opens the list
-  onStorm() { stormNow = true; if (!auto && started && game && !game.playing && !(rec && rec.recording) && !cardOpen) armed = true; },     // a shake by hand…
-  onCalm() { stormNow = false; if (armed && game && !game.playing && !(rec && rec.recording)) { armed = false; round(); } } });   // …and as its snow settles, the game
+  onStorm() { stormNow = true; },     // a shake: only snow (since 24 Nov the game starts only from PLAY THE GAME)
+  onCalm() { stormNow = false; } });
 
 g.sound(soundOn);
 // The snowmobile he unwraps and rides when the phrase is spelled: a second figure (the snowman on it), drawn only during the ride.
@@ -259,11 +295,11 @@ async function round() {
 const scores = createScores({ board: new URLSearchParams(location.search).get('board') || 'snowman' });
 const fmt = n => Math.round(n).toLocaleString('en-US');
 let boardNow = null, cardOpen = false, cardTimer = 0, plateTimer = 0, plateFrom = 0, cardResult = null, waiting = null, lastFocus = null, cardAt = 0, cheered = true;   // (cardResult: the round the card is showing, if it is showing one)
-const plateNames = () => { const list = mem.word ? [mem.word, AGAIN] : []; if (boardNow && boardNow.top.length) { list.push('TOP SCORES'); for (const r of boardNow.top.slice(0, 5)) list.push(r.place + '. ' + r.name + '  ' + fmt(r.score)); } return list.length ? list : ''; };
+const plateNames = () => { const list = mem.word ? [mem.word] : []; if (boardNow && boardNow.top.length) { list.push('TOP SCORES'); for (const r of boardNow.top.slice(0, 5)) list.push(r.place + '. ' + r.name + '  ' + fmt(r.score)); } return list.length ? list : ''; };
 // Which text is on the base just now? It takes turns as globe.js does it: the first text for 3 seconds, each of the others for 1.8
 // (and after a round it waits 2.85 seconds, while the phrase is on the glass). plateOnScores(): is it TOP SCORES or one of the
 // names? (A tap is taken to be meant for what was showing three tenths of a second before it.)
-let plateList = mem.word ? [mem.word, AGAIN] : [], plateAt = 0;
+let plateList = mem.word ? [mem.word] : [], plateAt = 0;
 const setPlate = () => { const n = plateNames(); plateList = Array.isArray(n) ? n : []; plateAt = performance.now() / 1000; g.set({ name: n }); };
 const plateOnScores = () => { const at = plateList.indexOf('TOP SCORES'), n = plateList.length; if (at < 0) return false; let u = performance.now() / 1000 - .3 - plateAt; if (u < 0) return false;
   u %= 3 + 1.8 * (n - 1); return (u < 3 ? 0 : 1 + Math.floor((u - 3) / 1.8)) >= at; };
@@ -278,7 +314,8 @@ function fillList() {
   else { for (const r of b.top) row(r, !!r.you); if (b.me && !b.top.some(r => r.you)) { const li = document.createElement('li'); li.className = 'gap'; li.textContent = '…'; li.setAttribute('aria-hidden', 'true'); ol.appendChild(li); row(b.me, true); } }
   $('scFine').textContent = boardNow && boardNow.shared ? 'Everyone who plays from this link is on this list, and can see the names on it.' : 'These scores are kept on this device.';
 }
-function showBoard(b) { if (b) boardNow = b; fillList(); $('tops').hidden = !(boardNow && boardNow.top.length); document.body.classList.toggle('tops', !$('tops').hidden); if (!(game && game.playing)) fit({ top: topRoom() }); plateSoon(); }
+function showBoard(b) { if (b) boardNow = b; fillList(); $('tops').hidden = true;   // (the Top scores button is not on the globe screen since 24 Nov: the list comes after a round, and from a tap on the base)
+  document.body.classList.toggle('tops', !$('tops').hidden); if (!(game && game.playing)) fit({ top: topRoom() }); plateSoon(); }
 function meLine(b, score) {
   const me = b && b.me; $('scMe').hidden = !me; if (!me) return;
   const where = 'number ' + me.place + ' of ' + b.players, txt = score != null && score < me.score ? me.name + ', your best is ' + fmt(me.score) + ': ' + where + '.' : me.name + ', you are ' + where + '.';
@@ -304,7 +341,7 @@ function openCard(result, tapped) {   // result: the round just played (or nothi
 function closeCard() { if (!cardOpen) return; cardOpen = false; $('score').hidden = true; try { (lastFocus && document.contains(lastFocus) ? lastFocus : $('shake')).focus({ preventScroll: true }); } catch (e) {} }
 $('scForm').onsubmit = e => { e.preventDefault(); const nm = scores.clean($('scName').value); if (!nm) { $('scName').value = ''; $('scName').focus(); say('Type a name first.'); return; } saveScore(nm, cardResult ? cardResult.score : scores.me.best); };
 $('scRename').onclick = () => { $('scMe').hidden = true; $('scForm').hidden = false; $('scName').value = scores.me.name || ''; $('scName').focus(); $('scName').select(); };
-$('scClose').onclick = closeCard; $('scAgain').onclick = async () => { closeCard(); if ($('go')) await $('start').onclick(); g.shake(); };   // (the list can be opened before "Tap to start": Play again then starts the globe first)
+$('scClose').onclick = closeCard; $('scAgain').onclick = async () => { closeCard(); if ($('go')) await $('start').onclick(); if (game && !game.playing) round(); };   // (the list can be opened before "Tap to start": Play again then starts the globe first)
 $('score').addEventListener('pointerdown', e => { if (e.target === $('score')) closeCard(); });
 $('tops').onclick = () => openCard(null);
 addEventListener('keydown', e => { if (e.key === 'Escape' && cardOpen) { e.preventDefault(); closeCard(); } });
@@ -317,10 +354,44 @@ addEventListener('resize', () => fit({ top: topRoom(), bottom: lowRoom() })); if
 try { document.fonts.load('900 64px Archivo'); } catch (e) {}
 $('start').disabled = false; $('start').textContent = 'Tap to start'; $('start').focus(); if (soundOn) sounds.prepare();
 let starting = false;   // (a double tap on "Tap to start" is one start, not two)
-$('start').onclick = async () => { if (starting) return; starting = true; if (soundOn) sounds.unlock(); if (line) line.unlock(); await g.start(); started = true; $('go').remove(); $('bar').hidden = false; $('shake').focus({ preventScroll: true });
-  const tip = 'Shake your phone, tilt it, or press Shake to make it snow.' + (game ? ' When the snow settles, catch snowflakes to build the snowman and letters to spell Happy Holidays. Slide him with a finger or the Left and Right buttons, and press Jump to hop over branches and campfires. When it is spelled, a big gift comes down for him.' : '');
+// Tap to start: the card's Ora logo glides to the middle and grows to the size the logo has between the globe and the game, while the
+// words fade and the hat's blue spreads behind it; then the game takes over at that same picture and zooms out of the logo on the
+// snowman's hat into the globe. (With "reduce motion" on, or no 3D, the card simply fades.)
+const nextFrame = () => new Promise(r => requestAnimationFrame(() => r()));
+// Snow on the card (24 Nov): a light flurry of soft round flakes, and now and then a little six-pointed one, drifting down behind the
+// words and swaying a little. Faint, so the words read easily (and a soft dark glow sits behind the words). Still with "reduce motion" on.
+(function cardSnow() {
+  const cv = $('cardSnow'); if (!cv || !cv.getContext) return; const x = cv.getContext('2d'), still = matchMedia('(prefers-reduced-motion: reduce)').matches; let W = 0, H = 0, D = 1, flakes = [], last = performance.now();
+  const make = (y) => { const star = Math.random() < .12; return { x: Math.random() * W, y: y == null ? Math.random() * H : y, r: star ? 5 + Math.random() * 4 : .8 + Math.pow(Math.random(), 2) * 2.6, star, a: star ? .26 + Math.random() * .12 : .18 + Math.random() * .22, vy: 14 + Math.random() * 22, sw: .4 + Math.random() * .9, ph: Math.random() * 6.283, rot: Math.random() * 6.283, vr: (Math.random() - .5) * .6 }; };
+  const size = () => { const r = cv.getBoundingClientRect(); D = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = Math.round(W * D); cv.height = Math.round(H * D); const n = Math.round(Math.min(90, Math.max(40, W * H / 6500))); flakes = Array.from({ length: n }, () => make()); };
+  const starAt = (f) => { x.save(); x.translate(f.x, f.y); x.rotate(f.rot); x.strokeStyle = '#ffffff'; x.lineWidth = Math.max(1, f.r * .16); x.lineCap = 'round'; x.beginPath();
+    for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3, c = Math.cos(a), s2 = Math.sin(a); x.moveTo(0, 0); x.lineTo(c * f.r, s2 * f.r); const m = f.r * .58, b = f.r * .3; x.moveTo(c * m, s2 * m); x.lineTo(c * m + Math.cos(a + .7) * b, s2 * m + Math.sin(a + .7) * b); x.moveTo(c * m, s2 * m); x.lineTo(c * m + Math.cos(a - .7) * b, s2 * m + Math.sin(a - .7) * b); }
+    x.stroke(); x.restore(); };
+  function draw(now) { if (!document.contains(cv)) return; const dt = Math.min(.05, (now - last) / 1000); last = now; x.setTransform(D, 0, 0, D, 0, 0); x.clearRect(0, 0, W, H);
+    for (const f of flakes) { if (!still) { f.y += f.vy * dt; f.ph += dt * f.sw; f.rot += f.vr * dt; if (f.y > H + 12) Object.assign(f, make(-12)); } const fx = f.x + Math.sin(f.ph) * 9 * f.sw;
+      x.globalAlpha = f.a; if (f.star) starAt({ x: fx, y: f.y, r: f.r, rot: f.rot }); else { x.fillStyle = '#ffffff'; x.beginPath(); x.arc(fx, f.y, f.r, 0, 6.283); x.fill(); } }
+    x.globalAlpha = 1; if (!still) requestAnimationFrame(draw); }
+  size(); addEventListener('resize', () => { if (document.contains(cv)) { size(); if (still) draw(performance.now()); } }); requestAnimationFrame(draw);
+})();
+async function cardZoom() {
+  const go = $('go'), logo = $('goLogo'), still = matchMedia('(prefers-reduced-motion: reduce)').matches, P = game && game.introOK && !still ? game.plate : null;
+  if (!P || !logo.animate) { if (go.animate) await go.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 450, fill: 'forwards' }).finished.catch(() => {}); return false; }
+  const pl = $('goPlate'); pl.style.background = `radial-gradient(circle at ${P.x}px ${P.y}px, ${P.inner} 0, ${P.outer} ${Math.round(Math.hypot(innerWidth, innerHeight) * .62)}px)`;
+  const r = logo.getBoundingClientRect(), k = P.w / r.width, dx = P.x - (r.left + r.width / 2), dy = P.y - (r.top + r.height / 2), ease = { easing: 'cubic-bezier(.55,0,.35,1)', fill: 'forwards' };
+  for (const el of [$('cardText'), $('start'), go.querySelector('.frame')]) el.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.94)' }], { duration: 380, fill: 'forwards' });
+  pl.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, delay: 250, easing: 'ease-in', fill: 'forwards' });
+  logo.style.zIndex = 2; await logo.animate([{ transform: 'none', filter: 'none' }, { transform: `translate(${dx * .6}px,${dy * .6}px) scale(${1 + (k - 1) * .45}) rotate(-6deg)`, offset: .55 }, { transform: `translate(${dx}px,${dy}px) scale(${k * 1.06}) rotate(2deg)`, offset: .85 }, { transform: `translate(${dx}px,${dy}px) scale(${k})`, filter: 'none' }], Object.assign({ duration: 1100 }, ease)).finished.catch(() => {});
+  return true;
+}
+$('start').onclick = async () => { if (starting) return; starting = true; if (soundOn) sounds.unlock(); if (line) line.unlock(); const opening = g.start();
+  const zoomed = await cardZoom(); await opening; started = true;
+  if (zoomed) { document.body.classList.add('playing'); const done = game.intro(); await nextFrame(); await nextFrame(); $('go').remove(); await done; document.body.classList.remove('playing'); } else $('go').remove();   // (the greeting at the top comes in as the globe arrives)
+  $('bar').hidden = false; fit({ top: topRoom(), bottom: lowRoom() }); $('shake').focus({ preventScroll: true });
+  const tip = 'To swirl the snow, swipe the globe, shake your phone, or press Shake.' + (game ? ' Press Play the game to play: catch snowflakes to build the snowman and letters to spell Happy Holidays. Slide him with a finger or the Left and Right buttons, and press Jump to hop over branches and campfires. When it is spelled, a big gift comes down for him.' : '');
   if (line && soundOn) { greeted = true; held = tip; setTimeout(() => line.say(afterSpeech), 330); } else say(msg + '. ' + tip); };   // (the recording begins with half a second of quiet, so his first word comes one second after the globe opens)
 $('shake').onclick = () => g.shake();
+$('play').onclick = () => { if (started && game && !game.playing && !cardOpen) round(); };   // the only way into the game
+if (!game) $('play').hidden = true;
 // Sound off: the notes, the recorded sounds and his voice all stop (he stops in the middle of a word). Sound on: they are back; and if
 // he has not said his hello yet this visit, he says it now.
 function setSound(on, tell) {

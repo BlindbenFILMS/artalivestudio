@@ -122,9 +122,14 @@ const GOT = { armR: ['An arm!', 'The gift was an arm.'], armL: ['His other arm!'
 const HF = [.52, .42, .33, .345];   // how tall the whole snowman would stand (as a part of the screen): with only his head made, with his middle done, when he is whole, and at his biggest. (The taller he is, the further back the view: the sky above him stays tall.)
 const JT = 1.05;                    // a jump, from the snow and back: seconds
 const ROLL = .9;                    // tripped by a branch: his tumble forward, seconds
-const PTS = { flake: 10, big: 20, letter: 50, gift: 100, jump: 100, second: 10, par: 120, coin: 10, ride: 10, tidings: 200 };   // the score: a small snowflake, a big one, a letter, a gift, a thing jumped over; for speed, 10 for every second under two minutes (par) that the phrase took; and on the ride, a coin, and every second ridden
+const PTS = { flake: 10, big: 20, letter: 50, gift: 100, jump: 100, second: 10, par: 120, coin: 10, ride: 10, tidings: 200, home: 300 };   // (home: on the ride, for each heart he still has when he gets home)
+//   // the score: a small snowflake, a big one, a letter, a gift, a thing jumped over; for speed, 10 for every second under two minutes (par) that the phrase took; and on the ride, a coin, and every second ridden
 const CAPS = { snow: 400, jumps: 10 };   // before the ride: the most that snowflakes can score, and how many of the things jumped over score (so that waiting does not pay)
 // THE RIDE on the snowmobile: the big gift, when the phrase is spelled
+const HEARTS0 = 3, HEARTS_MAX = 5;        // HEARTS (Ben, 24 Nov: players "didnt know how many hits I had left"): he starts the ride with 3, and can catch more, up to 5. Running into a campfire or a branch, or an icicle that hits him, takes one. With none left the ride is over
+const HEART_GAP = [35, 60];              // a heart to catch comes along every 35 seconds of track at first, and every 60 later on (and up to 6 more, as chance has it); none while he has all 5
+const HOME = 210;                        // the ride's length in seconds of track (about two and a half minutes by the clock): there he is HOME, and every heart he still has is worth PTS.home. So a skilled rider gets to the end, and the best score there can be stays under the top-score list's limit
+const DARK_LEVEL = .5;                   // how dark the wood is: half as dark as the darkest it was, the same all the ride long, with the headlight on (Ben, 24 Nov)
 const RIDE_FREE = 20;                    // its first seconds are free: the lamp does not run down, and running into something, or an icicle, costs nothing (20 seconds since 18 Nov; it was 30)
 const LAMP0 = .5, COIN_LIGHT = .01, BUMP = .34, ICE_HIT = .25;   // the lamp (0 out … 1 full): how full it is at the start; how much a coin adds (half of what it did: Ben, 18 Nov, "less lamp energy per coin but keep the points the same"); how much running into something takes (a third of the lamp: "hitting any obstacle take significant lamp energy"); and how much an icicle that comes down on him takes
 const ICE_GAP = [8, 4.5];                // ICICLES FALL AGAIN on the ride (Ben, 18 Nov: "bring back the falling icicles that drain the lamp energy"). The first has its turn in the first half minute (FIRST: 16 seconds in, inside the free seconds, so it costs nothing and shows what they do); after it there is one every 8 seconds of track at first and every 4.5 at last (and up to 2 more, as chance has it)
@@ -380,9 +385,9 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
   // One has come down on him. In the free seconds it is only a knock. After them it dims the lamp (ICE_HIT). For a moment after it nothing
   // else can catch him (and one that comes down on him in the moment after a bump breaks on him without harm).
   function rideIceHit() {
-    const R = G.ride, t = G.t, free = R.t < RIDE_FREE; R.iceHits++; R.bumpT = t; R.safeT = Math.max(R.safeT, t + .8); G.ouchT = t; if (!free) R.b = Math.max(0, R.b - ICE_HIT);
+    const R = G.ride, t = G.t, free = R.t < RIDE_FREE; R.iceHits++; R.bumpT = t; R.safeT = Math.max(R.safeT, t + .8); G.ouchT = t; if (!free) loseHeart();
     chunks(14, '#d9ecff', true); [329.63, 261.63, 196].forEach((f, k) => globe.bell(f, k * .11, .08)); buzz([70, 40, 70]); fx('icehit', { pan: here() });   // (with the icicle's own breaking: together, an icicle that broke on something hard)
-    note(free ? 'Bonk! Move away from icicles' : 'Icicle! Your light is dimmer', 2); say('An icicle hit him' + (free ? '. Move him out from under the next one.' : ', and the lamp is dimmer. Move him out from under the next one.'));
+    note(free ? 'Bonk! Move away from icicles' : heartsLeft(), 2); say('An icicle hit him' + (free ? '. Move him out from under the next one.' : '. ' + heartsLeft(true)));
   }
   function stepIce(dt, play) {
     const t = G.t, R = G.ride, ride = G.phase === 'ride' && !!R && R.on && !R.end; G.iceA = Math.min(1, G.iceA + dt / 1.2);
@@ -545,7 +550,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     const r = clamp(PW * .15, 46, 84), gx = PX + PW * .62;
     G.phase = 'gift'; G.pt = 0; G.note = null; G.cheerT = G.t; glow(false); G.pad.l = G.pad.r = 0; G.jumpAsk = -9;
     G.ride = { on: false, t: 0, m: 0, b: LAMP0, bs: LAMP0, dark: 0, darkOn: false, darkAt: DARK1[0], lightAt: DARK1[1], u: 1, len: 1, acc: 0, pitch: 0, flash: 0, end: 0, openT: 0, box: { x: gx, y: -r * 2.2, r, vy: 0, down: false, t: 0, cue: 0 },
-      coins: [], beatAt: FIRST[0][1], beatN: 0, last: '', safeT: -9, bumpT: -9, bumps: 0, combo: 0, comboT: -9, run: 0, runAt: null, lowT: -9, sprayAt: 0, lampX: 0, reach: 0, told: {}, boost: 0, surge: 0, z: 1, pk: peak(), fastest: 0, ramps: [], airs: 0, lifts: 0, top: 1e9, first: null, letter: null, nextAt: LETTER_AT, iceAt: 1e9, iceN: 0, iceHits: 0, iceDown: 0, again: 0, tidings: 0, caught: 0, missed: 0, missRow: 0, gotAny: false, rushAt: -9, revAt: -9, backAt: -9 };
+      coins: [], beatAt: FIRST[0][1], beatN: 0, last: '', safeT: -9, bumpT: -9, bumps: 0, combo: 0, comboT: -9, run: 0, runAt: null, lowT: -9, sprayAt: 0, lampX: 0, reach: 0, told: {}, boost: 0, surge: 0, z: 1, pk: peak(), fastest: 0, ramps: [], airs: 0, lifts: 0, top: 1e9, first: null, hearts: HEARTS0, heartAt: 30, heartsGot: 0, heartT: -9, lostT: -9, home: false, letter: null, nextAt: LETTER_AT, iceAt: 1e9, iceN: 0, iceHits: 0, iceDown: 0, again: 0, tidings: 0, caught: 0, missed: 0, missRow: 0, gotAny: false, rushAt: -9, revAt: -9, backAt: -9 };
     G.tx = clamp(PX + PW * .27, PX + edge(), PX + PW - edge());
     ride.state.rider = true; ride.state.lamp = 1; ride.model.pose = { yaw: RYAW, lean: 0, look: -.45, up: 0, cheer: 0, walk: 0 };
     note('The big gift!', 2.4); [783.99, 1046.5, 1318.5].forEach((f, k) => globe.bell(f, k * .12, .06)); say(G.word + ' is spelled! Here comes the big gift.');
@@ -578,13 +583,13 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     let len = clamp(Math.min(PW * .44, W * NEAR[0]), 104, 300); if (!low) while (len > 84 && room(len) < want(len) * .8) len *= .95;
     R.len = len; R.z = len / full; R.u = len / span; R.pk = clamp(Math.min(want(len), Math.max(44, room(len))), 30, 170);
     R.top = low ? 1e9 : Math.max(R.pk * 1.2, groundY - hudLow() - 8 - 1.38 * R.u);   // the highest it may ever be thrown (from a ramp, fast, with JUMP at the top): his hat stops just short of the light bar
-    R.darkOn = true; R.dark = 1;   // the ride begins in the dark (DARK1): as the puff of snow clears, the headlight is what shows the way
+    R.darkOn = true; R.dark = DARK_LEVEL; R.b = R.bs = .75;   // the wood is half dark from the first moment to the last, and the headlight is on (its light no longer comes and goes: hearts are what he has left)
     G.sx = clamp(B.x - R.len * .1, PX + R.len * .5, PX + PW - R.len * .5); G.tx = G.sx; G.jy = 0; G.jv = 0; G.air = false; G.gy = 0; G.ramp = null; G.vx = 0; G.roll = null;
     for (const col of ['#ffd76a', '#ff5a45', '#ffffff']) pop(B.x, B.y, col, 12, true); pop(G.sx, moundY(G.sx) - 20, '#ffffff', 22, true);
     [1046.5, 1318.5, 1568, 2093, 2637].forEach((f, n) => globe.bell(f, n * .07, .06, pan)); buzz([30, 40, 30, 40, 80]); fx('gift', { pan }); fx('piece', { pan, when: .35 }); fx('start', { pan: here(), when: .6 });   // (start: its starter whirs, once the gift's own burst has been heard, and the engine catches as the puff of snow clears and the ride begins)
     btnL.innerHTML = ICON_SLOW; btnL.setAttribute('aria-label', 'Slower'); btnR.innerHTML = ICON_FAST; btnR.setAttribute('aria-label', 'Faster');   // on the snowmobile the two buttons beside JUMP are SLOWER and FASTER: they bring it back and forward along the snow
     note('A snowmobile! Press JUMP to hop', 3.4);
-    say('The big gift was a snowmobile with a headlight, and he is on it! He rides through a dark wood, and the headlight shows the way. Press Jump, or tap the screen, to hop over campfires and branches and to reach the Ora coins: every coin makes his light a little bigger. Hold the Faster button, where the Right button was, to bring him forward, which is faster and jumps higher; hold the Slower button to drop back. Icicles fall: move him out from under them. Snowflakes fall again: catch the letters to spell ' + TIDINGS.toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase()) + '.');
+    say('The big gift was a snowmobile with a headlight, and he is on it! He rides through a dark wood, and the headlight shows the way. Press Jump, or tap the screen, to hop over campfires and branches and to reach the Ora coins, worth points. He has three hearts: running into something, or an icicle, takes one. Catch the glowing hearts to get more. Hold the Faster button, where the Right button was, to bring him forward, which is faster and jumps higher; hold the Slower button to drop back. Icicles fall: move him out from under them. Snowflakes fall again: catch the letters to spell ' + TIDINGS.toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase()) + '.');
   }
   // What comes along on the ride, one thing after another: a line of coins on the snow; a campfire or a branch, with the path of
   // a good jump over it marked out in coins; coins up high (a jump at the right moment); or the top coins (speed, and then a jump
@@ -621,10 +626,10 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
       if (Math.random() < .3 * p) { rideOb(Math.random() < .5 ? 'fire' : 'branch', hx + v * 1.45); R.beatAt += 1.1; } }   // (later on, now and then a second thing close behind the first: two jumps)
   }
   function coinGot(c) {
-    const R = G.ride, t = G.t, py = moundY(c.x) - c.h, pan = from(c.x); G.coins++; R.b = Math.min(1, R.b + COIN_LIGHT);
+    const R = G.ride, t = G.t, py = moundY(c.x) - c.h, pan = from(c.x); G.coins++;
     R.combo = t - R.comboT < 1.3 ? Math.min(R.combo + 1, COIN_NOTES.length - 1) : 0; R.comboT = t; if (!fx('coin', { pan, hz: COIN_NOTES[R.combo] })) { globe.bell(COIN_NOTES[R.combo], 0, .05, pan); globe.bell(COIN_NOTES[R.combo] * 2, .03, .02, pan); }   // (a run of coins rings up the scale: the coin's own recorded note, played higher each time)
     G.score += PTS.coin; G.pts.coins += PTS.coin; R.run += PTS.coin; R.runAt = [c.x, py]; pop(c.x, py, '#ffe08a', 6); buzz(8);   // (its points are shown once for the whole run of coins, when the run is over: see stepRide)
-    if (!R.told.coin) { R.told.coin = 1; note('Ora coins make your light bigger!', 2.8); say('A coin! Every Ora coin makes his light bigger.'); }
+    if (!R.told.coin) { R.told.coin = 1; note('Ora coins: 10 points each!', 2.4); say('A coin! Every Ora coin is worth 10 points.'); }
   }
   // The next letter of GOOD TIDINGS comes down: mostly ahead of where he is (he must come forward for it), sometimes behind; never right over
   // him, so that there is something to do, and never out of reach. The first one, and one after two misses, comes down nearer.
@@ -641,28 +646,37 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     const R = G.ride, k = G.i, pan = (L.x - W / 2) / (W / 2) * .6; R.letter = null; R.gotAny = true; R.missRow = 0; R.nextAt = R.t + .6; R.caught++; G.caught++; G.i++; G.cheerT = G.t;
     G.fly.push({ ch: L.ch, k, x: L.x, y: L.y, t: 0, r: L.r }); pop(L.x, L.y, '#ffe9a8', 16, true);
     globe.bell(SCALE[k % SCALE.length], 0, .13); globe.bell(SCALE[k % SCALE.length] * 2, .07, .06); buzz(25); fx('letter', { pan, hz: chime(k) }); say(L.ch + '!'); gain(PTS.letter, 'letters', L.x, L.y);
-    if (G.i >= G.letters.length) {   // GOOD TIDINGS is spelled: points, more light for the lamp, and it begins again
-      R.tidings++; R.again = R.t + 2.2; R.nextAt = R.t + 2.6; R.b = Math.min(1, R.b + TID_LIGHT); fx('tidings', { when: .12 }); gain(PTS.tidings, 'letters', G.sx + R.u * .5, headY() - 26, TIDINGS + '!');
-      [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, n) => globe.bell(f, .18 + n * .09, .07)); buzz([30, 40, 30, 40, 90]); note(TIDINGS + '! Spell it again', 2.6); say(TIDINGS + ' is spelled! The lamp burns brighter. Spell it again.'); }
+    if (G.i >= G.letters.length) {   // GOOD TIDINGS is spelled: points, and it begins again
+      R.tidings++; R.again = R.t + 2.2; R.nextAt = R.t + 2.6; fx('tidings', { when: .12 }); gain(PTS.tidings, 'letters', G.sx + R.u * .5, headY() - 26, TIDINGS + '!');
+      [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, n) => globe.bell(f, .18 + n * .09, .07)); buzz([30, 40, 30, 40, 90]); note(TIDINGS + '! Spell it again', 2.6); say(TIDINGS + ' is spelled! 200 points. Spell it again.'); }
   }
+  // A heart is lost (a bump, or an icicle, after the free seconds). The heart breaks in the row above the buttons. With none left, the ride is over.
+  function loseHeart() { const R = G.ride; R.hearts = Math.max(0, R.hearts - 1); R.lostT = G.t; if (R.hearts <= 0) R.endAt = G.t + .5; }
+  const heartsLeft = long => { const n = G.ride.hearts; return n <= 0 ? (long ? 'No hearts left!' : 'Out of hearts!') : n === 1 ? (long ? 'One heart left! Catch a glowing heart.' : '1 heart left!') : (long ? n + ' hearts left.' : 'Ouch! ' + n + ' hearts left'); };
+  // A heart to catch: it glows and beats, low enough to ride through, or now and then up where a jump reaches.
+  function rideHeart() { const R = G.ride, u = R.u, x0 = Math.max(W, PX + PW) + 40, high = Math.random() < .35; R.coins.push({ x: x0, h: high ? u * .55 + rpeak() * .6 : u * .55, r: clamp(u * .2, 16, 28), ph: 0, lit: 1, ring: high, rang: false, heart: true }); }
+  function heartGot(c) { const R = G.ride, py = moundY(c.x) - c.h; R.hearts = Math.min(HEARTS_MAX, R.hearts + 1); R.heartsGot++; R.heartT = G.t; pop(c.x, py, '#ff5d73', 14, true); buzz([20, 30, 40]);
+    [659.25, 830.61, 987.77, 1318.5].forEach((f, k) => globe.bell(f, k * .07, .06)); note(R.hearts >= HEARTS_MAX ? 'Extra heart! Hearts full' : 'Extra heart! ' + R.hearts + ' hearts', 2); say('An extra heart! ' + R.hearts + ' hearts.'); }
   // He has run into something. In the free seconds it is only a bump. After them it dims the lamp. For a moment after it nothing
   // else can catch him. A campfire shows why, as it does when he walks: his scarf, hat and nose burn for a moment.
   function bump(o) {
-    const R = G.ride, t = G.t, free = R.t < RIDE_FREE, fire = o.kind === 'fire', pan = here(); R.safeT = t + 1.2; R.bumpT = t; R.bumps++; if (!free) R.b = Math.max(0, R.b - BUMP);
+    const R = G.ride, t = G.t, free = R.t < RIDE_FREE, fire = o.kind === 'fire', pan = here(); R.safeT = t + 1.2; R.bumpT = t; R.bumps++; if (!free) loseHeart();
     chunks(10, '#ffffff', true); pop(o.x, restY(o.x) - 10, fire ? '#ffc46b' : '#7a5433', 9); buzz([50, 30, 50]);
     if (fire) { G.burns++; G.singe = { t: 0, ph: Math.random(), on: FLAMES.map(q => q[0]).filter(n => mark(n)), at: [], out: false };
       for (let k = 0; k < 6; k++) G.pops.push({ x: o.x + (Math.random() - .5) * 24, y: restY(o.x) - 14 - Math.random() * 24, vx: -40 - Math.random() * 60, vy: -110 - Math.random() * 100, life: .7 + Math.random() * .4, t: 0, s: 3 + Math.random() * 4, col: 'rgba(235,242,255,.75)' });   // (steam)
       [523.25, 392, 261.63].forEach((f, k) => globe.bell(f, k * .12, .08)); fx('burn', { pan }); }
     else { G.trips++; [196, 146.83].forEach((f, k) => globe.bell(f, k * .09, .08)); if (!fx('bump', { pan })) fx('trip', { pan, cut: .32 }); }
     const what = fire ? 'He rode through the campfire' : 'He ran into the branch';
-    note(free ? (fire ? 'Hot! Jump the campfires' : 'Bump! Jump the branches') : 'Bump! Your light is dimmer', 2); say(what + (free ? '. Jump over the next one.' : ', and the lamp is dimmer. Coins charge it.'));
+    note(free ? (fire ? 'Hot! Jump the campfires' : 'Bump! Jump the branches') : heartsLeft(), 2); say(what + (free ? '. Jump over the next one.' : '. ' + heartsLeft(true)));
   }
   // The lamp is out: the snowmobile comes to a stop, and the snowflakes spell the phrase.
   function endRide() {
-    const R = G.ride; if (R.end) return; R.end = .001; R.b = 0; glow(false); G.jumpAsk = -9;
+    const R = G.ride; if (R.end) return; R.end = .001; glow(false); G.jumpAsk = -9; const home = R.home;
+    if (home) { const bonus = PTS.home * R.hearts; if (bonus) { G.score += bonus; G.pts.ride += bonus; plus(bonus, G.sx + R.u * .5, headY() - 30, 'HOME!'); } }
     for (const o of G.obs) pop(o.x, moundY(o.x) - 10, o.kind === 'fire' ? '#ffc46b' : '#7a5433', 8); G.obs = []; for (const c of R.coins) pop(c.x, moundY(c.x) - c.h, '#ffe08a', 4); R.coins = []; for (const r of R.ramps) pop(r.x + r.L * .6, moundY(r.x) - r.h * .4, '#ffffff', 9); R.ramps = []; if (R.letter) { pop(R.letter.x, R.letter.y, '#ffffff', 8); R.letter = null; } G.pad.l = G.pad.r = 0; G.drag = null;
     [523.25, 415.3, 329.63].forEach((f, k) => globe.bell(f, k * .15, .07)); buzz([60, 50, 120]); fx('stop', { pan: here() });   // (stop: the engine putters and dies)
-    note('The lamp is out. What a ride!', 2.4); say('The lamp has gone out, and the snowmobile comes to a stop. What a ride!');
+    if (home) { [523.25, 659.25, 783.99, 1046.5].forEach((f, k) => globe.bell(f, .3 + k * .1, .07)); note('Home! ' + R.hearts + (R.hearts === 1 ? ' heart' : ' hearts') + ' x ' + PTS.home, 3); say('He made it home, with ' + R.hearts + (R.hearts === 1 ? ' heart' : ' hearts') + ' left: ' + PTS.home * R.hearts + ' more points. What a ride!'); }
+    else { note('Out of hearts. What a ride!', 2.4); say('No hearts left, and the snowmobile comes to a stop. What a ride!'); }
   }
   function stepRide(dt) {
     const R = G.ride, t = G.t, u = R.u, over = !!R.end;
@@ -680,25 +694,26 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     const goal = over ? 0 : FAST[0] + Math.max(0, tau - RIDE_FREE) * FAST[1]; R.m += (goal - R.m) * Math.min(1, dt * (over ? 2.4 : 1.2));
     const v = speed(), lamp = at('lamp'), nose = at('nose'), rear = at('rear'); R.lampX = lamp ? lamp[0] : G.sx + R.len * .4; R.reach = PW * (.14 + .5 * R.bs);   // (reach: how far ahead of the lamp its light shows the snow)
     // the wood: moonlit, then dark, by turns (the first dark stretch is short and comes inside the free seconds; later ones are longer, with less moonlight between)
-    if (!over) { if (!R.darkOn && tau >= R.darkAt) { R.darkOn = true; if (!R.told.dark) { R.told.dark = 1; note('Dark wood! Your light shows the way', 3); } say('The wood grows dark. The headlight shows the way.'); globe.bell(196, 0, .05); globe.bell(146.83, .14, .05); }
+    // (the dark no longer comes and goes since 24 Nov: DARK_LEVEL. What follows is kept, switched off, in case it is wanted again)
+    if (false) { if (!R.darkOn && tau >= R.darkAt) { R.darkOn = true; if (!R.told.dark) { R.told.dark = 1; note('Dark wood! Your light shows the way', 3); } say('The wood grows dark. The headlight shows the way.'); globe.bell(196, 0, .05); globe.bell(146.83, .14, .05); }
       else if (R.darkOn && tau >= R.lightAt) { R.darkOn = false; if (tau < DARK2[0]) { R.darkAt = DARK2[0]; R.lightAt = DARK2[1]; } else { const q = clamp((tau - RIDE_FREE) / 210, 0, 1); R.darkAt = Math.max(RIDE_FREE + 4, tau + lerp(9, 5, q) + Math.random() * 2); R.lightAt = R.darkAt + lerp(8, 15, q) + Math.random() * 3; }
         say('Moonlight again.'); globe.bell(392, 0, .04); globe.bell(523.25, .12, .04); }
       }
-    R.dark += ((R.darkOn && !over ? 1 : 0) - R.dark) * Math.min(1, dt * 1.6);
-    // the lamp: after the free seconds it runs down, and coins charge it
-    if (!over) { if (!free) { R.b -= (DRAIN[0] + DRAIN[1] * (tau - RIDE_FREE)) * dtau; if (!R.told.free) { R.told.free = 1; note('Coins keep your light on!', 3); say('From now on the lamp slowly runs down, and running into something, or an icicle that hits him, dims it a lot. Coins charge it a little. When it is out, the ride is over.'); globe.bell(659.25, 0, .05); globe.bell(880, .1, .05); } }
-      R.b = clamp(R.b, 0, 1);
-      if (!free && R.b < .2 && R.b > 0 && t - R.lowT > 7) { R.lowT = t; note('Your light is low: get coins!', 2.2); say('The lamp is low. Get coins.'); if (!fx('low')) { globe.bell(311.13, 0, .05); globe.bell(261.63, .12, .05); } }
-      if (R.b <= 0) endRide(); }
+    R.dark += (DARK_LEVEL - R.dark) * Math.min(1, dt * 1.6);
+    // HEARTS: a heart to catch now and then (none while he has all five, and none in the last 15 seconds); the ride is over when the last
+    // heart has gone (half a second after, so that it is seen to break), or HOME at the end of the way
+    if (!over) { if (tau >= R.heartAt) { R.heartAt = tau + lerp(HEART_GAP[0], HEART_GAP[1], clamp((tau - RIDE_FREE) / 180, 0, 1)) + Math.random() * 6; if (R.hearts < HEARTS_MAX && tau < HOME - 15) rideHeart(); }
+      if (!R.told.free && !free) { R.told.free = 1; note('Careful now: hits cost hearts!', 2.6); say('From now on, running into something, or an icicle that hits him, takes a heart. Catch the glowing hearts to get more.'); }
+      if (R.endAt && t >= R.endAt) endRide(); else if (tau >= HOME) { R.home = true; endRide(); } }
     R.bs += (R.b - R.bs) * Math.min(1, dt * 6);
     const flick = calm ? 1 : 1 - .6 * Math.max(0, Math.sin((t - R.bumpT) * 40)) * Math.exp(-(t - R.bumpT) * 4); ride.state.lamp = R.end ? Math.max(0, .35 - R.end) : (.35 + .65 * R.bs) * flick;   // (it flickers when he has run into something)
     if (!R.end) { R.acc += dtau; while (R.acc >= 1) { R.acc -= 1; G.score += PTS.ride; G.pts.ride += PTS.ride; } }   // points for every second of track ridden (they count up quietly)
     if (!R.end && tau >= R.beatAt) beat();
     // the coins: the snowmobile and its rider have only to touch one (a low one is ridden through; a high one wants a jump)
     const fires = G.obs.filter(o => o.kind === 'fire'), x0 = rear ? rear[0] + R.len * .08 : G.sx - R.len * .4, x1 = nose ? nose[0] - R.len * .03 : G.sx + R.len * .5;
-    for (const c of R.coins) { c.x -= v * dt; const shown = R.dark < .35 || c.x < R.lampX + R.reach + 10 || fires.some(f => Math.abs(f.x - c.x) < 170 * f.k); c.lit += ((shown ? 1 : 0) - c.lit) * Math.min(1, dt * 8);
+    for (const c of R.coins) { c.x -= v * dt; const shown = R.dark < .6 || c.x < R.lampX + R.reach + 10 || fires.some(f => Math.abs(f.x - c.x) < 170 * f.k); c.lit += ((shown ? 1 : 0) - c.lit) * Math.min(1, dt * 8);
       if (c.ring && !c.rang && c.x - x1 < v * .5) { c.rang = true; if (cues && !R.end) { const pan = clamp((c.x - G.sx) / (PW * .5), -1, 1); globe.bell(1568, 0, .04, pan); globe.bell(2093, .08, .04, pan); } }   // ("jump now for the coins up there")
-      if (!R.end && c.x > x0 && c.x < x1 && c.h + c.r > G.jy - 4 && c.h - c.r < G.jy + 1.3 * u) { c.got = true; coinGot(c); } }
+      if (!R.end && c.x > x0 && c.x < x1 && c.h + c.r > G.jy - 4 && c.h - c.r < G.jy + 1.3 * u) { c.got = true; if (c.heart) heartGot(c); else coinGot(c); } }
     R.coins = R.coins.filter(c => !c.got && c.x > -40);
     if (R.run && (t - R.comboT > .4 || R.end)) { plus(R.run, Math.min(R.runAt[0], x1), R.runAt[1] - 16); R.run = 0; }   // a run of coins is over: its points rise once, together
     // The letters. Snowflakes fall again, one at a time, and spell GOOD TIDINGS. Most come down ahead of where the snowmobile is, so it has to be
@@ -720,7 +735,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     // lights what is near it).
     let ready = false; const fw = 14 * rk();
     for (const o of G.obs) { o.x -= v * dt; const tc = (o.x - o.hx - G.sx) / Math.max(60, v);
-      if (!o.seen && (R.dark < .35 || o.kind === 'fire' || o.x - o.hx < R.lampX + R.reach || fires.some(f => f !== o && Math.abs(f.x - o.x) < 165 * f.k))) { o.seen = true; const n = R.told[o.kind] = (R.told[o.kind] || 0) + 1;
+      if (!o.seen && (R.dark < .6 || o.kind === 'fire' || o.x - o.hx < R.lampX + R.reach || fires.some(f => f !== o && Math.abs(f.x - o.x) < 165 * f.k))) { o.seen = true; const n = R.told[o.kind] = (R.told[o.kind] || 0) + 1;
         if (n === 1) note(o.kind === 'fire' ? 'A campfire! Jump over it' : 'A branch! Jump over it', 2.2); if (n <= 2) say(o.kind === 'fire' ? 'A campfire ahead. Jump when it rings.' : 'A branch ahead. Jump when it rings.'); }
       o.a += ((o.seen ? 1 : 0) - o.a) * Math.min(1, dt * 9);
       if (!o.hit && !o.done && !R.end) {
@@ -906,7 +921,12 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     if (lamp && on > .01) { const cx = lamp[0] + R.reach * .55; rlook.pool(x, cx, moundY(cx) + 5, R.reach * .64, Math.max(10, u * .17), (.4 + .45 * R.bs) * on); }
     drawFigure(G.sx, feetY() - fig.feetV * u, u);
   }
+  // a heart shape, its point at the bottom, centred on (cx, cy), r across from the middle
+  function heartPath(cx, cy, r) { x.beginPath(); x.moveTo(cx, cy + r * .95); x.bezierCurveTo(cx - r * 1.35, cy + r * .1, cx - r * 1.05, cy - r * 1.15, cx, cy - r * .45); x.bezierCurveTo(cx + r * 1.05, cy - r * 1.15, cx + r * 1.35, cy + r * .1, cx, cy + r * .95); x.closePath(); }
+  function drawHeart(cx, cy, r, fill, glowA) { x.save(); if (glowA > 0) { const g = x.createRadialGradient(cx, cy, 0, cx, cy, r * 2.6); g.addColorStop(0, `rgba(255,120,150,${.55 * glowA})`); g.addColorStop(1, 'rgba(255,120,150,0)'); x.fillStyle = g; x.fillRect(cx - r * 2.6, cy - r * 2.6, r * 5.2, r * 5.2); }
+    heartPath(cx, cy, r); x.fillStyle = fill; x.fill(); x.lineWidth = Math.max(1.5, r * .16); x.strokeStyle = '#ffffff'; x.stroke(); x.beginPath(); x.ellipse(cx - r * .42, cy - r * .38, r * .2, r * .13, -.6, 0, 6.283); x.fillStyle = 'rgba(255,255,255,.6)'; x.fill(); x.restore(); }
   function drawCoins(t) { const R = G.ride, B = figure.badge; for (const c of R.coins) { const py = moundY(c.x) - c.h + (calm ? 0 : Math.sin(t * 3 + c.ph) * 2.5);
+    if (c.heart) { const beat = calm ? .5 : .5 + .5 * Math.sin(t * 7.5); drawHeart(c.x, py, c.r * (calm ? 1 : .9 + .25 * beat), '#ff3d5a', .6 + .4 * beat); continue; }   // (a heart to catch: it beats, and glows)
     if (c.sky) { const q = calm ? .5 : .5 + .5 * Math.sin(t * 6 + c.ph); x.save(); x.globalAlpha = .5 + .4 * q; x.strokeStyle = '#ffe9a8'; x.lineWidth = Math.max(1.5, c.r * .16); x.beginPath(); x.arc(c.x, py, c.r * (1.42 + .14 * q), 0, 6.283); x.stroke(); x.restore(); }   // (the top coins, which want speed: a ring of light round each)
     rlook.coin(x, c.x, py, c.r, t * 5.2 + c.ph, lerp(1, c.lit, R.dark), B); } }
   // The dark of the wood, and the light in it. Where it is dark, a layer of dark lies over the picture, and every light takes its
@@ -923,6 +943,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
       for (const o of G.obs) if (o.kind === 'fire') { const f = calm ? 1 : .92 + .08 * Math.sin(t * 9 + o.ph * 20); D.spot(o.x, restY(o.x) - 26 * o.k, 215 * o.k * f, 165 * o.k * f, .97); }
       for (const c of R.coins) D.spot(c.x, moundY(c.x) - c.h, c.r * 2.6, c.r * 2.6, .66);
       for (const r of R.ramps) D.spot(r.x + r.L * .56, moundY(r.x + r.L * .5) - r.h * .75, r.L * .8, r.h * 2.3, .62 * r.a);   // (a ramp: dimly, from the first)
+      for (const c of R.coins) if (c.heart) D.spot(c.x, moundY(c.x) - c.h, c.r * 2.8, c.r * 2.8, .9);   // (a heart to catch glows)
       if (R.letter) D.spot(R.letter.x, R.letter.y, R.letter.r * 2.5, R.letter.r * 2.5, .85);                                   // (a letter glows)
       for (const c of G.ice) if (c.state === 'shake' || c.state === 'fall') { const px = iceX(c), L = iceLen(c); D.spot(px, c.y + L * .5, L * .95, L * 1.15, .92); D.spot(px, moundY(px) + 4, clamp(PW * .075, 24, 44) * 1.7, 20, .85); if (c.state === 'shake') D.spot(px, (L + moundY(px)) / 2, clamp(PW * .05, 15, 26) * 1.3, (moundY(px) - L) * .56, .5); }   // (an icicle that is coming down glows, and so do the mark where it will land and the column over it)
       D.end(x); }
@@ -1141,7 +1162,13 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
           x.globalAlpha = G.hud * smooth(.2, .8, t); x.font = `800 ${fs}px ${FONT}`; const w1 = x.measureText('SCORE ').width; x.font = `900 ${f2}px ${FONT}`; const w2 = x.measureText(num).width, w = w1 + w2 + fs * 1.6, x0 = W / 2 - (w1 + w2) / 2;
           x.fillStyle = 'rgba(8,14,32,.62)'; rr(W / 2 - w / 2, by - fs * .9, w, fs * 1.8, fs * .9); x.fill(); x.textAlign = 'left'; x.font = `800 ${fs}px ${FONT}`; x.fillStyle = 'rgba(255,255,255,.85)'; x.fillText('SCORE ', x0, by + fs * .04);
           x.font = `900 ${f2}px ${FONT}`; x.fillStyle = '#ffe08a'; x.fillText(num, x0 + w1, by + fs * .04); x.textAlign = 'center';
-          if (riding()) { const R = G.ride; x.globalAlpha = G.hud; low = rlook.meter(x, W / 2, sby + sfs * .9 + 13, clamp(PW * .44, 132, 220), R.bs, t, R.t >= RIDE_FREE && R.b < .2 && !R.end) + 6; hudY += low; } }   // the light that is left: a small lamp and a bar
+          if (riding()) { const R = G.ride, hr = clamp((barTop - feetY() - 8) / 3, 9, 17), gap = hr * 2.7, n = HEARTS_MAX, w = gap * n + hr * .9, cy = barTop - 4 - hr * 1.45,   // (in the strip between the snow under the skis and the buttons, so that nothing on the snow is hidden)
+            x0 = W / 2 - gap * (n - 1) / 2;   // HEARTS: what he has left, in a row just above the buttons (so that they are not taken for hearts to catch)
+            x.globalAlpha = G.hud; x.fillStyle = 'rgba(8,14,32,.62)'; rr(W / 2 - w / 2, cy - hr * 1.45, w, hr * 2.9, hr * 1.45); x.fill();
+            for (let k = 0; k < n; k++) { const cx = x0 + k * gap, full = k < R.hearts, lost = k === R.hearts && t - R.lostT < .8, won = k === R.hearts - 1 && t - R.heartT < .5;
+              if (full) { const s = won && !calm ? 1 + .45 * Math.sin((t - R.heartT) / .5 * Math.PI) : R.hearts === 1 && !R.end && !calm ? 1 + .12 * Math.sin(t * 9) : 1; drawHeart(cx, cy, hr * s, '#ff3d5a', 0); }
+              else if (lost) { const q = (t - R.lostT) / .8; x.save(); x.globalAlpha = G.hud * (1 - q); drawHeart(cx, cy - q * hr, hr * (1 + .5 * q), '#ffffff', 0); x.restore(); }
+              else if (k < HEARTS_MAX) { heartPath(cx, cy, hr * .85); x.lineWidth = 2; x.strokeStyle = 'rgba(255,255,255,.35)'; x.stroke(); } } } }
         if (ha > 0) { let fs = clamp(PW * .052, 17, 26); x.globalAlpha = ha * G.hud; x.font = `800 ${fs}px ${FONT}`; let w = x.measureText(N.txt).width; if (w > PW * .86) { fs *= PW * .86 / w; x.font = `800 ${fs}px ${FONT}`; w = PW * .86; } w += fs * 1.6; const by = sby + sfs * .9 + 6 + fs * .9 + low;   // (a few words of help, just under the score)
           x.fillStyle = 'rgba(8,14,32,.72)'; rr(W / 2 - w / 2, by - fs * .9, w, fs * 1.8, fs * .9); x.fill(); x.fillStyle = '#ffffff'; x.fillText(N.txt, W / 2, by + fs * .04); if (ha > .3) hudY = by + fs * .9; }
         G.hudY = hudY; x.restore(); }
@@ -1193,7 +1220,8 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     x.globalAlpha = 1;
   }
   function logoFrame(dt) {
-    const gl = globe.glass, T = calm ? .45 : TZ, hold = calm ? .5 : TH, chime = () => { globe.bell(1568, 0, .05); globe.bell(2093, .09, .04); };
+    const gl = globe.glass, T = calm ? .45 : G.intro ? 1.9 : TZ, hold = calm ? .5 : G.intro ? .25 : TH,   // (G.intro: the opening, out of the logo on the holiday card: a slower, grander zoom)
+      chime = () => { globe.bell(1568, 0, .05); globe.bell(2093, .09, .04); };
     fig.sharp = ['play', 'word', 'gift', 'ride'].includes(G.phase) ? 0 : 1280;
     if (G.phase === 'in') {             // over the globe: the figure turns to face us, and the view goes into the logo on its hat
       G.pt += dt; G.t += dt; const p = clamp(G.pt / T, 0, 1);
@@ -1305,13 +1333,24 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
         cv.style.display = 'block'; last = performance.now(); raf = requestAnimationFrame(frame);
       });
     },
+    // The opening (24 Nov 2026): the page's holiday card has zoomed into its Ora logo until the logo sits level in the middle on the hat's
+    // blue, exactly as the logo is drawn between the globe and the game. From there the view zooms out of the logo on the snowman's hat
+    // to the globe, as it does after a round. Resolves when the globe is all there is. (Nothing happens without a figure with a logo.)
+    get introOK() { return !!(figure && figure.focus && figure.badge && figure.badge.image); },
+    get plate() { if (!(figure && figure.badge)) return null; size(); const P = plateGeo(); return { x: P.x, y: P.y, w: 2 * P.hw, h: 2 * P.hw / figure.badge.aspect, inner: tint(figure.badge.color, 1.22), outer: tint(figure.badge.color, .72) }; },
+    intro() {
+      if (G || !(figure && figure.focus && figure.badge && figure.badge.image)) return Promise.resolve(false);
+      return new Promise(fin => { size(); addEventListener('resize', size); G = newRound(WORDS[0]); G.intro = true; G.logo = true; G.fin = () => fin(true); G.yaw0 = figure.facing || 0;
+        G.phase = 'card2'; G.pt = 0; G.e = 1; G.cam = null; G.geo = null; G.back = { t: 0 }; figure.made = null; figure.pose = FRONT(); globe.rest(false); whoosh();
+        cv.style.display = 'block'; last = performance.now(); raf = requestAnimationFrame(frame); });
+    },
     jump: ask,   // (the same as pressing JUMP)
     // (for testing) give him this much snow and these parts, and put something in his way a little way ahead: test({ snow, got: [names], ob: ['branch' | 'fire', pixels ahead] })
     // test({ ride: true }): the phrase is spelled now (the big gift comes); on the ride: { rideT: seconds ridden, lamp: 0 … 1, dark: true | false, coin: [pixels ahead, height], ob: [...] }
     test(o) { if (!G || !o) return; if (o.snow != null) { G.snow = clamp(+o.snow, 0, MOST); G.snap = true; } for (const k of o.got || []) G.got[k] = true;
       if (o.ob) { if (G.phase === 'ride') rideOb(o.ob[0], G.sx + (o.ob[1] == null ? 400 : o.ob[1])); else { const q = spawnOb(o.ob[0]); if (o.ob[1] != null) q.x = G.sx + o.ob[1]; } }
       if (o.ride && G.phase === 'play') { G.i = G.letters.length; G.doneAt = G.played; G.letter = null; G.fly = []; G.nextAt = G.t; }
-      const R = G.ride; if (!R) return; if (o.rideT != null) R.t = +o.rideT; if (o.lamp != null) R.b = clamp(+o.lamp, 0, 1); if (o.dark != null) { R.darkOn = !!o.dark; R.darkAt = o.dark ? 0 : 1e9; R.lightAt = 1e9; } if (o.beatAt != null) R.beatAt = +o.beatAt;
+      const R = G.ride; if (!R) return; if (o.rideT != null) R.t = +o.rideT; if (o.lamp != null) R.b = clamp(+o.lamp, 0, 1); if (o.hearts != null) R.hearts = +o.hearts; if (o.heartAt != null) R.heartAt = +o.heartAt; if (o.heart) rideHeart(); if (o.home != null) { R.t = +o.home; } if (o.dark != null) { R.darkOn = !!o.dark; R.darkAt = o.dark ? 0 : 1e9; R.lightAt = 1e9; } if (o.beatAt != null) R.beatAt = +o.beatAt;
       if (o.coin) R.coins.push({ x: G.sx + o.coin[0], h: o.coin[1], r: clamp(R.u * .11, 9, 17), ph: 0, lit: 1, ring: false, rang: false });
       if (o.iceAt != null) R.iceAt = +o.iceAt; if (o.ice) rideIce(); if (o.to != null) G.tx = +o.to; if (o.letter && !R.letter) { rideLetter(); if (o.letter !== true) R.letter.bx = R.letter.x = +o.letter; }
       if (o.ramp) R.ramps.push({ x: G.sx + o.ramp[0], L: RAMP.len * R.u, h: RAMP.h * R.u, seen: false, a: 0, rang: false, armed: false, ph: 0 }); if (o.next) { R.beatN = Math.max(R.beatN, FIRST.length); R.last = ''; const was = Math.random; let k = 0; const want = { fire: .1, branch: .25, coins: .4, high: .5, sky: .65, ramp: .9 }[o.next]; Math.random = () => (k++ ? (o.rnd == null ? was() : o.rnd) : want); try { beat(); } finally { Math.random = was; } } },   // (ramp: [pixels ahead]; next: the kind of thing that comes along now; rnd: what chance says for the rest of it)
@@ -1322,9 +1361,9 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
       ice: G.ice.filter(c => !c.deco).map(c => ({ x: iceX(c), len: iceLen(c), state: c.state, t: c.t, y: c.y })), shake: SHAKE, iceAt: G.iceAt, toys: G.toys.map(o => o.k),
       jy: G.jy, jumps: G.jumps, peak: peak(), jt: JT, walk: G.walk, pace: pace(), going: G.going, foot: foot(), obs: G.obs.map(o => ({ kind: o.kind, x: o.x, hx: o.hx, hh: o.hh, hit: o.hit, done: o.done })), trips: G.trips, burns: G.burns, singe: G.singe && { t: G.singe.t, left: SINGE - G.singe.t, on: G.singe.on, at: G.singe.at.map(q => [q[0], Math.round(q[1] * 10) / 10, Math.round(q[2] * 10) / 10, Math.round(q[3] * 10) / 10]) }, marks: ['hat', 'nose', 'scarf'].map(n => [n, mark(n)]), cleared: G.cleared, obN: G.obN, snd: { night: night ? night.level : 0, fire: fire ? [fire.level, fire.pan] : [0, 0], stepAt: G.stepAt }, lit, button: bar.style.visibility === 'visible', barTop, roll: G.roll && { p: clamp(G.roll.t / ROLL, 0, 1), hop: G.roll.hop, far: G.roll.far }, rush: G.rush, heaps: G.heaps.map(h => ({ x: h.x, r: h.r, t: h.t })), pad: G.pad, tx: G.tx, score: G.score, pts: G.pts, secs: G.secs, doneAt: G.doneAt, gains: G.gains.map(q => q.n),
       sun: G.sun && { x: G.sun.x, w: G.sun.w, t: G.sun.t, done: G.sun.done, warn: WARN, burn: BURN },
-      rideOK, fig: fig === figure ? 'snowman' : 'ride', coins: G.coins, arrows: btnL.style.visibility !== 'hidden', caps: CAPS, rideFree: RIDE_FREE,
-      ride: G.ride && { on: G.ride.on, t: G.ride.t, m: G.ride.m, b: G.ride.b, bs: G.ride.bs, dark: G.ride.dark, darkOn: G.ride.darkOn, u: G.ride.u, len: G.ride.len, end: G.ride.end, bumps: G.ride.bumps, lampX: G.ride.lampX, reach: G.ride.reach, flash: G.ride.flash, beatN: G.ride.beatN, pitch: G.ride.pitch, boost: G.ride.boost, surge: G.ride.surge, back: riding() ? rideX() : null, far: riding() ? rideFar() : null, tx: G.tx, vx: G.vx, letter: G.ride.letter && { ch: G.ride.letter.ch, x: G.ride.letter.x, y: G.ride.letter.y, r: G.ride.letter.r, vy: G.ride.letter.vy }, ice: { n: G.ride.iceN, hits: G.ride.iceHits, down: G.ride.iceDown, at: G.ride.iceAt, cost: ICE_HIT }, bumpCost: BUMP, coinLight: COIN_LIGHT, safe: G.ride.safeT - G.t, tidings: G.ride.tidings, lettersGot: G.ride.caught, lettersMissed: G.ride.missed, again: G.ride.again, first: G.ride.first && { i: G.ride.first.i, n: G.ride.first.letters.length }, fastest: G.ride.fastest, ramps: G.ride.ramps.map(r => ({ x: r.x, L: r.L, h: r.h, seen: r.seen, a: r.a, armed: r.armed })), onRamp: G.ramp ? (G.sx + G.ride.len * .25 - G.ramp.x) / G.ramp.L : -1, gy: G.gy, jv: G.jv, air: G.air, airs: G.ride.airs, lifts: G.ride.lifts, top: G.ride.top, ramp: RAMP, z: G.ride.z, peak: G.ride.pk, restX: riding() ? rideX() : null, hudLow: hudLow(), v: speed(), fastIcon: btnR.getAttribute('aria-label'),
-        box: G.ride.on ? null : { x: G.ride.box.x, y: G.ride.box.y, r: G.ride.box.r, down: G.ride.box.down, t: G.ride.box.t }, coinsOn: G.ride.coins.map(c => ({ x: c.x, h: c.h, r: c.r, lit: c.lit, sky: !!c.sky })),
+      barTop, rideOK, fig: fig === figure ? 'snowman' : 'ride', coins: G.coins, arrows: btnL.style.visibility !== 'hidden', caps: CAPS, rideFree: RIDE_FREE,
+      ride: G.ride && { hearts: G.ride.hearts, heartsGot: G.ride.heartsGot, home: G.ride.home, homeAt: HOME, heartsMax: HEARTS_MAX, heartsOn: G.ride.coins.filter(c => c.heart).length, on: G.ride.on, t: G.ride.t, m: G.ride.m, b: G.ride.b, bs: G.ride.bs, dark: G.ride.dark, darkOn: G.ride.darkOn, u: G.ride.u, len: G.ride.len, end: G.ride.end, bumps: G.ride.bumps, lampX: G.ride.lampX, reach: G.ride.reach, flash: G.ride.flash, beatN: G.ride.beatN, pitch: G.ride.pitch, boost: G.ride.boost, surge: G.ride.surge, back: riding() ? rideX() : null, far: riding() ? rideFar() : null, tx: G.tx, vx: G.vx, letter: G.ride.letter && { ch: G.ride.letter.ch, x: G.ride.letter.x, y: G.ride.letter.y, r: G.ride.letter.r, vy: G.ride.letter.vy }, ice: { n: G.ride.iceN, hits: G.ride.iceHits, down: G.ride.iceDown, at: G.ride.iceAt, cost: ICE_HIT }, bumpCost: BUMP, coinLight: COIN_LIGHT, safe: G.ride.safeT - G.t, tidings: G.ride.tidings, lettersGot: G.ride.caught, lettersMissed: G.ride.missed, again: G.ride.again, first: G.ride.first && { i: G.ride.first.i, n: G.ride.first.letters.length }, fastest: G.ride.fastest, ramps: G.ride.ramps.map(r => ({ x: r.x, L: r.L, h: r.h, seen: r.seen, a: r.a, armed: r.armed })), onRamp: G.ramp ? (G.sx + G.ride.len * .25 - G.ramp.x) / G.ramp.L : -1, gy: G.gy, jv: G.jv, air: G.air, airs: G.ride.airs, lifts: G.ride.lifts, top: G.ride.top, ramp: RAMP, z: G.ride.z, peak: G.ride.pk, restX: riding() ? rideX() : null, hudLow: hudLow(), v: speed(), fastIcon: btnR.getAttribute('aria-label'),
+        box: G.ride.on ? null : { x: G.ride.box.x, y: G.ride.box.y, r: G.ride.box.r, down: G.ride.box.down, t: G.ride.box.t }, coinsOn: G.ride.coins.filter(c => !c.heart).map(c => ({ x: c.x, h: c.h, r: c.r, lit: c.lit, sky: !!c.sky })),
         obs: G.obs.map(o => ({ kind: o.kind, x: o.x, seen: !!o.seen, a: o.a, hit: o.hit, done: o.done })), lamp: riding() ? at('lamp') : null, nose: riding() ? at('nose') : null, rear: riding() ? at('rear') : null, hat: riding() ? at('hat') : null, pose: fig.pose } }; }
   };
 }
