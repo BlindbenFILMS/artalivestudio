@@ -8,7 +8,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Art Alive">
 <meta property="og:url" content="https://artalivestudio.com/snowglobe/snowman.html">
-<meta property="og:title" content="Happy Holidays from Ora">
+<meta property="og:title" content="CLICK HERE - FUN INSIDE">
 <meta property="og:description" content="A snow globe with a game inside. Shake your phone, then build the snowman and spell Happy Holidays.">
 <meta property="og:image" content="https://artalivestudio.com/play/share/snowglobe-snowman.jpg?v=1">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="og:video:width" content="1200">
 <meta property="og:video:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Happy Holidays from Ora">
+<meta name="twitter:title" content="CLICK HERE - FUN INSIDE">
 <meta name="twitter:description" content="A snow globe with a game inside. Shake your phone, then build the snowman and spell Happy Holidays.">
 <meta name="twitter:image" content="https://artalivestudio.com/play/share/snowglobe-snowman.jpg?v=1">
 <meta name="theme-color" content="#0b1530">
@@ -174,10 +174,10 @@ button:focus-visible,a:focus-visible{outline:3px solid #7cc4ff;outline-offset:3p
 body.playing .snd{opacity:0;pointer-events:none}
 
 /* while the game is on, the page's own words and buttons step back */
-/* (24 Nov) the title above the globe: ORA BLIZZARD BLITZ, and under it, smaller, the one line that says what the game is. The globe's own hints
+/* (24 Nov) the title above the globe: ORA BLIZZARD BLITZ, and under it, smaller, the one line that says what the game is (since 25 Nov: CATCH FLAKES. TOP THE BOARD., shorter and bolder). The globe's own hints
    ("Shake your phone!", "Let it settle…") are no longer shown there: the words above the buttons say how to swirl the snow; screen readers still hear them */
 .top h1{font-size:clamp(20px,6.6vw,46px)}
-.top p.sub{display:block;min-height:0;margin:9px auto 0;max-width:none;white-space:nowrap;color:var(--gold);font:800 clamp(10px,3vw,19px)/1.2 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.01em;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.55);animation:none}
+.top p.sub{display:block;min-height:0;margin:9px auto 0;max-width:none;white-space:nowrap;color:var(--gold);font:900 clamp(13px,4.4vw,26px)/1.2 Archivo,"Arial Black",Arial,sans-serif;font-stretch:112%;letter-spacing:.03em;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.55);animation:none}
 .top,.bar,.lowrow,.toptop{transition:opacity .35s ease}
 /* (24 Nov, evening) phones play upright only: turned sideways, this covers everything and the game waits (a web page cannot lock the screen itself on an iPhone) */
 .turn{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center;background:radial-gradient(120% 90% at 50% 40%,#22365e,#0b1530);color:#fff;font:800 22px/1.25 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.04em;text-transform:uppercase}
@@ -193,7 +193,7 @@ body.playing .top,body.playing .bar,body.playing .lowrow,body.playing .toptop{op
 <body>
 <div class="turn" id="turn" role="alert" hidden><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="20" y="8" width="24" height="44" rx="5" fill="none" stroke="currentColor" stroke-width="3.5"/><circle cx="32" cy="45" r="2.4" fill="currentColor"/></svg><p>Please turn your phone upright</p><p class="small">Ora Blizzard Blitz plays standing tall.</p></div>
 <div id="stage" role="img" aria-label="A snow globe"></div>
-<header class="top"><h1 id="msg">Ora Blizzard Blitz</h1><p class="sub">Collect snowflakes to compete for top score</p><span id="hint" class="sr"></span></header>
+<header class="top"><h1 id="msg">Ora Blizzard Blitz</h1><p class="sub">Catch flakes. Top the board.</p><span id="hint" class="sr"></span></header>
 <div class="bar" id="bar" hidden><p class="swirl" id="swirl"><span>To swirl snow: swipe globe or</span> <span>shake phone or push button</span></p><button type="button" class="pri" id="shake">Shake</button><button type="button" class="play" id="play">Play the game</button><a class="learn" id="learn" href="https://oraclinical.com/the-lens/" target="_blank" rel="noopener" hidden>Learn about Ora<span class="sr"> (opens Ora Clinical&rsquo;s page The Lens in a new tab)</span><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a></div>
 <button type="button" class="toptop" id="tops" aria-label="Top scores" hidden data-off><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3"/><path d="M17 6h3v1a3 3 0 0 1-3 3"/><path d="M12 14v4"/><path d="M8 20h8"/></svg>Top scores</button>
 <div class="lowrow" hidden><a class="own" href="./"><b>Make your own</b><span>Your photo or video, free</span></a><a class="own" href="../play/snowglobes.html"><b>More globes</b><span>See all eight</span></a></div>
