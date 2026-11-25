@@ -14,8 +14,8 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="A snow globe holding a smiling snowman in an Ora hat and a striped scarf, waving in falling snow, with Happy Holidays from Ora and Shake your phone!">
-<meta property="og:video" content="https://artalivestudio.com/play/share/snowglobe-snowman.mp4?v=1">
-<meta property="og:video:secure_url" content="https://artalivestudio.com/play/share/snowglobe-snowman.mp4?v=1">
+<meta property="og:video" content="https://artalivestudio.com/play/share/snowglobe-snowman-play.mp4?v=1">
+<meta property="og:video:secure_url" content="https://artalivestudio.com/play/share/snowglobe-snowman-play.mp4?v=1">
 <meta property="og:video:type" content="video/mp4">
 <meta property="og:video:width" content="1200">
 <meta property="og:video:height" content="630">
@@ -38,6 +38,10 @@ html,body{margin:0;height:100%;background:var(--night);color:var(--snow);font:17
    and then every part of the page lets a pinch through until it is back at its own size. */
 html,body{touch-action:manipulation;touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html.zoomed,html.zoomed *{touch-action:manipulation!important}
+/* (25 Nov) Ben: the words on JUMP and the other buttons could get selected, as if to copy them, and that got in the way of playing. Nothing on the page
+   can be selected or long-pressed into a copy menu now, except the box where a name is typed */
+html,body,body *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 #stage{position:fixed;inset:0}
 .top{position:fixed;left:0;right:0;top:0;padding:calc(14px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));text-align:center;pointer-events:none}
 .top h1{margin:0;white-space:nowrap;font:900 clamp(20px,7.6vw,46px)/1 Archivo,"Arial Black",Arial,sans-serif;font-stretch:118%;letter-spacing:.02em;text-transform:uppercase;text-shadow:0 2px 18px rgba(0,0,0,.45)}
@@ -420,6 +424,7 @@ $('start').onclick = async () => { if (starting) return; starting = true; try { 
   const tip = 'To swirl the snow, swipe the globe, shake your phone, or press Shake.' + (game ? ' Press Play the game to play: catch snowflakes to build the snowman and letters to spell Happy Holidays. Slide him with a finger or the Left and Right buttons, and press Jump to hop over branches and campfires. When it is spelled, a big gift comes down for him.' : '');
   if (line && soundOn) { greeted = true; held = tip; setTimeout(() => line.say(afterSpeech), 330); } else say(msg + '. ' + tip); };   // (the recording begins with half a second of quiet, so his first word comes one second after the globe opens)
 $('shake').onclick = () => g.shake();
+document.addEventListener('selectstart', e => { const t = e.target && (e.target.closest ? e.target : e.target.parentElement); if (!(t && t.closest && t.closest('input,textarea'))) e.preventDefault(); });   // (25 Nov) no selecting words while playing (see the style sheet)
 // (24 Nov, evening) upright only: a phone turned sideways sees "Please turn your phone upright", and a round being played waits until it is upright again
 const sideways = matchMedia('(orientation: landscape) and (max-height: 520px) and (pointer: coarse)');
 const upright = () => { const on = sideways.matches; if ($('turn').hidden === !on) return; $('turn').hidden = !on; try { if (game) game.paused = on; } catch (e) {} if (on) say('Please turn your phone upright.'); };
