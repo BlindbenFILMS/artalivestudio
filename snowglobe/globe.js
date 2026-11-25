@@ -71,11 +71,18 @@
       wave.play().catch(() => { wave.muted = true; wave.play().catch(() => { waveOn = false; }); });
     }
 
+    let booted = false;   // (true once the first frame has been drawn)
     function size() {
       DPR = Math.min(2, devicePixelRatio || 1); W = host.clientWidth; H = host.clientHeight;
-      for (const c of [sky, cv]) { c.width = Math.max(1, Math.round(W * DPR)); c.height = Math.max(1, Math.round(H * DPR)); }
+      // (25 Nov) a canvas is wiped whenever its size is set, even to the size it already has, and on an iPhone the wiped canvas
+      // could be seen for a moment (a black flash as the opening zoom ended and the page made room for the buttons). So the size
+      // is set only when it really changes, and then the globe is drawn again at once.
+      let wiped = false; const cw = Math.max(1, Math.round(W * DPR)), ch = Math.max(1, Math.round(H * DPR));
+      for (const c of [sky, cv]) if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; wiped = true; }
       const room = Math.max(120, H - o.top - o.bottom);
       R = Math.max(40, Math.min(W * .42, room / 2.7)); cx = W / 2; cy = o.top + (room - R * 2.7) / 2 + R;
+      if (booted && !resting) try { const t = performance.now() / 1000; drawSky(t, 0); draw(t); } catch (e) {}   // (drawn again now, not at the next frame)
+      void wiped;
     }
     const ro = window.ResizeObserver ? new ResizeObserver(size) : null; if (ro) ro.observe(host); else addEventListener('resize', size); size();
 
@@ -350,7 +357,7 @@
 
     let last = performance.now();
     (function frame(now) {
-      if (dead) return; const dt = Math.max(0, Math.min(.05, (now - last) / 1000)), t = now / 1000; last = now;
+      booted = true; if (dead) return; const dt = Math.max(0, Math.min(.05, (now - last) / 1000)), t = now / 1000; last = now;
       if (resting) E *= Math.exp(-dt * 2); else { step(dt, t); drawSky(t, dt); draw(t); }   // resting: a game is covering the globe
       sound(dt); requestAnimationFrame(frame);
     })(last);

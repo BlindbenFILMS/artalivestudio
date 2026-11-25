@@ -34,12 +34,15 @@ export function createLine(d) {
     audio,
     get speaking() { return speaking; },
     // from a tap: play a moment of it in silence, so that the browser lets it play by itself afterwards
-    unlock() { if (wanted) return; try { audio.muted = true; const p = audio.play(); if (p && p.then) p.then(() => { if (!wanted) { audio.pause(); try { audio.currentTime = d.from; } catch (e) {} audio.muted = false; } }, () => { if (!wanted) audio.muted = false; }); } catch (e) {} },
+    // (25 Nov) on an iPhone the silent moment could be heard: the hello began at the tap, then began again from the start when it was
+    // meant to begin. Now it is started and stopped in the same instant (the tap still counts), and say() never starts it over.
+    unlock() { if (wanted) return; try { audio.muted = true; const p = audio.play(); try { audio.pause(); audio.currentTime = d.from; } catch (e) {} if (p && p.then) p.then(() => { if (!wanted) { audio.pause(); try { audio.currentTime = d.from; } catch (e) {} audio.muted = false; } }, () => { if (!wanted) audio.muted = false; }); } catch (e) {} },
     say(whenDone) {
       wanted = true; done = whenDone || null; speaking = true; mark = { ct: -1, at: 0 };
       clearTimeout(guard); guard = setTimeout(stop, (d.to - d.from + 5) * 1000);   // (whatever happens to the sound, it is over by then)
-      audio.muted = false; try { audio.currentTime = d.from; } catch (e) {}
-      try { const p = audio.play(); if (p && p.catch) p.catch(stop); } catch (e) { stop(); }
+      audio.muted = false;
+      const going = !audio.paused && !audio.ended && audio.currentTime < d.to - .5;   // (already playing, heard or not: it carries on from where it is)
+      if (!going) { try { audio.currentTime = d.from; } catch (e) {} try { const p = audio.play(); if (p && p.catch) p.catch(stop); } catch (e) { stop(); } }
     },
     hush() { if (!speaking) return; try { audio.pause(); } catch (e) {} stop(); },
     mouth() { return speaking && !audio.paused ? mouthAt(d, clock() + .03) : 0; }   // (a hair early: a mouth that leads the sound looks right, one that lags doesn't)
