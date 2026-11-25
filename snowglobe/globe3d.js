@@ -144,7 +144,8 @@ export async function createModel(source, o = {}) {
       if (hop) { const p = (t - hop.t0) / hop.dur;
         if (p >= 1) hop = hop.next ? { t0: t, dur: hop.dur * .55, h: hop.h * .32, next: false } : null;
         else { y = Math.sin(Math.PI * p) * hop.h; sq = 1 + .1 * Math.sin(Math.PI * p) - .08 * Math.pow(1 - Math.min(1, p * 6), 2) - .08 * Math.pow(Math.max(0, p * 6 - 5), 2); } }
-      if (spinT != null) { const p = (t - spinT) / 1.15; if (p >= 1) spinT = null; else extra = Math.PI * 2 * ease(p); }
+      let face = 1;   // (24 Nov) a shake's spin ends with it facing us: whichever way it was turned fades out as it spins
+      if (spinT != null) { const p = (t - spinT) / 1.15; if (p >= 1) { spinT = null; yaw = 0; yawV = 0; swayA = 0; lastDrag = t; } else { extra = Math.PI * 2 * ease(p); face = 1 - ease(p); } }
       M.air = y;
       const P = M.pose;
       if (!P && held) { yaw = 0; yawV = 0; swayA = 0; lastDrag = t; }   // let go by the game: it faces us, and takes up its gentle turning again in a moment
@@ -155,7 +156,7 @@ export async function createModel(source, o = {}) {
         // left alone, it turns gently from side to side; touched, it stays where you turned it for a moment
         const free = t - lastDrag > 2.2 && o.sway !== false && !calm; swayA += ((free ? 1 : 0) - swayA) * Math.min(1, dt * 1.5);
         lean += ((env.gx || 0) - lean) * Math.min(1, dt * 5);
-        spin.rotation.y = yaw + extra + Math.sin(t * .5) * .34 * swayA + lean * .45; tilt.rotation.z = -lean * .16;
+        spin.rotation.y = (yaw + Math.sin(t * .5) * .34 * swayA) * face + extra + lean * .45; tilt.rotation.z = -lean * .16;
         cheer += ((hop || spinT != null ? 1 : 0) - cheer) * Math.min(1, dt * 6);
       }
       spin.scale.set(1 / Math.sqrt(sq), sq, 1 / Math.sqrt(sq)); tilt.position.y = y0 + y * grown;

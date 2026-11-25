@@ -175,10 +175,19 @@ body.playing .snd{opacity:0;pointer-events:none}
 .top h1{font-size:clamp(20px,6.6vw,46px)}
 .top p.sub{display:block;min-height:0;margin:9px auto 0;max-width:none;white-space:nowrap;color:var(--gold);font:800 clamp(10px,3vw,19px)/1.2 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.01em;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.55);animation:none}
 .top,.bar,.lowrow,.toptop{transition:opacity .35s ease}
+/* (24 Nov, evening) phones play upright only: turned sideways, this covers everything and the game waits (a web page cannot lock the screen itself on an iPhone) */
+.turn{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center;background:radial-gradient(120% 90% at 50% 40%,#22365e,#0b1530);color:#fff;font:800 22px/1.25 Archivo,"Arial Black",Arial,sans-serif;letter-spacing:.04em;text-transform:uppercase}
+.turn[hidden]{display:none}
+.turn p{margin:0}
+.turn .small{font:600 16px/1.4 Archivo,Arial,sans-serif;letter-spacing:0;text-transform:none;color:var(--gold)}
+.turn svg{width:72px;height:72px;color:var(--gold);animation:turnup 2.4s ease-in-out infinite}
+@keyframes turnup{0%,20%{transform:rotate(-90deg)}55%,100%{transform:rotate(0)}}
+@media (prefers-reduced-motion:reduce){.turn svg{animation:none}}
 body.playing .top,body.playing .bar,body.playing .lowrow,body.playing .toptop{opacity:0;pointer-events:none}
 </style>
 </head>
 <body>
+<div class="turn" id="turn" role="alert" hidden><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="20" y="8" width="24" height="44" rx="5" fill="none" stroke="currentColor" stroke-width="3.5"/><circle cx="32" cy="45" r="2.4" fill="currentColor"/></svg><p>Please turn your phone upright</p><p class="small">Ora Blizzard Blitz plays standing tall.</p></div>
 <div id="stage" role="img" aria-label="A snow globe"></div>
 <header class="top"><h1 id="msg">Ora Blizzard Blitz</h1><p class="sub">Collect snowflakes to compete for top score</p><span id="hint" class="sr"></span></header>
 <div class="bar" id="bar" hidden><p class="swirl" id="swirl"><span>To swirl snow: swipe globe or</span> <span>shake phone or push button</span></p><button type="button" class="pri" id="shake">Shake</button><button type="button" class="play" id="play">Play the game</button><a class="learn" id="learn" href="https://oraclinical.com/the-lens/" target="_blank" rel="noopener" hidden>Learn about Ora<span class="sr"> (opens Ora Clinical&rsquo;s page The Lens in a new tab)</span><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a></div>
@@ -403,13 +412,18 @@ async function cardZoom() {
   logo.style.zIndex = 2; await logo.animate([{ transform: 'none', filter: 'none' }, { transform: `translate(${dx * .6}px,${dy * .6}px) scale(${1 + (k - 1) * .45}) rotate(-6deg)`, offset: .55 }, { transform: `translate(${dx}px,${dy}px) scale(${k * 1.06}) rotate(2deg)`, offset: .85 }, { transform: `translate(${dx}px,${dy}px) scale(${k})`, filter: 'none' }], Object.assign({ duration: 1100 }, ease)).finished.catch(() => {});
   return true;
 }
-$('start').onclick = async () => { if (starting) return; starting = true; if (soundOn) sounds.unlock(); if (line) line.unlock(); const opening = g.start();
+$('start').onclick = async () => { if (starting) return; starting = true; try { screen.orientation.lock('portrait').catch(() => {}); } catch (e) {}   // (where the phone allows it, the screen stays upright)
+  if (soundOn) sounds.unlock(); if (line) line.unlock(); const opening = g.start();
   const zoomed = await cardZoom(); await opening; started = true;
   if (zoomed) { document.body.classList.add('playing'); const done = game.intro(); await nextFrame(); await nextFrame(); $('go').remove(); await done; document.body.classList.remove('playing'); } else $('go').remove();   // (the greeting at the top comes in as the globe arrives)
   $('bar').hidden = false; fit({ top: topRoom(), bottom: lowRoom() }); $('shake').focus({ preventScroll: true });
   const tip = 'To swirl the snow, swipe the globe, shake your phone, or press Shake.' + (game ? ' Press Play the game to play: catch snowflakes to build the snowman and letters to spell Happy Holidays. Slide him with a finger or the Left and Right buttons, and press Jump to hop over branches and campfires. When it is spelled, a big gift comes down for him.' : '');
   if (line && soundOn) { greeted = true; held = tip; setTimeout(() => line.say(afterSpeech), 330); } else say(msg + '. ' + tip); };   // (the recording begins with half a second of quiet, so his first word comes one second after the globe opens)
 $('shake').onclick = () => g.shake();
+// (24 Nov, evening) upright only: a phone turned sideways sees "Please turn your phone upright", and a round being played waits until it is upright again
+const sideways = matchMedia('(orientation: landscape) and (max-height: 520px) and (pointer: coarse)');
+const upright = () => { const on = sideways.matches; if ($('turn').hidden === !on) return; $('turn').hidden = !on; try { if (game) game.paused = on; } catch (e) {} if (on) say('Please turn your phone upright.'); };
+try { sideways.addEventListener('change', upright); } catch (e) { try { sideways.addListener(upright); } catch (e2) {} } addEventListener('resize', upright); upright();
 $('play').onclick = () => { if (started && game && !game.playing && !cardOpen) round(); };   // the only way into the game
 if (!game) $('play').hidden = true;
 // Sound off: the notes, the recorded sounds and his voice all stop (he stops in the middle of a word). Sound on: they are back; and if

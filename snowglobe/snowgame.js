@@ -72,7 +72,7 @@
    still backdrop is shown.)
 
    To play: drag a finger left and right (the figure follows it), hold the left or the right arrow beside JUMP, tilt the
-   phone, or use the arrow keys; press JUMP to jump. On the snowmobile: JUMP (the button, the space bar, or a tap on the
+   phone, or use the arrow keys; press JUMP to jump (or give the phone a quick bump). On the snowmobile: JUMP (the button, the space bar, or a tap on the
    screen), and SLOWER and FASTER (the two arrow buttons, the Left and Right arrow keys, or a finger sliding on the screen),
    which bring it back and forward along the snow.
    By ear: the letter that is needed rings from its side (left or right); the ring gets quicker as it comes down, and higher
@@ -188,7 +188,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     groundY = Math.min(H * .84, barTop - (H < 500 ? Math.max(18, H * .05) : Math.max(30, H * .095))); }   // his path: the snow from here down to the buttons (not so deep on a low, wide screen, where the sky is short)
   const moundY = px => groundY + Math.pow((px - W / 2) / (W / 2), 2) * H * .03;
 
-  let G = null, raf = 0, last = 0, lastAsk = 0, lit = false, focusWas = null;   // G: the round being played
+  let G = null, raf = 0, last = 0, lastAsk = 0, lit = false, focusWas = null, held = false;   // G: the round being played; held: paused (the phone is turned sideways)
   const WARN = calm ? 1.9 : 1.4, BURN = 1.5, FADE = .5;   // a ray of sunshine: it warns, it shines, it goes
   const SHAKE = calm ? 1.9 : 1.3;                          // an icicle: how long it shakes before it drops
   const buzz = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
@@ -590,7 +590,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     for (const col of ['#ffd76a', '#ff5a45', '#ffffff']) pop(B.x, B.y, col, 12, true); pop(G.sx, moundY(G.sx) - 20, '#ffffff', 22, true);
     [1046.5, 1318.5, 1568, 2093, 2637].forEach((f, n) => globe.bell(f, n * .07, .06, pan)); buzz([30, 40, 30, 40, 80]); fx('gift', { pan }); fx('piece', { pan, when: .35 }); fx('start', { pan: here(), when: .6 });   // (start: its starter whirs, once the gift's own burst has been heard, and the engine catches as the puff of snow clears and the ride begins)
     btnL.innerHTML = ICON_SLOW; btnL.setAttribute('aria-label', 'Slower'); btnR.innerHTML = ICON_FAST; btnR.setAttribute('aria-label', 'Faster');   // on the snowmobile the two buttons beside JUMP are SLOWER and FASTER: they bring it back and forward along the snow
-    note('A snowmobile! Press JUMP to hop', 3.4);
+    note(motionSeen ? 'A snowmobile! Tap, bump or JUMP to hop' : 'A snowmobile! Press JUMP to hop', 3.4);
     say('The big gift was a snowmobile with a headlight, and he is on it! He rides through a dark wood, and the headlight shows the way. Press Jump, or tap the screen, to hop over campfires and branches and to reach the Ora coins, worth points. He has three hearts: running into something, or an icicle, takes one. Catch the glowing hearts to get more. Hold the Faster button, where the Right button was, to bring him forward, which is faster and jumps higher; hold the Slower button to drop back. Icicles fall: move him out from under them. Snowflakes fall again: catch the letters to spell ' + TIDINGS.toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase()) + '.');
   }
   // What comes along on the ride, one thing after another: a line of coins on the snow; a campfire or a branch, with the path of
@@ -1268,6 +1268,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
   }
   function frame(now) {
     if (!G) return; const dt = clamp((now - last) / 1000, 0, .05); last = now;
+    if (held) { raf = requestAnimationFrame(frame); return; }   // (paused: everything waits where it is)
     if (G.logo) { logoFrame(dt); if (!G) return; }
     else if (G.phase === 'in') {        // zoom in; the snow rushes up white; then the game is there
       G.pt += dt; const p = G.pt / (calm ? .6 : 1.25);
@@ -1314,11 +1315,20 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     if (k === 'ArrowLeft' || k === 'a' || k === 'A') { G.keys.l = on; e.preventDefault(); } if (k === 'ArrowRight' || k === 'd' || k === 'D') { G.keys.r = on; e.preventDefault(); }
     if (k === ' ' || k === 'Spacebar' || k === 'ArrowUp' || k === 'w' || k === 'W') { if (on && !e.repeat) ask(); e.preventDefault(); } };
   addEventListener('keydown', key(1)); addEventListener('keyup', key(0));
+  // (24 Nov, evening) BUMP TO JUMP: while playing, a quick sharp bump of the phone (a short jolt, as if tossing him up) is a jump too. Tilting the phone
+  // to steer is far too gentle to set it off. BUMP: how hard a jolt it takes, in m/s² (raise it if jumps happen by themselves, lower it if a bump is missed).
+  const BUMP = 13; let bumpAt = 0, lastG = null, motionSeen = false;
+  addEventListener('devicemotion', e => { const a = e.acceleration; let j = 0;
+    if (a && a.x != null) j = Math.hypot(a.x, a.y, a.z || 0);
+    else { const b = e.accelerationIncludingGravity; if (!b || b.x == null) return; if (lastG) j = Math.hypot(b.x - lastG.x, b.y - lastG.y, (b.z || 0) - (lastG.z || 0)) * .8; lastG = { x: b.x, y: b.y, z: b.z || 0 }; }
+    motionSeen = true; if (!G || (G.phase !== 'play' && G.phase !== 'ride') || (G.ride && G.ride.end)) return;
+    const now = performance.now(); if (j > BUMP && now - bumpAt > 600) { bumpAt = now; ask(); } });
   addEventListener('deviceorientation', e => { if (!G || e.gamma == null) return; const ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
     const tip = ang === 90 ? e.beta : ang === -90 || ang === 270 ? -e.beta : ang === 180 ? -e.gamma : e.gamma; G.tilt = clamp(Math.sin(tip * Math.PI / 180) * 1.6, -1, 1); if (G.tilt0 == null) G.tilt0 = G.tilt; });
 
   return {
     get playing() { return !!G; },
+    get paused() { return held; }, set paused(v) { held = !!v; },   // (24 Nov) the page pauses the round while the phone is turned sideways
     // play one round: a word, or a phrase of two (or a few) words. back() is called at the moment the globe is on screen again
     // (still hidden: in white, or behind the logo).
     play(word, back) {

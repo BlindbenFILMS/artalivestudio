@@ -128,6 +128,8 @@
       for (const p of puffs) { p.t += dt; p.vv += 1.4 * dt; p.u += p.vu * dt; p.v += p.vv * dt; } puffs = puffs.filter(p => p.t < p.life);
       if (stormy && !calmed && E < .35 && stormT > 2.4) { calmed = true; if (o.onCalm) try { o.onCalm(); } catch (e) {} }   // the snow is starting to settle
       gx += (tgx - gx) * Math.min(1, dt * 4); gy += (tgy - gy) * Math.min(1, dt * 4);
+      const tipped = Math.abs(gx) > .3 || gy < .85;   // (24 Nov, evening) tipped over (more than about 20° to a side, or upside down): ALL the snow on the bottom slides off to the low side, quickly
+      if (tipped) { const q = Math.min(1, dt * 7); for (const f of F) if (f.down && Math.random() < q) { f.down = false; pile[f.b] = Math.max(0, pile[f.b] - f.add); f.vu = gx * (.4 + Math.random() * .5); f.vv = gy * (.4 + Math.random() * .5) - .05; } if (cap > .08 && (Math.abs(gx) > .5 || gy < .5)) puffOff(); }
       const k = 1 - Math.exp(-dt * 2.4), A = .26 * E;
       for (const f of F) {
         if (f.down) continue;
@@ -141,7 +143,7 @@
         f.vu += (fu - f.vu) * k; f.vv += (fv - f.vv) * k; f.u += f.vu * dt; f.v += f.vv * dt;
         const r = Math.hypot(f.u, f.v), lim = WALL - f.s;
         if (r > lim) { const nu = f.u / r, nv = f.v / r, dot = f.vu * nu + f.vv * nv; f.u = nu * lim; f.v = nv * lim; if (dot > 0) { f.vu -= dot * nu * 1.2; f.vv -= dot * nv * 1.2; } }
-        if (E < .5 && gy > .45 && f.vu * gx + f.vv * gy > 0 && f.v >= surf(binOf(f.u)) - f.s * .5) land(f);
+        if (E < .5 && !tipped && Math.abs(gx) < .22 && f.vu * gx + f.vv * gy > 0 && f.v >= surf(binOf(f.u)) - f.s * .5) land(f);   // (it settles on the bottom only with the globe nearly upright)
       }
       if (stormy && E < .12 && (stormT > 14 || F.reduce((n, f) => n + f.down, 0) > N * .75)) {
         stormy = false; hintStorm = false; o.onHint(shook ? 'Shake again!' : 'Shake your phone!', true); chimes(); shineAt = performance.now() / 1000; o.say('The snow has settled.');
@@ -306,11 +308,18 @@
       if (lastA) { const j = Math.hypot(a.x - lastA.x, a.y - lastA.y, (a.z || 0) - (lastA.z || 0)); if (j > 4) stir(Math.min(.35, (j - 4) * .03)); }
       lastA = { x: a.x, y: a.y, z: a.z };
     }
+    // (24 Nov, evening) which way is down, on the screen, as the phone is held: tipped to a side the snow falls that way, and upside down it falls to the top
+    // of the glass (and what lay on the bottom falls off it). Lying flat, down stays toward the base.
+    function setDown(nu, nv) {
+      const m = Math.hypot(nu, nv) || 1; nu /= m; nv /= m; const d = Math.hypot(nu - tgx, nv - tgy); tgx = nu; tgy = nv;
+      if (d > .05) stir(Math.min(.32, d * .9), (nu - gx) * 2.4, (nv - gy) * 2.4);   // tilting sloshes the water: the snow swirls toward the low side
+    }
     function onTilt(e) {
-      if (e.gamma == null) return; const ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
-      let side = ang === 90 ? e.beta : ang === -90 || ang === 270 ? -e.beta : ang === 180 ? -e.gamma : e.gamma;
-      side = Math.max(-.85, Math.min(.85, Math.sin(side * Math.PI / 180) * 1.3)); const d = side - tgx; tgx = side; tgy = Math.sqrt(1 - side * side);
-      if (Math.abs(d) > .06) stir(Math.min(.2, Math.abs(d) * .6), d * 1.6, -Math.abs(d) * .3);   // (24 Nov) tilting the phone sloshes the water: the snow swirls toward the low side
+      if (e.gamma == null || e.beta == null) return; const ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+      const b = e.beta * Math.PI / 180, g = e.gamma * Math.PI / 180, dx = Math.cos(b) * Math.sin(g), dy = Math.sin(b);   // down, in the phone's own measure (x to its right, y to its bottom)
+      let nu = ang === 90 ? dy : ang === -90 || ang === 270 ? -dy : ang === 180 ? -dx : dx, nv = ang === 90 ? -dx : ang === -90 || ang === 270 ? dx : ang === 180 ? -dy : dy;
+      const w = Math.max(0, Math.min(1, (Math.hypot(nu, nv) - .15) / .35));   // (nearly flat: down is the base)
+      setDown(nu * w, 1 - w + nv * w);
     }
     let tap = null;   // a quick touch that doesn't move: on the glass (with a 3D figure) the figure hops; on the base, onPlate is called
     const pd = e => { drag = { x: e.clientX, y: e.clientY, t: performance.now() }; tap = o.model || o.onPlate ? { x: e.clientX, y: e.clientY, t: drag.t, moved: 0 } : null; ac(); };
@@ -346,7 +355,7 @@
       sound(dt); requestAnimationFrame(frame);
     })(last);
     return {
-      tilt(side) { onTilt({ gamma: Math.asin(Math.max(-.65, Math.min(.65, side / 1.3))) * 180 / Math.PI, beta: 0 }); },   // (for testing: tilt it as a phone would, −1 … 1)
+      tilt(side) { const a = side * Math.PI / 2; setDown(Math.sin(a), Math.cos(a)); },   // (for testing: turn it as a phone would: 1 = on its right side, −1 = its left, 2 = upside down)
       get cap() { return cap; },
       start, set, shake() { ac(); stir(2.6, (Math.random() - .5) * .6, -.4); },
       sound(on) { soundOn = !!on; if (waveOn) wave.muted = !soundOn; },
