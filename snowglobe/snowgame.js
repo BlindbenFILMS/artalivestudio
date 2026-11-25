@@ -109,6 +109,7 @@ const SUNSHINE = false;   // rays of sunshine that melt him: switched off for no
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), lerp = (a, b, p) => a + (b - a) * p;
 const easeOut = p => 1 - Math.pow(1 - clamp(p, 0, 1), 3), easeIn = p => Math.pow(clamp(p, 0, 1), 2.4), smooth = (a, b, v) => { const p = clamp((v - a) / (b - a), 0, 1); return p * p * (3 - 2 * p); };
 const FONT = 'Archivo, "Arial Black", Arial, sans-serif';
+const HEARTS_TOP = true;   // (24 Nov) on the ride the hearts are at the top, under the icicles and above the phrase (false: just above the buttons, as before)
 const SCALE = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66];   // the catch notes climb, one per letter
 const PACE = [1.15, .8, 1, .75, 1.2];                                     // the letters come quick and slow by turns
 const NT = 10, NB = 14, NX = 8, FULL = NT + NB, MOST = NT + NB + NX;      // snow (a small flake is 1, a big one 2) to finish his middle ball, then his bottom ball, then to grow a little bigger all over
@@ -236,6 +237,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
   // (as he gets taller the view draws back, so that the sky above him stays tall)
   const hfGoal = () => { const s = G.snow; return !pieces ? lerp(.22, .34, clamp(s / FULL, 0, 1)) : s <= NT ? lerp(HF[0], HF[1], s / NT) : s <= FULL ? lerp(HF[1], HF[2], (s - NT) / NB) : lerp(HF[2], HF[3], clamp((s - FULL) / NX, 0, 1)); };
   const riding = () => !!(G && G.ride && G.ride.on);          // he is on the snowmobile
+  const heartTop = () => { const hr = clamp(PW * .042, 11, 16), cy = Math.max(hr * 1.45 + 8, iceH() * .7); return { hr, cy, room: Math.max(0, cy + hr * 1.45 + 6 - iceH()) }; };   // the row of hearts at the top, on the ride: over the tips of the icicles, so the phrase moves down only a little
   const figH = () => fig.height || 1.2;                       // the whole figure's height in its own picture (the picture is 2 units tall)
   const unit = () => (riding() ? G.ride.u : G.hf * H / figH());   // pixels per unit of that picture (the snowmobile: sized by its length)
   const feetY = () => (riding() ? moundY(G.sx) + 2 : groundY + H * .012) - G.jy;   // where its feet are on the screen (just under the top of the snow; higher in a jump). The snowmobile: the line its track runs along
@@ -1069,7 +1071,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
     x.restore();
   }
   function slots() {   // the phrase at the top, just under the icicles: outlines that fill with gold as the letters are caught
-    const Y = layout(), fs = Y.fs, gap = fs * 1.02, y0 = Math.max(H * .085, 46, iceH() + fs * .62), at = [];
+    const Y = layout(), fs = Y.fs, gap = fs * 1.02, y0 = Math.max(H * .085, 46, iceH() + fs * .62) + (HEARTS_TOP && riding() ? heartTop().room : 0), at = [];
     Y.rows.forEach((row, j) => { const x0 = W / 2 - gap * (row.length - 1) / 2; [...row].forEach((ch, c) => { if (ch !== ' ') at.push([x0 + gap * c, y0 + j * fs * 1.16]); }); });
     return { fs, at, bottom: y0 + (Y.rows.length - 1) * fs * 1.16, wide: gap * (Math.max(...Y.rows.map(r => r.length)) - 1) + fs };
   }
@@ -1162,7 +1164,7 @@ export function createGame({ stage, globe, figure, backdrop, scenery = null, say
           x.globalAlpha = G.hud * smooth(.2, .8, t); x.font = `800 ${fs}px ${FONT}`; const w1 = x.measureText('SCORE ').width; x.font = `900 ${f2}px ${FONT}`; const w2 = x.measureText(num).width, w = w1 + w2 + fs * 1.6, x0 = W / 2 - (w1 + w2) / 2;
           x.fillStyle = 'rgba(8,14,32,.62)'; rr(W / 2 - w / 2, by - fs * .9, w, fs * 1.8, fs * .9); x.fill(); x.textAlign = 'left'; x.font = `800 ${fs}px ${FONT}`; x.fillStyle = 'rgba(255,255,255,.85)'; x.fillText('SCORE ', x0, by + fs * .04);
           x.font = `900 ${f2}px ${FONT}`; x.fillStyle = '#ffe08a'; x.fillText(num, x0 + w1, by + fs * .04); x.textAlign = 'center';
-          if (riding()) { const R = G.ride, hr = clamp((barTop - feetY() - 8) / 3, 9, 17), gap = hr * 2.7, n = HEARTS_MAX, w = gap * n + hr * .9, cy = barTop - 4 - hr * 1.45,   // (in the strip between the snow under the skis and the buttons, so that nothing on the snow is hidden)
+          if (riding()) { const R = G.ride, HT = HEARTS_TOP && heartTop(), hr = HT ? HT.hr : clamp((barTop - feetY() - 8) / 3, 9, 17), gap = hr * 2.7, n = HEARTS_MAX, w = gap * n + hr * .9, cy = HT ? HT.cy : barTop - 4 - hr * 1.45,   // (in the strip between the snow under the skis and the buttons, so that nothing on the snow is hidden)
             x0 = W / 2 - gap * (n - 1) / 2;   // HEARTS: what he has left, in a row just above the buttons (so that they are not taken for hearts to catch)
             x.globalAlpha = G.hud; x.fillStyle = 'rgba(8,14,32,.62)'; rr(W / 2 - w / 2, cy - hr * 1.45, w, hr * 2.9, hr * 1.45); x.fill();
             for (let k = 0; k < n; k++) { const cx = x0 + k * gap, full = k < R.hearts, lost = k === R.hearts && t - R.lostT < .8, won = k === R.hearts - 1 && t - R.heartT < .5;
